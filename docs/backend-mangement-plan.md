@@ -1,5 +1,40 @@
 # Backend Management Proposal for HrdHat
 
+## 🎯 **Mission Statement**
+
+HrdHat is a **tool for tradespeople** to efficiently complete daily safety forms, not a data analytics or reporting platform. Our backend architecture must support fast, reliable form operations for construction workers in the field.
+
+## 🚫 **Backend Development Focus - Do Nots**
+
+**❌ DO NOT OPTIMIZE FOR:**
+
+- Complex SQL queries across forms
+- Reporting performance or analytics
+- Data warehouse integration
+- Business intelligence use cases
+- Cross-user data analysis
+- Trend reporting systems
+- Management dashboards
+
+**❌ DO NOT ADD:**
+
+- Complex reporting tables or views
+- Analytics aggregation functions
+- Cross-form data mining capabilities
+- Business intelligence endpoints
+- Statistical analysis features
+
+**✅ DO FOCUS ON:**
+
+- Fast CRUD operations for individual forms
+- Reliable JSONB storage and retrieval
+- Device switching support via JSON serialization
+- Simple user-specific form queries
+- PDF generation data preparation
+- Offline sync capabilities
+
+---
+
 Based on our MCP connection capabilities and your project requirements, here's my proposal for how we should manage the backend development workflow:
 
 ## 🏗️ Backend Development Strategy

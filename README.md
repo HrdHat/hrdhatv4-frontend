@@ -1,5 +1,9 @@
 # HrdHat
 
+## 🎯 **Mission Statement**
+
+HrdHat is a **tool for tradespeople** to efficiently complete daily safety forms, not a data analytics or reporting platform. Our focus is on making safety paperwork fast, intuitive, and reliable for construction workers in the field.
+
 ## What the project does
 
 HrdHat webapp is a tool that helps tradespeople and crews create, fill out, store, view and submit daily safety form with is core form being the FLRA form (Field Level Risk Assessment form)
@@ -9,6 +13,42 @@ It provides a either a quickfill or guided, one-question-at-a-time experience th
 It supports mobile, tablet and desktop screens.
 
 A core feacher will be the "recall" function, where a user can click the "recall" button to help intuitavly fill out out section of the form based on the users previous data that was filled out.
+
+## 🚫 **Explicit Do Nots - Keep Focus on Tradesperson Tool**
+
+**❌ DO NOT ADD:**
+
+- Complex reporting queries or dashboards
+- Data analytics or trend analysis features
+- Advanced search across form content
+- Business intelligence or metrics
+- Cross-form data aggregation
+- Supervisor analytics dashboards
+- Performance reporting systems
+- Data export for analysis tools
+- Cross-user data analysis
+- Statistical analysis features
+
+**❌ DO NOT OPTIMIZE FOR:**
+
+- Complex SQL queries across forms
+- Reporting performance
+- Data warehouse integration
+- Business analytics use cases
+- Trend reporting
+- Management dashboards
+
+**✅ DO FOCUS ON:**
+
+- Fast form loading and saving
+- Reliable device switching
+- Offline form completion
+- Quick PDF generation
+- Simple form recall (Phase 2)
+- User-specific form management
+- Construction site usability
+- Touch-first mobile experience
+- Paper-like PDF output
 
 ## Project
 
@@ -41,6 +81,122 @@ Quick-start install & run
 .env variables you need (VITE_SUPABASE_URL, anon key, etc.)
 
 Optional Docker setup for local DB
+
+## Git Workflow & Repository Structure
+
+### Repository Organization
+
+HrdHat uses a **multi-repository architecture**:
+
+```
+Hrdhatv4/
+├── frontend/    # This repository (React app)
+├── backend/     # Separate repository (Supabase functions/schemas)
+├── .cursor/     # Global Cursor IDE configuration
+└── .vscode/     # Global VS Code configuration
+```
+
+### Important Git Rules
+
+⚠️ **CRITICAL: Each directory has its own git repository**
+
+- `frontend/` → `https://github.com/HrdHat/hrdhatv4-frontend.git`
+- `backend/` → `https://github.com/HrdHat/hrdhat4-backend.git`
+- Root directory (`Hrdhatv4/`) is **NOT** a git repository
+
+### Automated Git Workflow
+
+Both frontend and backend repositories include automated git scripts:
+
+#### Quick Usage
+
+```bash
+# Option 1: Auto-timestamp commit
+./git-auto-push.sh
+
+# Option 2: Custom commit message
+./git-auto-push.sh "your commit message"
+
+# Option 3: Windows batch version
+git-auto-push.bat "your commit message"
+
+# Option 4: Use Cursor snippet
+# Type @git-auto-push in Cursor, then say "run git auto-push"
+```
+
+#### Automation Features
+
+- ✅ **Retry Logic**: 5 attempts with exponential backoff
+- ✅ **Conflict Resolution**: Auto-fetches and rebases remote changes
+- ✅ **Safety Checks**: Validates repository and checks for changes
+- ✅ **Color Output**: Status messages for easy debugging
+- ✅ **Zero Disruption**: Guarantees completion or safe failure
+
+#### What the Automation Does
+
+1. Validates you're in a git repository
+2. Checks for uncommitted changes
+3. Fetches and rebases remote changes if needed
+4. Stages all changes (`git add .`)
+5. Commits with your message (or auto-timestamp)
+6. Pushes to current branch with retry logic
+
+### Manual Git Workflow
+
+If you prefer manual control:
+
+```bash
+# Standard git workflow
+git add .
+git commit -m "your message"
+git push origin master
+
+# Check status
+git status
+git log --oneline
+```
+
+### Working Across Repositories
+
+When working on features that span frontend and backend:
+
+1. **Make frontend changes** in `frontend/` directory
+2. **Commit and push** from `frontend/` directory
+3. **Switch to backend** directory: `cd ../backend`
+4. **Make backend changes** in `backend/` directory
+5. **Commit and push** from `backend/` directory
+
+#### Example Workflow
+
+```bash
+# Working on authentication feature
+cd frontend/
+# ... make frontend changes ...
+./git-auto-push.sh "Add login form UI"
+
+cd ../backend/
+# ... make backend changes ...
+./git-auto-push.sh "Add authentication endpoints"
+```
+
+### Common Mistakes to Avoid
+
+❌ **DON'T** create git repositories in the root `Hrdhatv4/` directory
+❌ **DON'T** try to commit both frontend and backend changes together
+❌ **DON'T** work in the wrong directory when making commits
+
+✅ **DO** always check your current directory before committing
+✅ **DO** use the automated scripts for consistent workflow
+✅ **DO** commit frontend and backend changes separately
+
+### Troubleshooting Git Issues
+
+If you encounter git problems:
+
+1. **Check your location**: `pwd` (should be in `frontend/` or `backend/`)
+2. **Check git status**: `git status`
+3. **Remove lock files**: `rm -f .git/index.lock` (if git operations hang)
+4. **Use automation**: The scripts handle most edge cases automatically
 
 ## Testing & Quality
 
