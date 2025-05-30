@@ -1,8 +1,26 @@
 # Application Overview
 
-HrdHat lets users sign up, create, and manage daily safety forms—chiefly the FLRA (Field-Level Risk Assessment).
+HrdHat lets users sign up, create, and manage daily safety forms — chiefly the FLRA (Field-Level Risk Assessment).
 
 We have a form structure and every form is built of form modules(sections).
+
+There are Two primary ways to fill out an FLRA in HrdHat:
+
+    Guided Mode
+
+        One question per screen
+
+        Smooth “click-in” transitions between fields
+
+        Ideal for step-by-step focus
+
+    Quick View
+
+        Multiple rows/questions on a single scrollable page
+
+        No columns—just a vertical list
+
+        Faster “all-at-once” fill experience
 
 ## Data model
 
@@ -32,6 +50,3 @@ To get started with the HrdHat application:
 
 For detailed setup instructions, check the [README.md](../../README.md) file in the frontend directory.
 
-- [React Vite](../apps/react-vite/README.md)
-- [Next.js App Router](../apps/nextjs-app/README.md)
-- [Next.js Pages](../apps/nextjs-pages/README.md)
