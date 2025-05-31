@@ -6,6 +6,136 @@
 
 ---
 
+## 🚨 **AGREED MINIMAL TESTING APPROACH (MVP)**
+
+**DECISION**: Implement minimal testing foundation early to protect form data integrity, then build comprehensive testing post-MVP.
+
+### **📋 IMPLEMENTATION TIMELINE:**
+
+- **Chapter 1.5 (1 Week)**: Minimal testing setup with 6 critical tests
+- **Chapters 4-7**: Add 2-3 tests per chapter as features are built (~15 total tests for MVP)
+- **Post-MVP**: Enhanced testing suite with integration tests
+- **Phase 2**: Comprehensive testing (E2E, A11y, Performance)
+
+### **🎯 MINIMAL VIABLE TESTING SETUP:**
+
+#### **Dependencies (ONLY 4 packages):**
+
+```json
+{
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0"
+  }
+}
+```
+
+#### **Critical Safety Tests (Maximum 6 tests):**
+
+```typescript
+// src/testing/critical.test.tsx
+describe('HrdHat Critical Safety Tests', () => {
+  // 1. DATA PROTECTION (Most Critical)
+  it('preserves form data during component crashes', () => {
+    // Error boundary recovery test
+  });
+
+  it('saves form data to localStorage on network failure', () => {
+    // Offline backup test
+  });
+
+  it('recovers form data after page reload', () => {
+    // Data persistence test
+  });
+
+  // 2. CORE WORKFLOW (Second Priority)
+  it('creates new form successfully', () => {
+    // Basic form creation
+  });
+
+  it('saves form data to Supabase', () => {
+    // Basic CRUD test
+  });
+
+  // 3. ERROR BOUNDARIES (Third Priority)
+  it('catches and recovers from form module errors', () => {
+    // Component error handling
+  });
+});
+```
+
+#### **Minimal Jest Configuration:**
+
+```javascript
+// jest.config.js (MINIMAL)
+export default {
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/testing/setup.ts'],
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  // NO coverage requirements for MVP
+  // NO performance testing
+  // NO accessibility testing
+};
+```
+
+#### **Basic CI/CD:**
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+      - run: npm run test
+      - run: npm run build
+```
+
+### **🚫 WHAT WE'RE NOT IMPLEMENTING (Build Later/Phase 2):**
+
+- ❌ **E2E Testing** (Playwright) - Phase 2
+- ❌ **Accessibility Testing** (jest-axe) - Phase 2
+- ❌ **Performance Testing** (bundlesize) - Post-MVP
+- ❌ **API Mocking** (MSW) - Build Later
+- ❌ **Coverage Requirements** - Post-MVP
+- ❌ **Visual Regression** - Phase 2
+- ❌ **Automated Deployment** - Build Later
+
+### **📊 SUCCESS CRITERIA:**
+
+- ✅ **6 critical tests** passing consistently
+- ✅ **Basic CI pipeline** working
+- ✅ **Zero data loss** in test scenarios
+- ✅ **Development velocity** maintained
+- ✅ **Testing foundation** ready for incremental expansion
+
+### **🔄 INCREMENTAL TESTING PLAN:**
+
+- **Chapter 4 (Data Persistence)**: Add 2-3 CRUD operation tests
+- **Chapter 5 (Form Workflows)**: Add 2-3 workflow tests
+- **Chapter 6 (Frontend Layout)**: Add 1-2 basic UI tests
+- **Chapter 7 (PDF Generation)**: Add 1-2 PDF generation tests
+- **Total MVP Tests**: ~15 tests maximum
+
+---
+
+## 🎯 **COMPREHENSIVE TESTING PHILOSOPHY (Future Reference)**
+
+_The following sections outline our long-term testing strategy for post-MVP and Phase 2 implementation._
+
 ## 🎯 **Testing Philosophy for HrdHat**
 
 HrdHat serves **construction workers in challenging field conditions** where reliability is critical. Our testing strategy prioritizes:
