@@ -14,6 +14,71 @@ It supports mobile, tablet and desktop screens.
 
 A core feacher will be the "recall" function, where a user can click the "recall" button to help intuitavly fill out out section of the form based on the users previous data that was filled out.
 
+## 🔧 **CRITICAL: Dynamic Form Architecture**
+
+**⚠️ IMPORTANT: Understanding "Dynamic" in HrdHat**
+
+HrdHat uses **dynamic module assembly**, NOT dynamic field creation:
+
+### **What "Dynamic" Means:**
+
+- ✅ **Module Selection**: Forms are built by combining predefined modules
+- ✅ **Module Assembly**: Phase 2 allows users to choose which modules to include
+- ✅ **Module Ordering**: Modules can be arranged in different sequences
+- ✅ **Array-based Content**: Some modules have dynamic arrays (Task/Hazard/Control entries, worker signatures)
+
+### **What "Dynamic" Does NOT Mean:**
+
+- ❌ **Field Creation**: Individual fields within modules are hardcoded TypeScript interfaces
+- ❌ **Schema Generation**: Field types and validation rules are predefined
+- ❌ **Runtime Field Definition**: No user-created custom fields
+
+### **Module Structure:**
+
+```typescript
+// Phase 1: Everyone gets the same 6 modules
+const DEFAULT_MODULES = [
+  'generalInformation', // Fixed fields: projectName, supervisorName, etc.
+  'preJobChecklist', // Fixed 20 boolean safety checks
+  'ppeAndPlatform', // Fixed PPE and platform checklists
+  'taskHazardControl', // Dynamic array: up to 6 task/hazard/control sets
+  'signatures', // Dynamic array: up to 20 worker signatures + supervisor
+  'photos', // Dynamic array: up to 5 photos with captions
+];
+
+// Phase 2: Users can customize which modules appear
+const USER_CUSTOM_MODULES = [
+  'generalInformation', // Always required
+  'taskHazardControl', // User choice
+  'signatures', // User choice
+  // User excludes: preJobChecklist, ppeAndPlatform, photos
+];
+```
+
+### **Validation Strategy:**
+
+- **NO ZOD**: Module structures are hardcoded, not dynamically generated
+- **Loosely Enforced**: Fields are recommended but not strictly required
+- **Guided Mode**: Prompts users to fill fields but allows skipping
+- **Quick Mode**: No validation blocking - user can submit incomplete forms
+- **Backend Permissive**: Server accepts incomplete forms without errors
+- **UI Guidance Only**: Visual cues and suggestions, not hard stops
+
+### **Progress Tracking:**
+
+- **Right-Side Tracker**: Persistent completion indicator on all devices
+- **Mobile**: 40px floating tracker with module status icons (✓ ○ ● !)
+- **Tablet/Desktop**: 300px expanded panel with module names and progress bars
+- **Psychology**: Visual design makes incomplete forms feel "unfinished"
+- **Navigation**: Tap any module to jump directly to that section
+- **Completion Logic**: Loosely enforced rules (e.g., 50% of fields = "complete")
+
+### **Implementation Reference:**
+
+- **Module Definitions**: `backend/docs/module-definitions.md`
+- **Source HTML**: `c:\Users\Pawel\HRDhat\HRDhat\HrdHatFLRApdf.html`
+- **Form Plan**: `frontend/docs/plan/form-plan/`
+
 ## 🚫 **Explicit Do Nots - Keep Focus on Tradesperson Tool**
 
 **❌ DO NOT ADD:**

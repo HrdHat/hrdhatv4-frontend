@@ -11,21 +11,37 @@ Based on our existing documentation, project standards, and established architec
 1. ✅ Project Setup & Supabase Configuration (Complete)
 2. ✅ Authentication & User Management
 3. ✅ Database Structure and Models (Complete)
-4. **Data Persistence & Form Operations** (Chapter 6 moved up)
-5. **Form Workflows (Quick Fill & Guided)** (Chapter 5)
-6. **Frontend Layout & Routing** (Chapter 4 moved down)
-7. **PDF Generation** (Chapter 7)
+4. **Data Persistence & Form Operations** (Chapter 6 moved up) + **Error Handling Foundation**
+5. **Form Workflows (Quick Fill & Guided)** (Chapter 5) + **Advanced Error Management**
+6. **Frontend Layout & Routing** (Chapter 4 moved down) + **Error UI Integration**
+7. **PDF Generation** (Chapter 7) + **Error Recovery Testing**
 8. **Version Control & Git Workflow** (Chapter 8)
 
-## Chapter 4: Data Persistence & Form Operations - CORE FUNCTIONALITY
+## 🛡️ **ERROR HANDLING INTEGRATION STRATEGY**
+
+**PARALLEL IMPLEMENTATION APPROACH**: Error handling will be implemented alongside each chapter to ensure robust data protection from day one. This addresses the critical gap identified in the plan audit.
+
+### **Error Handling Phases Mapped to Development Chapters:**
+
+```
+Chapter 4 (Data Persistence) → Error Handling Phase 1 (Core Boundaries)
+Chapter 5 (Form Workflows)   → Error Handling Phase 2 (Offline Management)
+Chapter 6 (Frontend Layout)  → Error Handling Phase 3 (Validation & UI)
+Chapter 7 (PDF Generation)   → Error Handling Phase 4 (Data Integrity)
+All Chapters                 → Error Handling Phase 5 (Integration & Testing)
+```
+
+---
+
+## Chapter 4: Data Persistence & Form Operations + Error Handling Foundation
 
 ### 📋 **Chapter Overview**
 
-This chapter implements the fundamental CRUD operations that make HrdHat functional. Users must be able to create, save, load, modify, and archive forms before any styling or advanced UI work begins.
+This chapter implements the fundamental CRUD operations that make HrdHat functional, **WITH** comprehensive error boundaries and data protection from the start. Users must be able to create, save, load, modify, and archive forms reliably before any styling or advanced UI work begins.
 
 ### 🏗️ **Feature Architecture Notes**
 
-**Feature Folder Structure:**
+**Feature Folder Structure (Updated with Error Handling):**
 
 ```
 frontend/src/features/
@@ -33,13 +49,28 @@ frontend/src/features/
 │   ├── components/
 │   │   ├── modules/         # Individual form modules
 │   │   ├── workflows/       # Quick Fill & Guided modes
-│   │   └── shared/          # Shared form components
+│   │   ├── shared/          # Shared form components
+│   │   └── error-boundaries/ # Form-specific error boundaries
 │   ├── hooks/
-│   ├── services/            # CRUD operations
-│   ├── stores/              # Form state management
+│   ├── services/            # CRUD operations with error handling
+│   ├── stores/              # Form state management with backup
 │   └── types/
 ├── dashboard/               # Form lists, navigation, overview
 ├── offline-sync/            # localStorage backup, sync when online
+├── error-handling/          # 🆕 Core error management system
+│   ├── components/
+│   │   ├── AppErrorBoundary.tsx
+│   │   ├── FormErrorBoundary.tsx
+│   │   └── ModuleErrorBoundary.tsx
+│   ├── services/
+│   │   ├── ErrorLogger.ts
+│   │   ├── DataIntegrityManager.ts
+│   │   └── FormBackupManager.ts
+│   ├── hooks/
+│   │   ├── useErrorRecovery.ts
+│   │   └── useFormBackup.ts
+│   └── types/
+│       └── errorTypes.ts
 └── authentication/          # User login/logout/registration
 ```
 
@@ -49,52 +80,55 @@ frontend/src/features/
 - **Modules Identified**: General Information, FLRA Pre-Job Checklist, PPE & Platform Inspection, Task/Hazard/Control, Signatures, Photos (missing from HTML)
 - **Implementation**: Each module becomes a component in `features/form/components/modules/`
 
-### 🎯 **Core Operations to Implement:**
+### 🎯 **Core Operations to Implement (With Error Protection):**
 
-1. **Create New Form**: Instantiate blank form with default module structure
-2. **Save Form Data**: Debounced auto-save to JSONB storage
-3. **Load Form**: Retrieve and hydrate form state from database
-4. **Modify Form**: Update existing form data in real-time
-5. **Archive Form**: Auto-archive after 16 hours, manual archive option
-6. **Form Lifecycle Management**: Active (max 5) vs Archived states
-7. **Device Switching**: JSON serialization for cross-device editing
-8. **Offline Resilience**: localStorage backup for network issues
+1. **Create New Form**: Instantiate blank form with default module structure + immediate backup
+2. **Save Form Data**: Debounced auto-save to JSONB storage + error queue management
+3. **Load Form**: Retrieve and hydrate form state from database + corruption detection
+4. **Modify Form**: Update existing form data in real-time + conflict resolution
+5. **Archive Form**: Auto-archive after 16 hours + data integrity checks
+6. **Form Lifecycle Management**: Active (max 5) vs Archived states + error boundaries
+7. **Device Switching**: JSON serialization for cross-device editing + sync conflict handling
+8. **Offline Resilience**: localStorage backup for network issues + retry queue
 
-### MODIFIED CHAPTER 4 PHASES:
+### **MODIFIED CHAPTER 4 PHASES (With Error Handling):**
 
-**Phases:**
+**Phase 4.1: Core Error Boundaries (Week 1)**
 
-1. **Implement form_instances CRUD**: Basic create, read, update operations via MCP-approved schema
-2. **Build form lifecycle system**: Active forms (max 5), auto-archive after 16 hours, read-only archived forms
-3. **Create form state management**: React context/store for form data with JSONB structure
-4. **Implement debounced auto-save**: Continuous saving with local cache backup
-5. **Add device switching support**: JSON-based form state that works across devices
-6. **Build form list interfaces**: Simple lists for Active and Archived forms (no styling yet)
-7. **Test core operations**: Verify create → save → load → modify → archive workflow
+- [ ] Implement `AppErrorBoundary` with form data preservation
+- [ ] Create `FormErrorBoundary` for form-specific errors
+- [ ] Add `ModuleErrorBoundary` for individual form sections
+- [ ] Test error boundary recovery with simulated crashes
+- [ ] Implement form_instances CRUD with error handling
 
-**⚠️ BACKEND SAFETY PROTOCOL:**
+**Phase 4.2: Data Protection & Backup (Week 2)**
 
-- All database operations via established MCP workflow
-- Test on development project (ybonzpfwdcyxbzxkyeji) first
-- Document all operations in backend/database/migrations/
+- [ ] Build `FormBackupManager` for automatic localStorage backup
+- [ ] Implement `DataIntegrityManager` with checksum validation
+- [ ] Create form lifecycle system with error recovery
+- [ ] Add device switching support with conflict detection
 
-**🎯 SUCCESS CRITERIA:**
+**Phase 4.3: Auto-Save with Error Management (Week 3)**
 
-- User can create a new blank form
-- Form data saves automatically as user types
-- User can switch devices and continue editing
-- Forms auto-archive after 16 hours
-- User can access up to 5 active forms
-- Archived forms are read-only
-- All operations work without styling/UI polish
+- [ ] Implement debounced auto-save with failure recovery
+- [ ] Build offline error queue with retry logic
+- [ ] Create form state management with backup integration
+- [ ] Test core operations with network failure scenarios
+
+**Phase 4.4: Integration & Validation (Week 4)**
+
+- [ ] Build form list interfaces with error states
+- [ ] Integrate all error handling systems
+- [ ] Test create → save → load → modify → archive workflow
+- [ ] Verify data protection under all failure conditions
 
 ---
 
-## Chapter 5: Form Workflows (Quick Fill & Guided) - FORM INTERACTION
+## Chapter 5: Form Workflows + Advanced Error Management
 
 ### 📋 **Chapter Overview**
 
-Now that core data operations work, implement the two form interaction modes. This focuses on form logic and user input handling, not visual design.
+Now that core data operations work with error protection, implement the two form interaction modes with comprehensive validation and offline error management.
 
 ### 🏗️ **Feature Architecture Notes**
 
@@ -125,33 +159,43 @@ frontend/src/features/
 - **Mapping**: HTML form fields → TypeScript interfaces → JSONB structure
 - **Validation**: Each module component handles its own validation rules
 
-### MODIFIED CHAPTER 5 PHASES:
+### **MODIFIED CHAPTER 5 PHASES (With Advanced Error Handling):**
 
-**Phases:**
+**Phase 5.1: Offline Error Queue Management (Week 1)**
 
-1. **Implement module-based architecture**: Build forms using module components that work with JSONB structure
-2. **Create Quick Fill mode**: Single-page, vertical list layout (basic HTML structure)
-3. **Create Guided mode**: One-question-at-a-time with basic navigation
-4. **Connect to data persistence**: Integrate with Chapter 4's save/load operations
-5. **Add mode switching**: Allow users to switch between modes mid-form
-6. **Build validation system**: Module-specific validation with basic error display
-7. **Test form workflows**: Verify both modes produce identical JSONB data
+- [ ] Build `OfflineErrorQueue` with retry logic
+- [ ] Implement `NetworkMonitor` for connection tracking
+- [ ] Create `AutoSaveManager` with failure recovery
+- [ ] Implement module-based architecture with error boundaries
 
-**🎯 SUCCESS CRITERIA:**
+**Phase 5.2: Form Workflows with Validation (Week 2)**
 
-- Both modes work with basic HTML/minimal CSS
-- Form data saves correctly in both modes
-- Users can switch modes without losing data
-- Validation prevents invalid submissions
-- All form operations integrate with data persistence
+- [ ] Create Quick Fill mode with real-time validation
+- [ ] Create Guided mode with step-by-step error checking
+- [ ] Connect to data persistence with error handling
+- [ ] Add mode switching with state preservation
+
+**Phase 5.3: Validation & Error Display (Week 3)**
+
+- [ ] Implement real-time validation system
+- [ ] Create error display components (inline, toast, modal)
+- [ ] Build notification system for offline/sync status
+- [ ] Test form workflows with validation errors
+
+**Phase 5.4: Workflow Integration (Week 4)**
+
+- [ ] Test offline form completion and sync
+- [ ] Verify both modes produce identical JSONB data
+- [ ] Validate error recovery workflows
+- [ ] Test validation system across all modules
 
 ---
 
-## Chapter 6: Frontend Layout & Routing - VISUAL DESIGN
+## Chapter 6: Frontend Layout + Error UI Integration
 
 ### 📋 **Chapter Overview**
 
-With core functionality working, now implement the responsive layout system and navigation architecture. This is where we make it look good and work well across devices.
+With core functionality and error handling working, implement the responsive layout system with integrated error state displays and user feedback systems.
 
 ### 🎯 **Key Areas to Define:**
 
@@ -200,12 +244,21 @@ MOBILE LAYOUT (0-599px):
 - Content: Full width when sidebar closed, pushed when open
 - Bottom Drawer: Fixed bottom, 120px height, shows active forms (max 5)
 - Progress Tracker: Floating right edge, 40px width
+  - Module completion indicators (6 modules max)
+  - Visual states: Complete (✓ green), Incomplete (○ gray), Current (● blue)
+  - Tap to jump to specific module
+  - Overall completion percentage
 
 TABLET LAYOUT (600-1023px):
 - Header: 64px height, logo left, navigation items right
 - Sidebar: Persistent left, 240px width, no overlay
 - Content: Remaining width after sidebar
 - Bottom Drawer: Becomes right panel, 300px width
+- Progress Tracker: Expanded right panel section
+  - Module names + completion status
+  - Progress bar per module
+  - Overall form completion percentage
+  - "Make user feel it's not done" visual cues
 ```
 
 ### 🎨 **What I Can Implement Well:**
@@ -225,13 +278,43 @@ TABLET LAYOUT (600-1023px):
 
 **Ready when you are to provide the layout specifications!**
 
+### **MODIFIED CHAPTER 6 PHASES (With Error UI):**
+
+**Phase 6.1: Layout Foundation with Error States (Week 1)**
+
+- [ ] Implement responsive layout components
+- [ ] Integrate error boundary displays into layout
+- [ ] Add connection status indicators
+- [ ] Create error notification positioning system
+
+**Phase 6.2: Navigation with Error Feedback (Week 2)**
+
+- [ ] Build navigation patterns with error states
+- [ ] Implement mobile-specific error displays
+- [ ] Add progress tracking with error indicators
+- [ ] Create form layout with validation feedback
+
+**Phase 6.3: Error UI Components (Week 3)**
+
+- [ ] Build comprehensive error message templates
+- [ ] Implement conflict resolution UI
+- [ ] Create offline status displays
+- [ ] Add sync progress indicators
+
+**Phase 6.4: Layout Integration & Testing (Week 4)**
+
+- [ ] Test responsive behavior with error states
+- [ ] Verify error UI across all breakpoints
+- [ ] Validate touch-friendly error interactions
+- [ ] Test accessibility of error feedback
+
 ---
 
-## Chapter 7: PDF Generation
+## Chapter 7: PDF Generation + Error Recovery Testing
 
 ### 📋 **Chapter Overview**
 
-Generate construction-site friendly PDFs from completed forms. Focus on paper-like output that mimics traditional forms workers are familiar with.
+Generate construction-site friendly PDFs with comprehensive error handling for generation failures and data integrity issues.
 
 ### 🏗️ **Feature Architecture Notes**
 
@@ -258,15 +341,78 @@ frontend/src/features/
 - **Mapping**: JSONB form data → PDF template → downloadable file
 - **Styling**: Maintain paper-like appearance for construction site familiarity
 
-### CHAPTER 7 PHASES:
+### **MODIFIED CHAPTER 7 PHASES (With PDF Error Handling):**
 
-**Phases:**
+**Phase 7.1: PDF Generation with Error Handling (Week 1)**
 
-1. **Evaluate PDF libraries**: Choose between html2pdf and Puppeteer based on output quality for construction sites.
-2. **Design paper-like template**: Create PDF layout that mimics traditional paper forms workers are familiar with.
-3. **Implement JSONB to PDF mapping**: Convert module-based JSONB data to PDF fields.
-4. **Add PDF generation**: Available from archived forms with download/print options.
-5. **Test cross-device compatibility**: Ensure PDF generation works on mobile, tablet, desktop.
+- [ ] Evaluate PDF libraries with error handling capabilities
+- [ ] Implement `DataIntegrityManager` for PDF data validation
+- [ ] Create PDF generation with failure recovery
+- [ ] Add PDF template error checking
+
+**Phase 7.2: PDF Error Management (Week 2)**
+
+- [ ] Build PDF generation error boundaries
+- [ ] Implement retry logic for failed PDF generation
+- [ ] Create fallback PDF templates
+- [ ] Add PDF corruption detection
+
+**Phase 7.3: Integration & Testing (Week 3)**
+
+- [ ] Test PDF generation under various error conditions
+- [ ] Verify PDF data integrity checks
+- [ ] Test cross-device PDF generation
+- [ ] Validate PDF error recovery workflows
+
+**Phase 7.4: Comprehensive Error Testing (Week 4)**
+
+- [ ] Comprehensive error scenario testing across all features
+- [ ] Performance testing with error handling overhead
+- [ ] User acceptance testing for error messages
+- [ ] Final integration testing of all error systems
+
+---
+
+## 🚨 **ERROR HANDLING SUCCESS CRITERIA**
+
+### **Technical Metrics (Per Chapter)**
+
+- **Chapter 4**: Zero data loss during CRUD operations, < 5s recovery time
+- **Chapter 5**: 100% form completion capability offline, 95% error recovery success
+- **Chapter 6**: 90% error message comprehension, < 2% abandonment due to errors
+- **Chapter 7**: 100% PDF generation reliability, robust failure recovery
+
+### **User Experience Metrics**
+
+- **Error Comprehension**: Users understand 90% of error messages without support
+- **Recovery Success**: Users successfully recover from 95% of errors independently
+- **Data Protection**: Zero form data lost due to errors, crashes, or network issues
+- **Offline Resilience**: 100% form functionality available without connectivity
+
+---
+
+## 📋 **CRITICAL ERROR HANDLING IMPLEMENTATION NOTES**
+
+### **🔧 Implementation Strategy**
+
+1. **Error Boundaries First**: Implement error boundaries before any feature development
+2. **Data Protection Priority**: Form data backup happens before any user interaction
+3. **Offline-First Design**: All features must work offline with error recovery
+4. **User-Friendly Messages**: No technical jargon in error messages for construction workers
+
+### **🚨 Safety Protocols**
+
+- **Backend Operations**: All database changes via MCP with error logging
+- **Data Validation**: Multiple validation layers (client, server, integrity checks)
+- **Backup Strategy**: localStorage + server backup + conflict resolution
+- **Recovery Testing**: Simulate crashes, network failures, data corruption
+
+### **📊 Monitoring Integration**
+
+- **Error Logging**: Categorized error tracking from day one
+- **Performance Monitoring**: Error handling overhead measurement
+- **User Feedback**: Error message clarity testing
+- **Continuous Improvement**: Weekly error pattern analysis
 
 ---
 

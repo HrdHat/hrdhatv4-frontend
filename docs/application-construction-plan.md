@@ -71,15 +71,23 @@ PHASED APPROACH:
   - Camera/photo upload
   - Sliding Sidebar on left.
   - Bottom drawer for Active Forms
-  - Small form tracker on right
+  - Progress Tracker on right edge (40px width)
+    - Module completion indicators (6 modules: ✓ complete, ○ incomplete, ● current)
+    - Tap to jump to specific module
+    - Overall completion percentage
+    - Psychological design to make incomplete forms feel "unfinished"
   - Portrait mode only
 
 - **Tablet/Desktop Features:**
   - Persistent sidebar and slide-out panel
   - Toolbar with navigation and fill mode options
-- On the right of the sreen (similar to sidebar) whill be a tool to track progress
+  - Progress Tracker: Expanded right panel (300px width)
+    - Module names + completion status
+    - Progress bars per module
+    - "Make user feel it's not done" visual cues
+    - Overall form completion percentage
 
-  ***
+---
 
 ## 3. Data Model & Sync
 
