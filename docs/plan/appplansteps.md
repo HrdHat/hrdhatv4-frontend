@@ -2,18 +2,386 @@
 
 ## 📋 **Chapter Overview**
 
-| Chapter | Focus Area                         | Duration    | Key Deliverables                                       |
-| ------- | ---------------------------------- | ----------- | ------------------------------------------------------ |
-| 1       | Project Setup & Architecture       | 1 week      | Vite, TypeScript, folder structure, routing            |
-| 2       | Authentication & User Management   | 1 week      | Supabase auth, user profiles, session handling         |
-| 3       | Core UI Components & Design System | 1 week      | Button, Input, Modal, responsive layouts               |
-| 4       | Error Handling & Resilience        | 1 week      | Error boundaries, offline support, auto-save           |
-| **5**   | **Core Module Development**        | **2 weeks** | **Photos, Signatures, Form Header modules**            |
-| 6       | Form Instance Management           | 2 weeks     | CRUD operations, data persistence, performance         |
-| 7       | Form Rendering & Navigation        | 2 weeks     | Dynamic modules, Quick/Guided modes, progress tracking |
-| 8       | PDF Generation & Export            | 1 week      | PDF creation, construction-site formatting             |
-| 9       | Testing & Quality Assurance        | 1 week      | Unit tests, integration tests, accessibility testing   |
-| 10      | Deployment & Production            | 1 week      | CI/CD, monitoring, performance optimization            |
+| Chapter | Focus Area                                      | Duration    | Key Deliverables                                              |
+| ------- | ----------------------------------------------- | ----------- | ------------------------------------------------------------- |
+| 1       | Project Setup & Architecture                    | 1 week      | Vite, TypeScript, folder structure, routing                   |
+| 2       | Authentication & User Management                | 1 week      | Supabase auth, user profiles, session handling                |
+| 3       | Core UI Components & Design System              | 1 week      | Button, Input, Modal, responsive layouts                      |
+| **3.5** | **CRITICAL: Form Analysis & Module Definition** | **1 week**  | **Complete FormSAMPLE.html analysis, finalized module specs** |
+| 4       | Error Handling & Resilience                     | 1 week      | Error boundaries, offline support, auto-save                  |
+| **5**   | **Core Module Development**                     | **2 weeks** | **Photos, Signatures, Form Header modules**                   |
+| 6       | Form Instance Management                        | 2 weeks     | CRUD operations, data persistence, performance                |
+| 7       | Form Rendering & Navigation                     | 2 weeks     | Dynamic modules, Quick/Guided modes, progress tracking        |
+| 8       | PDF Generation & Export                         | 1 week      | PDF creation, construction-site formatting                    |
+| 9       | Testing & Quality Assurance                     | 1 week      | Unit tests, integration tests, accessibility testing          |
+| 10      | Deployment & Production                         | 1 week      | CI/CD, monitoring, performance optimization                   |
+
+---
+
+## **Chapter 1: Project Setup & Architecture (1 week)**
+
+### **Overview**
+
+Establish the foundational architecture for HrdHat v4, including project structure, TypeScript configuration, routing strategy, and development workflow. This chapter sets up the technical foundation that all subsequent development will build upon.
+
+### **Phase 1.1: Project Foundation & TypeScript Setup (Days 1-2)**
+
+**Vite + TypeScript Configuration:**
+
+- [x] ✅ **COMPLETE**: Vite project initialized with TypeScript
+- [x] ✅ **COMPLETE**: TypeScript configuration optimized for React development
+- [x] ✅ **COMPLETE**: ESLint and Prettier configured for code quality
+- [ ] Configure absolute imports with `@/` path mapping
+- [ ] Set up development environment variables
+- [ ] Configure build optimization for production
+
+**Project Structure Setup:**
+
+- [ ] Create feature-based folder architecture following unidirectional imports
+- [ ] Set up `frontend/src/features/` directory structure
+- [ ] Create `frontend/src/components/` for shared components
+- [ ] Set up `frontend/src/hooks/`, `frontend/src/utils/`, `frontend/src/types/`
+- [ ] Configure ITCSS styling structure in `frontend/src/styles/`
+- [ ] Create testing directory structure
+
+**Essential Dependencies:**
+
+```json
+{
+  "dependencies": {
+    "zustand": "^4.4.7", // State management (decided)
+    "dompurify": "^3.0.5", // XSS protection
+    "@supabase/supabase-js": "^2.38.0" // Backend integration
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "vitest": "^1.0.0", // Testing framework
+    "@testing-library/react": "^14.0.0"
+  }
+}
+```
+
+### **Phase 1.2: Routing Architecture Implementation (Days 3-4)**
+
+**✅ ROUTING STRATEGY RESOLVED**: Custom App.tsx routing (no external router library)
+
+**Custom Routing Implementation:**
+
+- [ ] Implement custom routing logic in `App.tsx`
+- [ ] Create navigation state management with Zustand
+- [ ] Set up browser history support (back/forward buttons)
+- [ ] Implement URL parameter handling for form IDs and modes
+- [ ] Add protected route logic for authentication
+
+**Route Structure Implementation:**
+
+```typescript
+// HrdHat Route Map
+const routes = {
+  '/': 'Dashboard', // Active forms overview
+  '/form/:id': 'FormEditor', // Form editing (Quick mode default)
+  '/form/:id/guided': 'FormEditor', // Form editing (Guided mode)
+  '/archived': 'ArchivedForms', // Archived forms list
+  '/profile': 'Profile', // User profile settings
+  '/auth/login': 'AuthFlow', // Authentication
+  '/auth/signup': 'AuthFlow', // Registration
+};
+```
+
+**Navigation Components:**
+
+- [ ] Create `useNavigation` hook for route management
+- [ ] Implement navigation components for each breakpoint (Mobile/Tablet/Desktop)
+- [ ] Add deep linking support for form editing states
+- [ ] Create route transition handling
+
+**Routing Benefits for HrdHat:**
+
+- ✅ **Lightweight**: No external dependencies, smaller bundle for mobile users
+- ✅ **Simple**: Perfect for HrdHat's 6 main routes
+- ✅ **Fast**: Direct route switching without router overhead
+- ✅ **Integrated**: Seamless integration with Zustand state management
+- ✅ **Controlled**: Full control over navigation logic and performance
+
+### **Phase 1.3: State Management Architecture (Days 5-6)**
+
+**✅ STATE MANAGEMENT RESOLVED**: Zustand selected for optimal performance
+
+**Zustand Store Setup:**
+
+- [ ] Create `useFormStore` for form data management
+- [ ] Implement `useAuthStore` for user authentication
+- [ ] Create `useNavigationStore` for routing state
+- [ ] Set up `useOfflineStore` for offline queue management
+- [ ] Configure store persistence with localStorage
+
+**Core Store Interfaces:**
+
+```typescript
+// Form state management
+interface FormState {
+  formData: Record<string, any>;
+  isDirty: boolean;
+  saveStatus: 'idle' | 'saving' | 'saved' | 'error';
+  currentFormId?: string;
+
+  updateField: (field: string, value: any) => void;
+  saveToLocalStorage: () => void;
+  loadFromLocalStorage: (formId: string) => void;
+  clearForm: () => void;
+}
+
+// Navigation state management
+interface NavigationState {
+  currentRoute: string;
+  previousRoute: string;
+  formId?: string;
+  mode: 'quick' | 'guided';
+  currentModule?: string;
+
+  navigate: (route: string, params?: any) => void;
+  goBack: () => void;
+  setFormMode: (mode: 'quick' | 'guided') => void;
+  setCurrentModule: (module: string) => void;
+}
+```
+
+**State Management Benefits:**
+
+- ✅ **Performance**: Minimal re-renders, optimized for mobile
+- ✅ **TypeScript**: Full type safety across all stores
+- ✅ **Persistence**: Automatic localStorage backup
+- ✅ **Offline**: Queue management for network failures
+- ✅ **Simple API**: Easy `set()` and `get()` operations
+
+### **Phase 1.4: Development Workflow & Quality Setup (Day 7)**
+
+**Code Quality Tools:**
+
+- [ ] Configure ESLint rules for architectural boundaries
+- [ ] Set up Prettier with format-on-save
+- [ ] Add pre-commit hooks with Husky (future)
+- [ ] Configure TypeScript strict mode
+- [ ] Set up import organization rules
+
+**Development Scripts:**
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  }
+}
+```
+
+**Testing Foundation:**
+
+- [ ] Set up Vitest for unit testing
+- [ ] Configure React Testing Library
+- [ ] Create test utilities and helpers
+- [ ] Set up coverage reporting
+- [ ] Add testing scripts to package.json
+
+**Documentation Setup:**
+
+- [ ] Create component documentation standards
+- [ ] Set up API documentation structure
+- [ ] Create development guidelines
+- [ ] Document architectural decisions
+- [ ] Set up changelog structure
+
+---
+
+**Chapter 1 Success Criteria:**
+
+- ✅ **Project Structure**: Clean, scalable folder architecture following unidirectional imports
+- ✅ **Routing System**: Custom App.tsx routing working with all 6 main routes
+- ✅ **State Management**: Zustand stores configured for form, auth, and navigation
+- ✅ **TypeScript**: Full type safety with strict configuration
+- ✅ **Code Quality**: ESLint, Prettier, and testing framework operational
+- ✅ **Development Workflow**: Efficient development scripts and quality checks
+- ✅ **Performance Foundation**: Lightweight architecture optimized for mobile construction workers
+- ✅ **Security Foundation**: Input sanitization and XSS protection setup
+
+**Ready for Chapter 2**: Authentication & User Management can begin with solid architectural foundation
+
+---
+
+## **Chapter 3.5: CRITICAL - Form Analysis & Module Definition (1 week)**
+
+### **⚠️ MANDATORY PREREQUISITE FOR DATABASE IMPLEMENTATION**
+
+**Status**: 🚨 **CRITICAL PATH** - No database work begins until this chapter is 100% complete  
+**Purpose**: Analyze FormSAMPLE.html with a fine-tooth comb and finalize all module specifications before any SQL database creation  
+**Reference**: We have a rough draft in `@form-plan/` documentation that needs thorough review and finalization
+
+### **Phase 3.5.1: Complete FormSAMPLE.html Analysis (Days 1-2)**
+
+**🔍 Fine-Tooth Comb Analysis of FormSAMPLE.html:**
+
+- [ ] **Field-by-Field Analysis**: Document every single input field, checkbox, dropdown, and interactive element
+- [ ] **Data Type Mapping**: Define exact TypeScript interfaces for each field (string, number, boolean, Date, etc.)
+- [ ] **Validation Requirements**: Determine required vs optional fields, field length limits, format validation
+- [ ] **Layout Structure Analysis**: Document the exact HTML structure and CSS classes for each module
+- [ ] **Interactive Element Behavior**: Analyze JavaScript functionality, event handlers, and dynamic content
+- [ ] **Module Boundaries**: Clearly define where each module starts and ends
+- [ ] **Cross-Module Dependencies**: Identify any fields that depend on other modules or fields
+
+**📋 Detailed Documentation Requirements:**
+
+```typescript
+// Example of the level of detail needed for each field
+interface ProjectNameField {
+  htmlId: 'project-name';
+  htmlName: 'project-name';
+  fieldType: 'text';
+  label: 'Project Name:';
+  required: true;
+  maxLength: 255;
+  placeholder: undefined;
+  validation: {
+    minLength: 1;
+    pattern: undefined;
+    customRules: ['no-special-characters'];
+  };
+  gridPosition: { column: 1; row: 1 };
+  moduleId: 'general-information';
+  jsonbPath: 'modules.generalInformation.projectName';
+  databaseMapping: 'form_data->modules->generalInformation->projectName';
+}
+```
+
+### **Phase 3.5.2: Module Specification Finalization (Days 3-4)**
+
+**📝 Complete Module Documentation:**
+
+- [ ] **General Information Module**: Finalize all 9 fields with exact specifications
+- [ ] **FLRA Pre-Job Checklist Module**: Document all 20 checkbox items with exact wording
+- [ ] **PPE & Platform Inspection Module**: Define PPE section (8 items) and Platform section (9 items)
+- [ ] **Task, Hazard, Control Module**: Analyze dynamic table structure, risk dropdowns, and entry limits
+- [ ] **Signature Module**: Document worker signature grid, supervisor signature, and name fields
+- [ ] **Photo Module**: Define photo capture requirements (not in current HTML but needed)
+
+**🎯 Module Template Structure Definition:**
+
+- [ ] **Update**: `frontend/docs/plan/form-plan/modules/` with finalized specifications
+- [ ] **Create**: Complete TypeScript interfaces for each module
+- [ ] **Define**: JSONB storage structure for each module
+- [ ] **Document**: Validation rules and cross-module dependencies
+- [ ] **Specify**: UI layout requirements and responsive behavior
+
+### **Phase 3.5.3: Database Schema Planning (Days 5-6)**
+
+**🗄️ JSONB Schema Design:**
+
+- [ ] **Form Instance Structure**: Define top-level form metadata (id, user_id, created_at, status, etc.)
+- [ ] **Module Data Structure**: Design JSONB structure for `form_data` column
+- [ ] **Data Relationships**: Plan how modules relate to each other within JSONB
+- [ ] **Performance Considerations**: Design for efficient querying and indexing
+- [ ] **Migration Strategy**: Plan for future module additions and schema changes
+
+**📊 Example JSONB Structure Planning:**
+
+```sql
+-- form_instances table structure planning
+CREATE TABLE form_instances (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id),
+  form_type VARCHAR(50) DEFAULT 'flra',
+  status VARCHAR(20) DEFAULT 'active', -- 'active', 'archived', 'deleted'
+
+  -- CRITICAL: This JSONB structure must be 100% defined before implementation
+  form_data JSONB NOT NULL DEFAULT '{}', -- Complete module data structure
+
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  archived_at TIMESTAMPTZ,
+
+  -- Metadata for performance and querying
+  completion_percentage INTEGER DEFAULT 0,
+  last_module_updated VARCHAR(50),
+  device_info JSONB,
+
+  -- Constraints and indexes to be defined
+  CONSTRAINT valid_status CHECK (status IN ('active', 'archived', 'deleted')),
+  CONSTRAINT valid_completion CHECK (completion_percentage >= 0 AND completion_percentage <= 100)
+);
+```
+
+### **Phase 3.5.4: Cross-Reference & Validation (Day 7)**
+
+**🔍 Final Validation Before Database Implementation:**
+
+- [ ] **HTML vs TypeScript**: Ensure every HTML element has corresponding TypeScript interface
+- [ ] **TypeScript vs JSONB**: Verify TypeScript interfaces map correctly to JSONB structure
+- [ ] **Module Dependencies**: Validate all cross-module relationships are documented
+- [ ] **Performance Review**: Ensure JSONB structure supports efficient operations
+- [ ] **Security Review**: Verify all user input fields have sanitization plans
+
+**📋 Final Deliverables:**
+
+- [ ] **Complete Module Specifications**: All modules 100% documented in `form-plan/modules/`
+- [ ] **Finalized TypeScript Interfaces**: Ready for implementation
+- [ ] **JSONB Schema Definition**: Complete database structure ready for MCP implementation
+- [ ] **Validation Rules Documentation**: All field validation requirements defined
+- [ ] **Implementation Checklist**: Step-by-step tasks for database creation
+
+### **🚨 CRITICAL SUCCESS CRITERIA:**
+
+- ✅ **Every HTML element** in FormSAMPLE.html has been analyzed and documented
+- ✅ **Every field** has complete TypeScript interface definition
+- ✅ **Every module** has finalized specification in form-plan documentation
+- ✅ **JSONB structure** is completely defined and ready for database implementation
+- ✅ **No ambiguity** remains about any aspect of the form structure
+- ✅ **Database schema** is ready for MCP implementation with zero unknowns
+
+### **📁 Documentation References:**
+
+**Existing Rough Drafts** (to be refined and finalized):
+
+- [ ] `frontend/docs/plan/form-plan/README.md` - Documentation guide
+- [ ] `frontend/docs/plan/form-plan/photo-module-specification.md` - Photo module draft
+- [ ] `frontend/docs/plan/form-plan/state-management-architecture.md` - State management decisions
+- [ ] `frontend/docs/plan/form-plan/data-flow-architecture.md` - Data flow patterns
+
+**New Documentation to Create**:
+
+- [ ] `frontend/docs/plan/form-plan/modules/general-information-specification.md`
+- [ ] `frontend/docs/plan/form-plan/modules/flra-checklist-specification.md`
+- [ ] `frontend/docs/plan/form-plan/modules/ppe-platform-specification.md`
+- [ ] `frontend/docs/plan/form-plan/modules/task-hazard-control-specification.md`
+- [ ] `frontend/docs/plan/form-plan/modules/signature-specification.md`
+- [ ] `frontend/docs/plan/form-plan/integration/jsonb-schema-final.md`
+- [ ] `frontend/docs/plan/form-plan/integration/database-implementation-plan.md`
+
+### **🔄 Process Flow:**
+
+```
+FormSAMPLE.html Analysis
+         ↓
+Module Specifications
+         ↓
+TypeScript Interfaces
+         ↓
+JSONB Schema Design
+         ↓
+Database Implementation Plan
+         ↓
+✅ READY FOR MCP DATABASE CREATION
+```
+
+---
+
+**⚠️ IMPORTANT**: No work on Chapter 4 (Error Handling) or any subsequent chapters begins until Chapter 3.5 is 100% complete and all stakeholders have approved the final module specifications and database schema.
+
+**🎯 Outcome**: Complete, unambiguous specifications ready for database implementation with zero unknowns or assumptions.
 
 ---
 
@@ -181,6 +549,40 @@ Develop the three critical form modules that require specialized functionality: 
 
 - [ ] This chapter implements the fundamental CRUD operations that make HrdHat functional, **WITH** the comprehensive error handling infrastructure from Chapter 4 fully integrated **AND** performance budgets established to ensure optimal operation on construction site devices **AND** comprehensive data sanitization to prevent XSS attacks and ensure data integrity.
 
+### **Phase 6.0: Data Flow Architecture Foundation (Prerequisite)**
+
+**📋 Architectural Foundation Setup:**
+
+- [x] **Complete Data Flow Specification**: See `form-plan/data-flow-architecture.md` for unified architecture
+- [x] **State Management Decision**: Zustand selected (Chapter 1 of data-flow spec)
+- [x] **API Integration Pattern**: Unified service layer defined (Chapter 2 of data-flow spec)
+- [x] **CRUD Operation Flows**: Complete patterns documented (Chapter 3 of data-flow spec)
+- [x] **Offline/Online Strategy**: Queue management specified (Chapter 4 of data-flow spec)
+- [x] **Error Handling Integration**: Multi-layer error flow (Chapter 5 of data-flow spec)
+- [x] **Security Architecture**: Input sanitization patterns (Chapter 6 of data-flow spec)
+- [x] **Performance Framework**: Memory management and optimization (Chapter 7 of data-flow spec)
+
+**🎯 Implementation Approach:**
+
+```
+Phase 6.1 → Implement data-flow-architecture.md Chapters 1-2 (State + API)
+Phase 6.2 → Implement data-flow-architecture.md Chapter 3 (CRUD Operations)
+Phase 6.3 → Implement data-flow-architecture.md Chapter 4 (Offline Sync)
+Phase 6.4 → Integrate data-flow-architecture.md Chapters 5-7 (Error + Security + Performance)
+```
+
+**🔗 Key Components from Data Flow Spec:**
+
+- **Zustand Store**: `useFormStore` with auto-save pipeline
+- **API Service**: `api.forms`, `api.auth`, `api.storage` with retry logic
+- **Offline Queue**: `OfflineQueue` class for network failures
+- **Connection Manager**: `ConnectionManager` for online/offline transitions
+- **Error Handler**: `ErrorHandler` with categorized error flows
+- **Security Layer**: Input sanitization and secure storage
+- **Memory Manager**: `MemoryManager` for performance optimization
+
+**✅ Ready for Implementation**: All architectural decisions resolved, patterns defined
+
 ### 🏗️ **Feature Architecture Notes**
 
 **Feature Folder Structure (Updated with Error Handling + Security Integration):**
@@ -214,7 +616,13 @@ Develop the three critical form modules that require specialized functionality: 
 2. [ ] **Save Form Data**: Debounced auto-save to JSONB storage + error queue management + data integrity checks + **optimized payload size** + **sanitized data storage**
 3. [ ] **Load Form**: Retrieve and hydrate form state from database + corruption detection + recovery + **progressive loading** + **sanitized data display**
 4. [ ] **Modify Form**: Update existing form data in real-time + conflict resolution + backup sync + **debounced updates** + **real-time sanitization**
-5. [ ] **Archive Form**: Auto-archive after 16 hours + data integrity checks + error logging + **cleanup optimization**
+5. [x] **Archive Form**: ✅ **RESOLVED** - Dual archive approach (automatic + manual)
+   - [x] **Auto-Archive**: Edge Function runs hourly, queries forms older than 16 hours, updates status to "archived"
+   - [x] **Manual Archive**: User-initiated archive via frontend action (archive button/menu option)
+   - [x] **Implementation**: Both paths update form status from "active" → "archived" + set archived_at timestamp
+   - [x] **Benefits**: Server-side auto-archive + user control for immediate archiving
+   - [x] **Security**: Service role access for auto-archive, user RLS policies for manual archive
+   - [x] **User Experience**: Archive warnings, manual archive button, read-only status display
 6. [ ] **Form Lifecycle Management**: Active (max 5) vs Archived states + error boundaries + state recovery + **memory management**
 7. [ ] **Device Switching**: JSON serialization for cross-device editing + sync conflict handling + data validation + **optimized sync** + **secure data transfer**
 8. [ ] **Offline Resilience**: localStorage backup for network issues + retry queue + integrity verification + **storage limits** + **encrypted local storage**
@@ -224,10 +632,10 @@ Develop the three critical form modules that require specialized functionality: 
 **Input Sanitization Strategy:**
 
 - **All Text Fields**: Sanitize using DOMPurify before storage and display
-- **JSONB Storage**: Validate and sanitize all data before database insertion
-- **File Uploads**: Validate file types, scan for malicious content
-- **User-Generated Content**: Strip all HTML tags, prevent script injection
-- **Cross-Device Sync**: Sanitize data during sync operations
+- [ ] **JSONB Storage**: Validate and sanitize all data before database insertion
+- [ ] **File Uploads**: Validate file types, scan for malicious content
+- [ ] **User-Generated Content**: Strip all HTML tags, prevent script injection
+- [ ] **Cross-Device Sync**: Sanitize data during sync operations
 
 ### ⚡ **Performance Budgets & Limits (Chapter 6):**
 
@@ -261,425 +669,166 @@ interface Chapter6PerformanceLimits {
 
 **Phase 6.1: CRUD Operations with Error Protection + Performance Budgets + Data Sanitization + Essential Accessibility (Week 1)**
 
-- [ ] Integrate form_instances CRUD with error boundaries from Chapter 4
-- [ ] Implement auto-save with `AutoSaveManager` and `OfflineErrorQueue`
-- [ ] Add data integrity checks using `DataIntegrityManager`
-- [ ] **NEW**: Establish performance budgets and monitoring
-- [ ] **NEW**: Implement form data size limits and validation
-- [ ] **NEW**: Add memory usage tracking and cleanup
-- [ ] **NEW**: Implement comprehensive input sanitization
-- [ ] **NEW**: Add XSS protection for all text inputs
-- [ ] **NEW**: Create secure JSONB storage with validation
-- [ ] **NEW A11Y**: Implement 48px minimum touch targets for work glove compatibility
-- [ ] **NEW A11Y**: Add construction worker-friendly labels ("Safety Check" vs "Risk Assessment Module")
-- [ ] **NEW A11Y**: Ensure clear "(Required)" text for required fields
-- [ ] Test CRUD operations with simulated network failures, performance constraints, XSS attacks, and work glove usability
+**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapters 1-2
+
+- [ ] **Zustand Store Setup**: Implement `useFormStore` from data-flow spec Chapter 1.1
+- [ ] **API Service Layer**: Build `APIService` class from data-flow spec Chapter 2.1
+- [ ] **Form State Management**: Implement `updateField()` and auto-save pipeline from data-flow spec Chapter 1.2
+- [ ] **Error Boundaries Integration**: Use error handling patterns from data-flow spec Chapter 5.1
+- [ ] **Input Sanitization**: Implement `secureUpdateField()` from data-flow spec Chapter 6.1
+- [ ] **Performance Monitoring**: Add save metrics tracking from data-flow spec Chapter 7.1
+- [ ] **Memory Management**: Initialize `MemoryManager` from data-flow spec Chapter 7.2
+- [ ] **Essential Accessibility**: 48px touch targets, construction worker labels, clear required field indicators
+- [ ] **Testing**: Validate CRUD operations against data-flow spec success metrics
+
+**📋 Deliverables**:
+
+- ✅ Working Zustand store with TypeScript
+- ✅ API service with retry logic
+- ✅ Secure input sanitization
+- ✅ Performance budget monitoring
+- ✅ Touch-friendly accessibility
 
 **Phase 6.2: Form Lifecycle with Error Recovery + Memory Management + Secure Storage + Touch Accessibility (Week 2)**
 
-- [ ] Build form lifecycle system with error boundaries
-- [ ] Integrate `FormBackupManager` for crash recovery
-- [ ] Add device switching support with conflict resolution
-- [ ] **NEW**: Implement memory management for active forms (max 3 in memory)
-- [ ] **NEW**: Add localStorage cleanup and optimization
-- [ ] **NEW**: Optimize form serialization for device switching
-- [ ] **NEW**: Implement encrypted local storage for sensitive data
-- [ ] **NEW**: Add secure data transfer protocols for device switching
-- [ ] **NEW A11Y**: Implement 8px spacing between touch targets to prevent accidental touches
-- [ ] **NEW A11Y**: Add immediate response (no double-tap delays) for construction site efficiency
-- [ ] **NEW A11Y**: Test form operations with thick work gloves
-- [ ] Test form state recovery under various error conditions, memory constraints, security threats, and accessibility scenarios
+**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapter 3 (CRUD Operations)
 
-**Phase 6.3: Offline Sync with Error Management + Storage Optimization + Security Validation (Week 3)**
+- [ ] **Create Operation**: Implement `createForm()` flow from data-flow spec Chapter 3.1
+- [ ] **Update Operation**: Build auto-save `updateFlow` from data-flow spec Chapter 3.2
+- [ ] **Read Operation**: Implement `loadForm()` with conflict resolution from data-flow spec Chapter 3.3
+- [ ] **Archive Operation**: Build `archiveForm()` with cleanup from data-flow spec Chapter 3.4
+- [ ] **Memory Management**: Implement form eviction using `MemoryManager` from data-flow spec Chapter 7.2
+- [ ] **Secure Storage**: Use `SecureStorage` class from data-flow spec Chapter 6.2
+- [ ] **Device Switching**: ✅ **RESOLVED** - Implement backend-centric device switching with Supabase auth
+  - [ ] **Session Management**: Use Supabase JWT authentication (automatic refresh)
+  - [ ] **Sync Timing**: Implement on-focus sync + continuous auto-save (2s debounce)
+  - [ ] **Conflict Resolution**: Last-write-wins based on `updated_at` timestamp
+  - [ ] **User Experience**: Add sync status indicators (✓ Saved, ⟳ Syncing, ⚠ Offline, ✗ Error)
+  - [ ] **Focus Event Handler**: Implement `handleAppFocus()` to fetch latest form data
+  - [ ] **Notification System**: Simple "Form updated with latest changes" messages
+  - [ ] **State Management**: Update Zustand store with latest backend data on device switch
+- [ ] **Touch Accessibility**: 8px spacing, immediate response, work glove testing
+- [ ] **Form Lifecycle**: Active → Archived state transitions with error recovery
 
-- [ ] Implement offline form operations with error queue
-- [ ] Build sync conflict resolution using error handling infrastructure
-- [ ] Add form state management with backup integration
-- [ ] **NEW**: Implement storage limits and cleanup strategies
-- [ ] **NEW**: Optimize offline sync payload sizes
-- [ ] **NEW**: Add network request throttling and batching
-- [ ] **NEW**: Implement data validation during sync operations
-- [ ] **NEW**: Add security checks for sync data integrity
-- [ ] Test offline form completion and error recovery with storage constraints and security validation
-
-**Phase 6.4: Integration & Validation + Performance Testing + Security Auditing (Week 4)**
-
-- [ ] Build form list interfaces with error states
-- [ ] Integrate all error handling systems with form operations
-- [ ] Test create → save → load → modify → archive workflow with error scenarios
-- [ ] Verify data protection under all failure conditions
-- [ ] **NEW**: Comprehensive performance testing on target devices
-- [ ] **NEW**: Validate performance budgets are met
-- [ ] **NEW**: Test memory usage under stress conditions
-- [ ] **NEW**: Comprehensive security testing and XSS vulnerability assessment
-- [ ] **NEW**: Validate data sanitization effectiveness
-- [ ] **NEW**: Test secure storage and transfer mechanisms
-
-### 🔧 **Security Implementation Details (Chapter 6):**
-
-**Comprehensive Input Sanitization:**
+**📋 Device Switching Implementation Details**:
 
 ```typescript
-import DOMPurify from 'dompurify';
-
-// Secure form data handler with comprehensive sanitization
-const useSecureFormData = () => {
-  const sanitizeFormInput = (input: any, fieldType: string): any => {
-    if (typeof input === 'string') {
-      switch (fieldType) {
-        case 'text':
-          return DOMPurify.sanitize(input, {
-            ALLOWED_TAGS: [],
-            ALLOWED_ATTR: [],
-            MAX_LENGTH: 1000,
-          });
-
-        case 'projectName':
-        case 'taskDescription':
-        case 'hazardDescription':
-          // High-risk fields that could contain malicious content
-          return DOMPurify.sanitize(input, {
-            ALLOWED_TAGS: [],
-            ALLOWED_ATTR: [],
-            MAX_LENGTH: 500,
-          }).replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-
-        case 'email':
-          return DOMPurify.sanitize(input.toLowerCase().trim(), {
-            ALLOWED_TAGS: [],
-            ALLOWED_ATTR: [],
-          });
-
-        case 'phone':
-          return input.replace(/[^\d\-\+\(\)\s]/g, '');
-
-        default:
-          return DOMPurify.sanitize(input, {
-            ALLOWED_TAGS: [],
-            ALLOWED_ATTR: [],
-          });
-      }
-    }
-
-    if (Array.isArray(input)) {
-      return input.map(item => sanitizeFormInput(item, fieldType));
-    }
-
-    if (typeof input === 'object' && input !== null) {
-      const sanitized: any = {};
-      for (const [key, value] of Object.entries(input)) {
-        sanitized[key] = sanitizeFormInput(value, key);
-      }
-      return sanitized;
-    }
-
-    return input; // Numbers, booleans, null are safe
-  };
-
-  const saveSecureFormData = async (formData: FormData) => {
-    // 1. Sanitize all input data
-    const sanitizedData = sanitizeFormInput(formData, 'form');
-
-    // 2. Validate data structure
-    if (!validateFormStructure(sanitizedData)) {
-      throw new Error('Invalid form data structure');
-    }
-
-    // 3. Add data integrity hash
-    const dataWithHash = {
-      ...sanitizedData,
-      metadata: {
-        ...sanitizedData.metadata,
-        dataIntegrityHash: generateDataHash(sanitizedData),
-        lastSanitized: new Date().toISOString(),
-      },
-    };
-
-    // 4. Save to database (triggers will perform additional server-side sanitization)
-    await supabase.from('form_instances').upsert(dataWithHash);
-
-    return dataWithHash;
-  };
-
-  return { sanitizeFormInput, saveSecureFormData };
-};
-```
-
-**Secure Auto-save with Performance Monitoring:**
-
-```typescript
-// Performance-optimized auto-save with security
-const useSecureAutoSave = (formData, moduleType) => {
-  const [saveMetrics, setSaveMetrics] = useState({
-    lastSaveTime: 0,
-    averageSaveTime: 0,
-    payloadSize: 0,
-    sanitizationTime: 0,
-  });
-
-  const debouncedSecureSave = useMemo(
-    () =>
-      debounce(async data => {
-        const startTime = performance.now();
-
-        // 1. Sanitize data (with timing)
-        const sanitizationStart = performance.now();
-        const sanitizedData = sanitizeFormInput(data, moduleType);
-        const sanitizationTime = performance.now() - sanitizationStart;
-
-        // 2. Check payload size
-        const payloadSize = new Blob([JSON.stringify(sanitizedData)]).size;
-
-        // 3. Security check: Warn if payload is suspiciously large
-        if (payloadSize > 2 * 1024 * 1024) {
-          // 2MB warning
-          console.warn(
-            `Large form payload detected: ${payloadSize} bytes - possible attack?`
-          );
-        }
-
-        // 4. Performance check: Warn if sanitization is slow
-        if (sanitizationTime > 100) {
-          // 100ms warning
-          console.warn(
-            `Slow sanitization detected: ${sanitizationTime}ms - possible DoS?`
-          );
-        }
-
-        // 5. Save with error handling
-        await saveFormDataSecurely(sanitizedData);
-
-        const totalSaveTime = performance.now() - startTime;
-        setSaveMetrics(prev => ({
-          lastSaveTime: totalSaveTime,
-          averageSaveTime: (prev.averageSaveTime + totalSaveTime) / 2,
-          payloadSize,
-          sanitizationTime,
-        }));
-      }, DEBOUNCE_CONFIG[moduleType]),
-    [moduleType]
-  );
-
-  return { debouncedSecureSave, saveMetrics };
-};
-```
-
-**Secure Local Storage with Encryption:**
-
-```typescript
-// Encrypted local storage for sensitive form data
-class SecureFormStorage {
-  private encryptionKey: string;
-
-  constructor() {
-    this.encryptionKey = this.generateOrRetrieveKey();
+// Device switching service implementation
+class DeviceSwitchingService {
+  constructor(private supabase: SupabaseClient) {
+    this.setupFocusListener();
   }
 
-  async storeFormData(formId: string, formData: any) {
-    // 1. Sanitize data before storage
-    const sanitizedData = sanitizeFormInput(formData, 'form');
-
-    // 2. Encrypt sensitive data
-    const encryptedData = await this.encryptData(sanitizedData);
-
-    // 3. Store with integrity hash
-    const storageData = {
-      data: encryptedData,
-      hash: generateDataHash(sanitizedData),
-      timestamp: Date.now(),
-      version: '1.0',
-    };
-
-    localStorage.setItem(`form_${formId}`, JSON.stringify(storageData));
+  private setupFocusListener() {
+    window.addEventListener('focus', this.handleAppFocus);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
-  async retrieveFormData(formId: string) {
-    const stored = localStorage.getItem(`form_${formId}`);
-    if (!stored) return null;
+  private handleAppFocus = async () => {
+    const { formId } = useFormStore.getState();
+    if (!formId) return;
 
     try {
-      const storageData = JSON.parse(stored);
+      // Fetch latest from backend
+      const { data } = await this.supabase
+        .from('form_instances')
+        .select('*')
+        .eq('id', formId)
+        .single();
 
-      // 1. Decrypt data
-      const decryptedData = await this.decryptData(storageData.data);
+      // Update local state with latest
+      useFormStore.setState({
+        formData: data.form_data,
+        lastSaved: new Date(data.updated_at),
+        saveStatus: 'saved',
+      });
 
-      // 2. Verify integrity
-      const currentHash = generateDataHash(decryptedData);
-      if (currentHash !== storageData.hash) {
-        throw new Error('Data integrity check failed - possible tampering');
-      }
-
-      // 3. Sanitize again (defense in depth)
-      return sanitizeFormInput(decryptedData, 'form');
+      // Show notification
+      this.showSyncNotification('Form updated with latest changes');
     } catch (error) {
-      console.error('Failed to retrieve secure form data:', error);
-      return null;
+      console.error('Failed to sync on focus:', error);
     }
-  }
-
-  private async encryptData(data: any): Promise<string> {
-    // Simple encryption for demo - use proper crypto in production
-    const jsonString = JSON.stringify(data);
-    return btoa(jsonString); // Base64 encoding (replace with proper encryption)
-  }
-
-  private async decryptData(encryptedData: string): Promise<any> {
-    // Simple decryption for demo - use proper crypto in production
-    const jsonString = atob(encryptedData); // Base64 decoding
-    return JSON.parse(jsonString);
-  }
+  };
 }
 ```
 
-### ♿ **Phase 1 Essential Accessibility Implementation Details (Chapters 6-8):**
+**📋 Deliverables**:
 
-**Touch Target Implementation (Chapter 6):**
+- ✅ Complete CRUD operations
+- ✅ Device switching support (backend-centric approach)
+- ✅ Secure local storage
+- ✅ Memory-optimized form management
+- ✅ Touch-accessible form lifecycle
 
-```typescript
-// Construction site touch target standards
-const TOUCH_TARGETS = {
-  minimum: 48,        // Larger than WCAG 44px for work gloves
-  primary: 56,        // Primary buttons for critical actions
-  spacing: 8,         // Minimum spacing between targets
-  immediate: true,    // No double-tap delays
-};
+**Phase 6.3: Offline Sync with Error Management + Storage Optimization + Security Validation (Week 3)**
 
-// Touch-friendly form controls
-const FormButton = ({ children, ...props }) => {
-  return (
-    <button
-      className="min-h-[48px] min-w-[48px] px-4 py-3 m-1"
-      style={{
-        minHeight: '48px',
-        minWidth: '48px',
-        margin: '4px', // 8px total spacing
-        touchAction: 'manipulation' // Disable double-tap zoom
-      }}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-```
+**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapter 4 (Offline/Online Sync)
 
-**Keyboard Navigation Implementation (Chapter 7):**
+- [ ] **Offline Queue**: Implement `OfflineQueue` class from data-flow spec Chapter 4.1
+- [ ] **Connection Management**: Build `ConnectionManager` from data-flow spec Chapter 4.2
+- [ ] **Queue Processing**: Implement automatic sync on connection restore
+- [ ] **Storage Optimization**: Add cleanup strategies and payload optimization
+- [ ] **Network Throttling**: Implement request batching from data-flow spec Chapter 7.1
+- [ ] **Data Validation**: Add integrity checks during sync operations
+- [ ] **Security Validation**: Implement secure sync protocols from data-flow spec Chapter 6.2
+- [ ] **Error Recovery**: Use error handling patterns from data-flow spec Chapter 5.1
+- [ ] **Performance Monitoring**: Track sync performance and storage usage
 
-```typescript
-// Complete keyboard navigation for form modules
-const useKeyboardNavigation = () => {
-  const handleKeyDown = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case 'Tab':
-        // Default browser behavior - move to next/previous field
-        break;
-      case 'Enter':
-        // Submit/Activate current element
-        event.preventDefault();
-        activateCurrentElement();
-        break;
-      case 'Escape':
-        // Cancel/Close current operation
-        event.preventDefault();
-        cancelCurrentOperation();
-        break;
-      case 'Space':
-        // Toggle checkbox/button
-        if (isToggleable(event.target)) {
-          event.preventDefault();
-          toggleElement(event.target);
-        }
-        break;
-      case 'ArrowUp':
-      case 'ArrowDown':
-        // Navigate within modules (radio groups, lists)
-        if (isWithinModule(event.target)) {
-          event.preventDefault();
-          navigateWithinModule(event.key);
-        }
-        break;
-    }
-  };
+**📋 Deliverables**:
 
-  return { handleKeyDown };
-};
+- ✅ Robust offline functionality
+- ✅ Automatic sync on reconnection
+- ✅ Optimized storage management
+- ✅ Secure data synchronization
+- ✅ Performance-monitored sync operations
 
-// Focus indicator implementation
-const FOCUS_STYLES = {
-  outline: '3px solid #0066cc',
-  outlineOffset: '2px',
-  borderRadius: '4px',
-};
-```
+**Phase 6.4: Integration & Validation + Performance Testing + Security Auditing (Week 4)**
 
-**High Contrast Implementation (Chapter 8):**
+**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapters 5-7 (Error + Security + Performance)
 
-```typescript
-// Construction site high contrast theme
-const HIGH_CONTRAST_THEME = {
-  colors: {
-    text: '#000000',           // Pure black text
-    background: '#ffffff',     // Pure white background
-    border: '#000000',         // Black borders
-    error: '#cc0000',          // High contrast red for errors
-    success: '#006600',        // High contrast green for success
-  },
-  contrast: {
-    minimum: 4.5,              // WCAG AA standard
-    preferred: 7.0,            // Better for outdoor use
-    textShadow: '1px 1px 0px rgba(255,255,255,0.8)', // White shadow on dark text
-  },
-  borders: {
-    width: '2px',              // Bold borders for visibility
-    style: 'solid',
-  },
-};
+- [ ] **Complete Error Integration**: Validate all error flows from data-flow spec Chapter 5
+- [ ] **Security Auditing**: Test input sanitization and secure storage from data-flow spec Chapter 6
+- [ ] **Performance Validation**: Verify all success metrics from data-flow spec Chapter 7
+- [ ] **End-to-End Testing**: Test complete data flow: UI → Zustand → API → Supabase
+- [ ] **Accessibility Validation**: Verify construction worker usability and touch accessibility
+- [ ] **Memory Stress Testing**: Validate performance under maximum form loads
+- [ ] **Security Penetration Testing**: Test XSS protection and data integrity
+- [ ] **Cross-Device Testing**: Validate device switching and conflict resolution
+- [ ] **Network Resilience Testing**: Test offline/online transitions and queue processing
 
-// Outdoor visibility component
-const OutdoorReadableText = ({ children, ...props }) => {
-  return (
-    <span
-      style={{
-        color: HIGH_CONTRAST_THEME.colors.text,
-        textShadow: HIGH_CONTRAST_THEME.contrast.textShadow,
-        fontWeight: '600', // Semi-bold for better visibility
-      }}
-      {...props}
-    >
-      {children}
-    </span>
-  );
-};
-```
+**📋 Final Deliverables**:
 
-**Construction Worker Language Implementation (All Chapters):**
+- ✅ Complete data flow implementation
+- ✅ Zero data loss under any condition
+- ✅ < 100ms UI response time
+- ✅ 100% offline functionality
+- ✅ Construction site accessibility
+- ✅ Security compliance
+- ✅ Performance budget adherence
 
-```typescript
-// Construction worker-friendly labels and messages
-const CONSTRUCTION_LANGUAGE = {
-  labels: {
-    // Replace technical terms with construction-friendly language
-    'Risk Assessment Module': 'Safety Check',
-    Submit: 'Complete Safety Form',
-    'Task/Hazard/Control Matrix': 'Job Safety Steps',
-    'PPE Inspection': 'Safety Gear Check',
-    'Field Level Risk Assessment': 'Daily Safety Form',
-  },
+**🎯 Success Criteria**: All metrics from `data-flow-architecture.md` success section achieved
 
-  errorMessages: {
-    required: 'This safety information is required',
-    invalid: 'Please check this information',
-    networkError: 'Connection lost - your work is saved locally',
-    saveError: 'Could not save - trying again automatically',
-  },
+### 🔧 **Implementation Details (Chapter 6):**
 
-  confirmations: {
-    formSaved: 'Your safety form has been saved',
-    formSubmitted: 'Safety form completed successfully',
-    photoUploaded: 'Photo added to safety record',
-  },
-};
-```
+**📋 Complete Technical Specifications**: See `form-plan/data-flow-architecture.md`
+
+**🔗 Quick Reference**:
+
+- **Security Implementation**: Chapter 6 of data-flow spec (Input sanitization, secure storage)
+- **Performance Optimization**: Chapter 7 of data-flow spec (Memory management, debouncing)
+- [ ] **Error Handling Patterns**: Chapter 5 of data-flow spec (Multi-layer error flows)
+- [ ] **API Service Architecture**: Chapter 2 of data-flow spec (Unified service layer)
+- [ ] **CRUD Operation Flows**: Chapter 3 of data-flow spec (Complete operation patterns)
+- [ ] **Offline/Online Sync**: Chapter 4 of data-flow spec (Queue management, connection handling)
+
+**🎯 Implementation Approach**:
+
+1. **Study the data-flow spec** before implementing each phase
+2. **Follow the exact patterns** defined in the architecture document
+3. **Reference specific chapters** for detailed implementation guidance
+4. **Validate against success metrics** defined in the data-flow spec
+
+**✅ All architectural decisions resolved** - Ready for implementation
 
 ---
 
@@ -1359,7 +1508,7 @@ interface PDFPerformanceTargets {
 - [ ] **Respect multi-repo structure**: Separate frontend/backend development cycles
 - [ ] **Implement JSONB strategy**: Module-based data storage for flexibility with data integrity checks
 - [ ] **Focus on construction site UX**: Paper-like PDFs, touch-first mobile design, worker-friendly error messages
-- [ ] **Maintain form lifecycle**: Active/archived states with auto-archive and error recovery
+- [x] **Maintain form lifecycle**: Active/archived states with auto-archive via Edge Function and error recovery
 - [ ] **Enable device switching**: JSON-based state management for cross-device editing with conflict resolution
 - [ ] **Ensure data protection**: Zero data loss under any error conditions
 - [ ] **Enforce smart limits**: 6 tasks, 5 photos, 20 signatures maximum for optimal performance

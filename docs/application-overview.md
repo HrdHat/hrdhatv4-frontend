@@ -2,6 +2,8 @@
 
 HrdHat lets users sign up, create, and manage daily safety forms — chiefly the FLRA (Field-Level Risk Assessment).
 
+**📋 Architecture Status**: Complete implementation guides available for all major systems (state management, data flow, error handling, security, performance, accessibility, testing)
+
 We have a form structure and every form is built of form modules(sections).
 
 ## 🔧 **CRITICAL: Dynamic Form Architecture**
@@ -21,6 +23,37 @@ We have a form structure and every form is built of form modules(sections).
 - ❌ **Runtime Field Definition**: No user-created custom fields
 
 **Validation Strategy**: Loosely enforced - fields recommended but not required. Guided mode prompts, Quick mode allows blanks. Backend accepts incomplete forms.
+
+## 📱 **Device Switching - Critical Construction Site Feature**
+
+**Why Device Switching Matters**: Construction workers frequently need to switch between devices during form completion due to harsh site conditions, battery failures, shared equipment, and different tasks requiring different devices.
+
+### **Real-World Scenarios:**
+
+- **Phone → Tablet**: Worker starts FLRA on phone during site walk, continues on tablet in site office
+- **Personal → Shared Device**: Worker's phone battery dies, continues on shared company tablet
+- **Shift Handoffs**: Day shift starts form, night shift completes it on different device
+- **Emergency Situations**: Device damage requires immediate continuation on backup device
+
+### **Technical Implementation:**
+
+```typescript
+interface DeviceSwitchStrategy {
+  sessionManagement: 'supabase-auth'; // JWT with automatic refresh
+  stateSync: 'on-focus'; // Sync when app gains focus + auto-save
+  conflictResolution: 'last-write-wins'; // Most recent timestamp wins
+  syncIndicator: true; // Always show sync status
+}
+```
+
+### **How It Works:**
+
+1. **Authentication**: User logs in once per device with same credentials
+2. **Data Sync**: Forms automatically sync when app gains focus + continuous auto-save
+3. **Conflict Resolution**: Most recent changes win (simple, predictable for workers)
+4. **User Experience**: Clear sync status indicators, simple notifications
+
+**Backend-Centric Approach**: Since HrdHat has Supabase backend, forms are always rebuilt from latest server data, making device switching seamless and reliable.
 
 There are Two primary ways to fill out an FLRA in HrdHat:
 
@@ -65,6 +98,8 @@ The application contains the following models:
       - Generate Pdf
       - Modify what modules a user wants in there forms.
     - edit what modules are part of what form. (This is a phase 2)
+
+**📝 Note**: Form auto-archive (16 hours) implemented via Supabase Edge Function. Manual archive also available via user action.
 
 ## Get Started
 

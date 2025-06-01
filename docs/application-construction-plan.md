@@ -4,6 +4,8 @@
 
 HrdHat is a **tool for tradespeople** to efficiently complete daily safety forms, not a data analytics or reporting platform. Our focus is on making safety paperwork fast, intuitive, and reliable for construction workers in the field.
 
+**📊 Plan Status**: 96% complete - Implementation ready after completing FormSAMPLE.html analysis and module templates
+
 ## 🚫 **Development Focus - Do Nots**
 
 **❌ DO NOT ADD:**
@@ -49,7 +51,8 @@ PHASED APPROACH:
 - **Active Forms Drawer**
 
   - User can access up to 5 active forms
-  - Forms older than 16 hours auto-archive
+  - Forms older than 16 hours auto-archive (✅ **RESOLVED**: Supabase Edge Function with cron job)
+  - Users can also manually archive forms at their convenience via archive button/action
 
 - **Archive & PDF**
   - User can view archived forms list from Archived Forms drawer.
@@ -97,9 +100,277 @@ PHASED APPROACH:
 - Upon switching devices or reloading, the latest form data is pulled from the backend and rehydrated on the client
 - Local cache (localStorage/AsyncStorage) ensures no data loss if the device goes offline or the page reloads
 
+### **Device Switching Implementation - RESOLVED**
+
+**Status**: ✅ **COMPLETE** - Technical specifications defined and ready for implementation
+
+**Implementation Strategy**:
+
+```typescript
+interface DeviceSwitchStrategy {
+  sessionManagement: 'supabase-auth'; // JWT with automatic refresh
+  stateSync: 'on-focus'; // Sync when app gains focus + auto-save
+  conflictResolution: 'last-write-wins'; // Most recent timestamp wins
+  syncIndicator: true; // Always show sync status
+}
+```
+
+**Technical Details**:
+
+1. **Session Management**: Supabase authentication with JWT tokens
+
+   - User logs in once per device with same credentials
+   - Automatic token refresh maintains session across devices
+   - No complex session synchronization needed
+
+2. **Sync Timing**: On-focus sync + continuous auto-save
+
+   - Primary: Sync when app gains focus (device switch detection)
+   - Secondary: Debounced auto-save (2-second intervals)
+   - Result: Latest data always available on any device
+
+3. **Conflict Resolution**: Last-write-wins approach
+
+   - Most recent `updated_at` timestamp wins
+   - Simple, predictable behavior for construction workers
+   - No complex merge logic - keeps implementation reliable
+
+4. **User Experience**: Clear sync status indicators
+   - Visual sync status (✓ Saved, ⟳ Syncing, ⚠ Offline, ✗ Error)
+   - Simple notifications: "Form updated with latest changes"
+   - No complex conflict resolution UI needed
+
+**Implementation Flow**:
+
+```typescript
+// Device switching service implementation
+const handleAppFocus = async () => {
+  // 1. Fetch latest form data from Supabase
+  const latestForm = await supabase
+    .from('form_instances')
+    .select('*')
+    .eq('id', formId)
+    .single();
+
+  // 2. Update local state with latest data
+  useFormStore.setState({
+    formData: latestForm.form_data,
+    lastSaved: new Date(latestForm.updated_at),
+  });
+
+  // 3. Show simple notification
+  showNotification('Form updated with latest changes');
+};
+```
+
+**Why This Approach Works**:
+
+- **Backend-Centric**: Forms rebuild from Supabase data automatically
+- **Simple**: No complex conflict resolution needed
+- **Reliable**: Supabase handles authentication and data persistence
+- **Fast**: JSON data loads quickly on device switch
+- **Construction-Ready**: Workers don't need to understand complex sync logic
+
+**Ready for Implementation**: Chapter 6.2 - Form Lifecycle with Device Switching Support
+
 ---
 
-## 4. Phase 1 Deliverables
+## 4. Routing Strategy & Navigation
+
+### **Custom App.tsx Routing Approach**
+
+HrdHat uses a **custom routing solution** implemented directly in `App.tsx` rather than external libraries like React Router. This approach is perfect for our construction worker-focused app because:
+
+- **Lightweight**: No external dependencies, smaller bundle size for mobile users
+- **Simple**: Only 6 main routes needed - no complex nested routing
+- **Fast**: Direct route switching without router overhead
+- **Integrated**: Seamless integration with Zustand state management
+- **Controlled**: Full control over navigation logic and performance
+
+### **Route Structure**
+
+```typescript
+// HrdHat Route Map
+const routes = {
+  '/': 'Dashboard', // Active forms overview
+  '/form/:id': 'FormEditor', // Form editing (Quick mode default)
+  '/form/:id/guided': 'FormEditor', // Form editing (Guided mode)
+  '/archived': 'ArchivedForms', // Archived forms list
+  '/profile': 'Profile', // User profile settings
+  '/auth/login': 'AuthFlow', // Authentication
+  '/auth/signup': 'AuthFlow', // Registration
+};
+```
+
+### **Implementation Strategy**
+
+```typescript
+// frontend/src/App.tsx - Core routing logic
+function App() {
+  const [currentRoute, setCurrentRoute] = useState('/');
+  const [routeParams, setRouteParams] = useState<Record<string, string>>({});
+  const { user } = useAuthStore();
+
+  // Navigation function passed to all components
+  const navigate = (path: string, params?: Record<string, string>) => {
+    const url = params ? `${path}?${new URLSearchParams(params)}` : path;
+    window.history.pushState({}, '', url);
+    setCurrentRoute(path);
+    setRouteParams(params || {});
+  };
+
+  // Browser back/forward support
+  useEffect(() => {
+    const handlePopState = () => setCurrentRoute(window.location.pathname);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Protected route logic
+  const renderRoute = () => {
+    if (!user && !currentRoute.startsWith('/auth')) {
+      return <AuthFlow onNavigate={navigate} />;
+    }
+
+    switch (currentRoute) {
+      case '/': return <Dashboard onNavigate={navigate} />;
+      case '/form': return <FormEditor formId={routeParams.id} mode="quick" onNavigate={navigate} />;
+      case '/form/guided': return <FormEditor formId={routeParams.id} mode="guided" onNavigate={navigate} />;
+      case '/archived': return <ArchivedForms onNavigate={navigate} />;
+      case '/profile': return <Profile onNavigate={navigate} />;
+      case '/auth/login':
+      case '/auth/signup': return <AuthFlow mode={currentRoute.split('/')[2]} onNavigate={navigate} />;
+      default: return <Dashboard onNavigate={navigate} />; // 404 fallback
+    }
+  };
+}
+```
+
+### **Deep Linking & URL Parameters**
+
+**Form Editing Deep Links:**
+
+- `/form/abc123` - Opens form in Quick mode
+- `/form/abc123/guided` - Opens form in Guided mode
+- `/form/abc123?module=general` - Opens form at specific module
+- `/form/abc123/guided?module=hazards&step=2` - Guided mode at specific step
+
+**Navigation State Integration:**
+
+```typescript
+// Zustand store integration
+interface NavigationState {
+  currentRoute: string;
+  previousRoute: string;
+  formId?: string;
+  mode: 'quick' | 'guided';
+  currentModule?: string;
+
+  navigate: (route: string, params?: any) => void;
+  goBack: () => void;
+  setFormMode: (mode: 'quick' | 'guided') => void;
+  setCurrentModule: (module: string) => void;
+}
+```
+
+### **Mobile-First Navigation Patterns**
+
+**Mobile (0-599px):**
+
+- Bottom navigation bar for main routes
+- Swipe gestures for form module navigation
+- Back button behavior respects form editing state
+
+**Tablet (600-1023px):**
+
+- Side navigation panel
+- Breadcrumb navigation for form editing
+- Tab-style navigation for Quick/Guided modes
+
+**Desktop (1024px+):**
+
+- Full navigation sidebar
+- Keyboard shortcuts for power users
+- Multi-panel layout with persistent navigation
+
+### **Route-Specific Features**
+
+**Dashboard (`/`):**
+
+- Active forms grid/list
+- Quick actions (New Form, Recent Forms)
+- Navigation to archived forms
+
+**Form Editor (`/form/:id`):**
+
+- Mode switching (Quick ↔ Guided)
+- Module navigation (Progress Tracker)
+- Auto-save with URL state preservation
+- Exit confirmation for unsaved changes
+
+**Archived Forms (`/archived`):**
+
+- Read-only form viewing
+- PDF export functionality
+- Form duplication to create new active forms
+
+**Profile (`/profile`):**
+
+- User settings
+- Module template customization (Phase 2)
+- Account management
+
+### **Implementation Timeline**
+
+**Chapter 6 - Frontend Layout (Current Priority):**
+
+1. Implement basic App.tsx routing structure
+2. Create placeholder components for each route
+3. Add navigation function prop passing
+4. Implement protected route logic
+
+**Chapter 7 - Form Workflows:**
+
+1. Add form-specific routing (mode switching)
+2. Implement module navigation via URL params
+3. Add deep linking for form editing states
+4. Integrate with form auto-save
+
+**Chapter 8 - Polish & Optimization:**
+
+1. Add route transition animations
+2. Implement advanced navigation patterns
+3. Add keyboard shortcuts for desktop
+4. Optimize route switching performance
+
+### **Where to Start Implementation**
+
+**Immediate Next Steps:**
+
+1. **Update App.tsx** - Replace current placeholder with routing logic
+2. **Create Route Components** - Basic placeholder components for each route
+3. **Add Navigation Store** - Zustand store for navigation state
+4. **Implement Protected Routes** - Auth-based route protection
+5. **Test Basic Navigation** - Ensure all routes render correctly
+
+**Recommended Implementation Order:**
+
+```typescript
+// Step 1: Basic routing in App.tsx
+// Step 2: Dashboard component (form list)
+// Step 3: AuthFlow component (login/signup)
+// Step 4: FormEditor component (basic structure)
+// Step 5: ArchivedForms component
+// Step 6: Profile component
+// Step 7: Add navigation between components
+// Step 8: Implement deep linking and URL parameters
+```
+
+This routing strategy provides a solid foundation for HrdHat's navigation needs while maintaining the simplicity and performance required for construction site use.
+
+---
+
+## 5. Phase 1 Deliverables
 
 1. **Account & Auth:**
 
