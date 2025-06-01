@@ -2,19 +2,23 @@
 
 ## 📋 **Chapter Overview**
 
-| Chapter | Focus Area                                      | Duration    | Key Deliverables                                              |
-| ------- | ----------------------------------------------- | ----------- | ------------------------------------------------------------- |
-| 1       | Project Setup & Architecture                    | 1 week      | Vite, TypeScript, folder structure, routing                   |
-| 2       | Authentication & User Management                | 1 week      | Supabase auth, user profiles, session handling                |
-| 3       | Core UI Components & Design System              | 1 week      | Button, Input, Modal, responsive layouts                      |
-| **3.5** | **CRITICAL: Form Analysis & Module Definition** | **1 week**  | **Complete FormSAMPLE.html analysis, finalized module specs** |
-| 4       | Error Handling & Resilience                     | 1 week      | Error boundaries, offline support, auto-save                  |
-| **5**   | **Core Module Development**                     | **2 weeks** | **Photos, Signatures, Form Header modules**                   |
-| 6       | Form Instance Management                        | 2 weeks     | CRUD operations, data persistence, performance                |
-| 7       | Form Rendering & Navigation                     | 2 weeks     | Dynamic modules, Quick/Guided modes, progress tracking        |
-| 8       | PDF Generation & Export                         | 1 week      | PDF creation, construction-site formatting                    |
-| 9       | Testing & Quality Assurance                     | 1 week      | Unit tests, integration tests, accessibility testing          |
-| 10      | Deployment & Production                         | 1 week      | CI/CD, monitoring, performance optimization                   |
+| Chapter | Focus Area                                                         | Duration | Key Deliverables                                                  |
+| ------- | ------------------------------------------------------------------ | -------- | ----------------------------------------------------------------- |
+| 1       | Project Setup & Architecture                                       | 1 week   | Vite, TypeScript, folder structure, routing                       |
+| 1.5     | 🔥 BACKEND: Supabase Setup & Database                              | 1 week   | Supabase project, database schema, MCP connection, Edge Functions |
+| 2       | Authentication & User Management                                   | 1 week   | Supabase auth, user profiles, session handling                    |
+| 3       | Core UI Components & Design System                                 | 1 week   | Button, Input, Modal, responsive layouts                          |
+| 3.5     | CRITICAL: Form Analysis & Module Definition                        | 1 week   | Complete FormSAMPLE.html analysis, finalized module specs         |
+| 4       | Error Handling & Resilience                                        | 1 week   | Error boundaries, offline support, auto-save                      |
+| 5       | Core Module Development                                            | 2 weeks  | Photos, Signatures, Form Header modules                           |
+| 5.5     | 🔥 FORM: Module Rendering Architecture                             | 1 week   | Dynamic module assembly, module registry, rendering engine        |
+| 6       | Form Instance Management                                           | 2 weeks  | CRUD operations, data persistence, performance                    |
+| 7       | Form Workflows & Navigation                                        | 2 weeks  | Quick/Guided modes, progress tracking, user flows                 |
+| 8       | PDF Generation & Export                                            | 1 week   | PDF creation, construction-site formatting                        |
+| 9       | Testing & Quality Assurance                                        | 1 week   | Unit tests, integration tests, accessibility testing              |
+| 10      | Deployment & Production                                            | 1 week   | CI/CD, monitoring, performance optimization                       |
+| 11      | PDF Generation + Error Recovery Testing + Performance Optimization | 1 week   | PDF generation with error handling, performance optimization      |
+| 12      | Version Control & Git Workflow                                     | 1 week   | Automated git scripts for frontend and backend development        |
 
 ---
 
@@ -211,6 +215,188 @@ interface NavigationState {
 - ✅ **Security Foundation**: Input sanitization and XSS protection setup
 
 **Ready for Chapter 2**: Authentication & User Management can begin with solid architectural foundation
+
+---
+
+## **Chapter 1.5: 🔥 BACKEND - Supabase Setup & Database Implementation (1 week)**
+
+### **🎯 Overview**
+
+Establish complete backend infrastructure including Supabase project setup, database schema implementation, MCP connection configuration, and Edge Functions deployment. This chapter creates the foundation that all subsequent development depends on.
+
+### **📋 Prerequisites**
+
+- ✅ Chapter 1 completed: Project structure and TypeScript configuration ready
+- ✅ Chapter 3.5 completed: Form analysis and module definitions finalized
+- ✅ Database schema designed and approved
+- ✅ MCP connection available and tested
+
+### **Phase 1.5.1: Supabase Project Setup & Configuration (Days 1-2)**
+
+**Supabase Project Initialization:**
+
+- [ ] Create new Supabase project via MCP (`mcp_supabase_create_project`)
+- [ ] Configure project settings (region: us-east-1, organization setup)
+- [ ] Set up authentication providers and security settings
+- [ ] Configure Supabase CLI for local development
+- [ ] Set up environment variables in `frontend/src/config/.env`
+
+**Database Extensions & Configuration:**
+
+- [ ] Enable required PostgreSQL extensions (`uuid-ossp`, `pg_cron`)
+- [ ] Configure Row-Level Security (RLS) policies foundation
+- [ ] Set up database triggers for updated_at timestamps
+- [ ] Configure database backup and recovery settings
+
+### **Phase 1.5.2: Core Database Schema Implementation (Days 3-4)**
+
+**Primary Tables Creation:**
+
+- [ ] `users` table with profile extensions
+- [ ] `form_instances` table with complete JSONB structure (from Chapter 3.5)
+- [ ] `form_templates` table for future module configurations
+- [ ] `audit_logs` table for security and compliance tracking
+
+**Database Schema Implementation:**
+
+```sql
+-- Implementation via MCP mcp_supabase_apply_migration
+CREATE TABLE form_instances (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+
+  -- Form metadata
+  form_type VARCHAR(50) DEFAULT 'flra' NOT NULL,
+  status VARCHAR(20) DEFAULT 'active' NOT NULL,
+  title VARCHAR(255),
+
+  -- Complete module data structure (finalized in Chapter 3.5)
+  form_data JSONB NOT NULL DEFAULT '{
+    "modules": {
+      "generalInformation": {},
+      "flraChecklist": {},
+      "ppePlatform": {},
+      "taskHazardControl": {"entries": []},
+      "signatures": {"workers": [], "supervisor": null},
+      "photos": {"entries": []}
+    },
+    "metadata": {
+      "currentModule": null,
+      "completionPercentage": 0,
+      "lastDeviceInfo": {}
+    }
+  }',
+
+  -- Timestamps and metadata
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  archived_at TIMESTAMPTZ,
+
+  -- Performance and query optimization
+  completion_percentage INTEGER DEFAULT 0,
+  last_module_updated VARCHAR(50),
+  device_last_updated JSONB,
+
+  -- Constraints
+  CONSTRAINT valid_status CHECK (status IN ('active', 'archived', 'deleted')),
+  CONSTRAINT valid_completion CHECK (completion_percentage >= 0 AND completion_percentage <= 100)
+);
+
+-- Indexes for performance
+CREATE INDEX idx_form_instances_user_status ON form_instances(user_id, status);
+CREATE INDEX idx_form_instances_created_at ON form_instances(created_at);
+CREATE INDEX idx_form_instances_updated_at ON form_instances(updated_at);
+```
+
+**Security Implementation:**
+
+- [ ] Row-Level Security (RLS) policies for all tables
+- [ ] User access controls and permissions
+- [ ] Data encryption for sensitive fields
+- [ ] API key management and rotation
+
+### **Phase 1.5.3: Storage & Edge Functions Setup (Days 5-6)**
+
+**Supabase Storage Configuration:**
+
+- [ ] Create `form-photos` storage bucket with appropriate policies
+- [ ] Set up image compression and optimization rules
+- [ ] Configure file size limits and security policies
+- [ ] Test photo upload and retrieval workflows
+
+**Edge Functions Deployment:**
+
+- [ ] Deploy auto-archive Edge Function for 16-hour form cleanup
+- [ ] Set up cron job scheduling via `pg_cron`
+- [ ] Deploy form data validation Edge Function
+- [ ] Create backup and cleanup utility functions
+
+**Auto-Archive Edge Function:**
+
+```typescript
+// Deploy via MCP mcp_supabase_deploy_edge_function
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+serve(async req => {
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
+
+  // Archive forms older than 16 hours
+  const cutoffTime = new Date(Date.now() - 16 * 60 * 60 * 1000);
+
+  const { data, error } = await supabase
+    .from('form_instances')
+    .update({ status: 'archived', archived_at: new Date().toISOString() })
+    .eq('status', 'active')
+    .lt('updated_at', cutoffTime.toISOString());
+
+  return new Response(
+    JSON.stringify({ archived_count: data?.length || 0, error }),
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+});
+```
+
+### **Phase 1.5.4: MCP Integration & Testing (Day 7)**
+
+**MCP Connection Validation:**
+
+- [ ] Test all MCP functions with the new Supabase project
+- [ ] Validate database operations via MCP commands
+- [ ] Test Edge Function deployment and execution
+- [ ] Verify storage operations and file management
+
+**Integration Testing:**
+
+- [ ] End-to-end database operation testing
+- [ ] Security policy validation
+- [ ] Performance baseline establishment
+- [ ] Backup and recovery testing
+
+**Frontend Integration Preparation:**
+
+- [ ] Generate TypeScript types via MCP (`mcp_supabase_generate_typescript_types`)
+- [ ] Create initial Supabase client configuration
+- [ ] Set up environment variables and API keys
+- [ ] Document connection and authentication flows
+
+---
+
+**Chapter 1.5 Success Criteria:**
+
+- ✅ **Supabase Project**: Fully configured and operational
+- ✅ **Database Schema**: Complete implementation matching Chapter 3.5 specifications
+- ✅ **RLS Security**: All tables protected with appropriate policies
+- ✅ **Storage Setup**: Photo storage bucket configured and tested
+- ✅ **Edge Functions**: Auto-archive and utility functions deployed
+- ✅ **MCP Integration**: All backend operations functional via MCP
+- ✅ **Type Safety**: TypeScript types generated and available for frontend
+- ✅ **Performance**: Database indexed and optimized for form operations
+
+**Ready for Chapter 2**: Authentication can now connect to functional backend infrastructure
 
 ---
 
@@ -543,533 +729,129 @@ Develop the three critical form modules that require specialized functionality: 
 
 ---
 
-## Chapter 6: Data Persistence & Form Operations + Error Handling Integration + Performance Budgets + Data Sanitization
+## **Chapter 5.5: 🔥 FORM - Module Rendering Architecture (1 week)**
 
-### 📋 **Chapter Overview**
+### **🎯 Overview**
 
-- [ ] This chapter implements the fundamental CRUD operations that make HrdHat functional, **WITH** the comprehensive error handling infrastructure from Chapter 4 fully integrated **AND** performance budgets established to ensure optimal operation on construction site devices **AND** comprehensive data sanitization to prevent XSS attacks and ensure data integrity.
+Implement the core form rendering engine that dynamically assembles and manages form modules. This chapter creates the foundation for rendering any form configuration using reusable, performant module components.
 
-### **Phase 6.0: Data Flow Architecture Foundation (Prerequisite)**
+### **📋 Prerequisites**
 
-**📋 Architectural Foundation Setup:**
+- ✅ Chapter 5 completed: Core modules (Photos, Signatures, Form Header) implemented
+- ✅ Chapter 3.5 completed: All module specifications finalized
+- ✅ Database schema ready: JSONB structure supporting dynamic modules
+- ✅ TypeScript interfaces defined for all modules
 
-- [x] **Complete Data Flow Specification**: See `form-plan/data-flow-architecture.md` for unified architecture
-- [x] **State Management Decision**: Zustand selected (Chapter 1 of data-flow spec)
-- [x] **API Integration Pattern**: Unified service layer defined (Chapter 2 of data-flow spec)
-- [x] **CRUD Operation Flows**: Complete patterns documented (Chapter 3 of data-flow spec)
-- [x] **Offline/Online Strategy**: Queue management specified (Chapter 4 of data-flow spec)
-- [x] **Error Handling Integration**: Multi-layer error flow (Chapter 5 of data-flow spec)
-- [x] **Security Architecture**: Input sanitization patterns (Chapter 6 of data-flow spec)
-- [x] **Performance Framework**: Memory management and optimization (Chapter 7 of data-flow spec)
+### **Phase 5.5.1: Module Registry & Discovery System (Days 1-2)**
 
-**🎯 Implementation Approach:**
+**Module Registry Implementation:**
 
-```
-Phase 6.1 → Implement data-flow-architecture.md Chapters 1-2 (State + API)
-Phase 6.2 → Implement data-flow-architecture.md Chapter 3 (CRUD Operations)
-Phase 6.3 → Implement data-flow-architecture.md Chapter 4 (Offline Sync)
-Phase 6.4 → Integrate data-flow-architecture.md Chapters 5-7 (Error + Security + Performance)
-```
+- [ ] Create `ModuleRegistry` for module registration and discovery
+- [ ] Implement module metadata and configuration management
+- [ ] Set up dynamic module loading and lazy loading capabilities
+- [ ] Create module validation and compatibility checking
 
-**🔗 Key Components from Data Flow Spec:**
-
-- **Zustand Store**: `useFormStore` with auto-save pipeline
-- **API Service**: `api.forms`, `api.auth`, `api.storage` with retry logic
-- **Offline Queue**: `OfflineQueue` class for network failures
-- **Connection Manager**: `ConnectionManager` for online/offline transitions
-- **Error Handler**: `ErrorHandler` with categorized error flows
-- **Security Layer**: Input sanitization and secure storage
-- **Memory Manager**: `MemoryManager` for performance optimization
-
-**✅ Ready for Implementation**: All architectural decisions resolved, patterns defined
-
-### 🏗️ **Feature Architecture Notes**
-
-**Feature Folder Structure (Updated with Error Handling + Security Integration):**
-
-- [ ] Create `frontend/src/features/form/` # Core form functionality
-- [ ] Create `frontend/src/features/form/components/modules/` # Individual form modules
-- [ ] Create `frontend/src/features/form/components/workflows/` # Quick Fill & Guided modes
-- [ ] Create `frontend/src/features/form/components/shared/` # Shared form components
-- [ ] Create `frontend/src/features/form/hooks/`
-- [ ] Create `frontend/src/features/form/services/` # CRUD operations with error handling integration
-- [ ] Create `frontend/src/features/form/stores/` # Form state management with backup integration
-- [ ] Create `frontend/src/features/form/types/`
-- [ ] Create `frontend/src/features/form/security/` **← NEW: Form data sanitization**
-- [ ] Create `frontend/src/features/dashboard/` # Form lists, navigation, overview
-- [ ] Create `frontend/src/features/offline-sync/` # localStorage backup, sync when online
-- [ ] **Error handling integration**: All form operations will use the error handling infrastructure from Chapter 4
-- [ ] **Performance optimization**: All form operations will implement performance budgets and monitoring
-- [ ] **Security integration**: All form operations will implement comprehensive data sanitization
-
-**Module Definitions Reference:**
-
-- [ ] **Source**: `c:\Users\Pawel\HRDhat\HRDhat\HrdHatFLRApdf.html`
-- [ ] **Modules Identified**: General Information, FLRA Pre-Job Checklist, PPE & Platform Inspection, Task/Hazard/Control, Signatures, Photos (missing from HTML)
-- [ ] **Implementation**: Each module becomes a component in `features/form/components/modules/` with error boundaries
-- [ ] **Performance Limits**: Task/Hazard/Control (6 entries max), Photos (5 max), Signatures (20 workers + 1 supervisor max)
-- [ ] **Security**: All user input sanitized before storage, XSS protection on all text fields
-
-### 🎯 **Core Operations to Implement (With Error Protection + Performance Optimization + Data Sanitization):**
-
-1. [ ] **Create New Form**: Instantiate blank form with default module structure + immediate backup + error boundaries + **performance monitoring** + **input sanitization**
-2. [ ] **Save Form Data**: Debounced auto-save to JSONB storage + error queue management + data integrity checks + **optimized payload size** + **sanitized data storage**
-3. [ ] **Load Form**: Retrieve and hydrate form state from database + corruption detection + recovery + **progressive loading** + **sanitized data display**
-4. [ ] **Modify Form**: Update existing form data in real-time + conflict resolution + backup sync + **debounced updates** + **real-time sanitization**
-5. [x] **Archive Form**: ✅ **RESOLVED** - Dual archive approach (automatic + manual)
-   - [x] **Auto-Archive**: Edge Function runs hourly, queries forms older than 16 hours, updates status to "archived"
-   - [x] **Manual Archive**: User-initiated archive via frontend action (archive button/menu option)
-   - [x] **Implementation**: Both paths update form status from "active" → "archived" + set archived_at timestamp
-   - [x] **Benefits**: Server-side auto-archive + user control for immediate archiving
-   - [x] **Security**: Service role access for auto-archive, user RLS policies for manual archive
-   - [x] **User Experience**: Archive warnings, manual archive button, read-only status display
-6. [ ] **Form Lifecycle Management**: Active (max 5) vs Archived states + error boundaries + state recovery + **memory management**
-7. [ ] **Device Switching**: JSON serialization for cross-device editing + sync conflict handling + data validation + **optimized sync** + **secure data transfer**
-8. [ ] **Offline Resilience**: localStorage backup for network issues + retry queue + integrity verification + **storage limits** + **encrypted local storage**
-
-### 🔒 **Data Sanitization Requirements (Chapter 6):**
-
-**Input Sanitization Strategy:**
-
-- **All Text Fields**: Sanitize using DOMPurify before storage and display
-- [ ] **JSONB Storage**: Validate and sanitize all data before database insertion
-- [ ] **File Uploads**: Validate file types, scan for malicious content
-- [ ] **User-Generated Content**: Strip all HTML tags, prevent script injection
-- [ ] **Cross-Device Sync**: Sanitize data during sync operations
-
-### ⚡ **Performance Budgets & Limits (Chapter 6):**
+**Module Registry Structure:**
 
 ```typescript
-interface Chapter6PerformanceLimits {
-  formData: {
-    maxActiveFormsInMemory: 3;        // Prevent memory bloat
-    maxFormSizeInMemory: 15MB;        // 5 photos × 3MB average
-    maxDOMNodesPerForm: 200;          // Manageable DOM size
-    autoSaveDebounce: 800;            // Balance responsiveness vs performance
-  };
-  storage: {
-    maxLocalStorageUsage: 50MB;       // Browser storage limit
-    maxCachedForms: 5;                // Offline form cache
-    cleanupThreshold: 40MB;           // Trigger cleanup at 80% capacity
-  };
-  network: {
-    maxConcurrentRequests: 3;         // Prevent network congestion
-    autoSaveTimeout: 5000;            // 5 second timeout
-    retryBackoffMax: 30000;           // 30 second max retry delay
-  };
-  security: {
-    sanitizationTimeout: 100;         // Max time for input sanitization
-    maxInputLength: 10000;            // Prevent DoS via large inputs
-    validationCacheSize: 1000;        // Cache sanitization results
-  };
+// Module registry for dynamic form assembly
+interface ModuleDefinition {
+  id: string;
+  name: string;
+  version: string;
+  component: React.ComponentType<ModuleProps>;
+  validation: ValidationSchema;
+  dependencies?: string[];
+  dataLimits?: ModuleDataLimits;
+  performance: ModulePerformanceConfig;
 }
-```
 
-### **MODIFIED CHAPTER 6 PHASES (With Error Handling + Performance + Security Integration):**
+class ModuleRegistry {
+  private modules = new Map<string, ModuleDefinition>();
 
-**Phase 6.1: CRUD Operations with Error Protection + Performance Budgets + Data Sanitization + Essential Accessibility (Week 1)**
-
-**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapters 1-2
-
-- [ ] **Zustand Store Setup**: Implement `useFormStore` from data-flow spec Chapter 1.1
-- [ ] **API Service Layer**: Build `APIService` class from data-flow spec Chapter 2.1
-- [ ] **Form State Management**: Implement `updateField()` and auto-save pipeline from data-flow spec Chapter 1.2
-- [ ] **Error Boundaries Integration**: Use error handling patterns from data-flow spec Chapter 5.1
-- [ ] **Input Sanitization**: Implement `secureUpdateField()` from data-flow spec Chapter 6.1
-- [ ] **Performance Monitoring**: Add save metrics tracking from data-flow spec Chapter 7.1
-- [ ] **Memory Management**: Initialize `MemoryManager` from data-flow spec Chapter 7.2
-- [ ] **Essential Accessibility**: 48px touch targets, construction worker labels, clear required field indicators
-- [ ] **Testing**: Validate CRUD operations against data-flow spec success metrics
-
-**📋 Deliverables**:
-
-- ✅ Working Zustand store with TypeScript
-- ✅ API service with retry logic
-- ✅ Secure input sanitization
-- ✅ Performance budget monitoring
-- ✅ Touch-friendly accessibility
-
-**Phase 6.2: Form Lifecycle with Error Recovery + Memory Management + Secure Storage + Touch Accessibility (Week 2)**
-
-**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapter 3 (CRUD Operations)
-
-- [ ] **Create Operation**: Implement `createForm()` flow from data-flow spec Chapter 3.1
-- [ ] **Update Operation**: Build auto-save `updateFlow` from data-flow spec Chapter 3.2
-- [ ] **Read Operation**: Implement `loadForm()` with conflict resolution from data-flow spec Chapter 3.3
-- [ ] **Archive Operation**: Build `archiveForm()` with cleanup from data-flow spec Chapter 3.4
-- [ ] **Memory Management**: Implement form eviction using `MemoryManager` from data-flow spec Chapter 7.2
-- [ ] **Secure Storage**: Use `SecureStorage` class from data-flow spec Chapter 6.2
-- [ ] **Device Switching**: ✅ **RESOLVED** - Implement backend-centric device switching with Supabase auth
-  - [ ] **Session Management**: Use Supabase JWT authentication (automatic refresh)
-  - [ ] **Sync Timing**: Implement on-focus sync + continuous auto-save (2s debounce)
-  - [ ] **Conflict Resolution**: Last-write-wins based on `updated_at` timestamp
-  - [ ] **User Experience**: Add sync status indicators (✓ Saved, ⟳ Syncing, ⚠ Offline, ✗ Error)
-  - [ ] **Focus Event Handler**: Implement `handleAppFocus()` to fetch latest form data
-  - [ ] **Notification System**: Simple "Form updated with latest changes" messages
-  - [ ] **State Management**: Update Zustand store with latest backend data on device switch
-- [ ] **Touch Accessibility**: 8px spacing, immediate response, work glove testing
-- [ ] **Form Lifecycle**: Active → Archived state transitions with error recovery
-
-**📋 Device Switching Implementation Details**:
-
-```typescript
-// Device switching service implementation
-class DeviceSwitchingService {
-  constructor(private supabase: SupabaseClient) {
-    this.setupFocusListener();
+  register(module: ModuleDefinition) {
+    this.validateModule(module);
+    this.modules.set(module.id, module);
   }
 
-  private setupFocusListener() {
-    window.addEventListener('focus', this.handleAppFocus);
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+  getModule(id: string): ModuleDefinition | null {
+    return this.modules.get(id) || null;
   }
 
-  private handleAppFocus = async () => {
-    const { formId } = useFormStore.getState();
-    if (!formId) return;
+  getAvailableModules(): ModuleDefinition[] {
+    return Array.from(this.modules.values());
+  }
 
-    try {
-      // Fetch latest from backend
-      const { data } = await this.supabase
-        .from('form_instances')
-        .select('*')
-        .eq('id', formId)
-        .single();
-
-      // Update local state with latest
-      useFormStore.setState({
-        formData: data.form_data,
-        lastSaved: new Date(data.updated_at),
-        saveStatus: 'saved',
-      });
-
-      // Show notification
-      this.showSyncNotification('Form updated with latest changes');
-    } catch (error) {
-      console.error('Failed to sync on focus:', error);
-    }
-  };
+  validateFormConfiguration(moduleIds: string[]): ValidationResult {
+    // Validate module dependencies and compatibility
+    // Check performance impact of module combination
+    // Verify data limits don't conflict
+  }
 }
+
+// Global registry instance
+export const moduleRegistry = new ModuleRegistry();
 ```
 
-**📋 Deliverables**:
+### **Phase 5.5.2: Dynamic Form Assembly Engine (Days 3-4)**
 
-- ✅ Complete CRUD operations
-- ✅ Device switching support (backend-centric approach)
-- ✅ Secure local storage
-- ✅ Memory-optimized form management
-- ✅ Touch-accessible form lifecycle
+**Form Builder Implementation:**
 
-**Phase 6.3: Offline Sync with Error Management + Storage Optimization + Security Validation (Week 3)**
+- [ ] Create `FormBuilder` component for dynamic module assembly
+- [ ] Implement module ordering and layout management
+- [ ] Set up inter-module communication and data sharing
+- [ ] Create module state management and persistence
 
-**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapter 4 (Offline/Online Sync)
+### **Phase 5.5.3: Rendering Modes & Performance Optimization (Days 5-6)**
 
-- [ ] **Offline Queue**: Implement `OfflineQueue` class from data-flow spec Chapter 4.1
-- [ ] **Connection Management**: Build `ConnectionManager` from data-flow spec Chapter 4.2
-- [ ] **Queue Processing**: Implement automatic sync on connection restore
-- [ ] **Storage Optimization**: Add cleanup strategies and payload optimization
-- [ ] **Network Throttling**: Implement request batching from data-flow spec Chapter 7.1
-- [ ] **Data Validation**: Add integrity checks during sync operations
-- [ ] **Security Validation**: Implement secure sync protocols from data-flow spec Chapter 6.2
-- [ ] **Error Recovery**: Use error handling patterns from data-flow spec Chapter 5.1
-- [ ] **Performance Monitoring**: Track sync performance and storage usage
+**Quick Mode Renderer:**
 
-**📋 Deliverables**:
+- [ ] Implement single-page module rendering
+- [ ] Create responsive grid layout for module arrangement
+- [ ] Optimize rendering performance for all modules visible
+- [ ] Implement scroll-based module activation and deactivation
 
-- ✅ Robust offline functionality
-- ✅ Automatic sync on reconnection
-- ✅ Optimized storage management
-- ✅ Secure data synchronization
-- ✅ Performance-monitored sync operations
+**Guided Mode Renderer:**
 
-**Phase 6.4: Integration & Validation + Performance Testing + Security Auditing (Week 4)**
+- [ ] Implement step-by-step module navigation
+- [ ] Create smooth transitions between modules
+- [ ] Set up module completion validation before progression
+- [ ] Implement progress tracking and navigation controls
 
-**🔗 Implementation Reference**: Follow `data-flow-architecture.md` Chapters 5-7 (Error + Security + Performance)
+### **Phase 5.5.4: Module State Management & Integration Testing (Day 7)**
 
-- [ ] **Complete Error Integration**: Validate all error flows from data-flow spec Chapter 5
-- [ ] **Security Auditing**: Test input sanitization and secure storage from data-flow spec Chapter 6
-- [ ] **Performance Validation**: Verify all success metrics from data-flow spec Chapter 7
-- [ ] **End-to-End Testing**: Test complete data flow: UI → Zustand → API → Supabase
-- [ ] **Accessibility Validation**: Verify construction worker usability and touch accessibility
-- [ ] **Memory Stress Testing**: Validate performance under maximum form loads
-- [ ] **Security Penetration Testing**: Test XSS protection and data integrity
-- [ ] **Cross-Device Testing**: Validate device switching and conflict resolution
-- [ ] **Network Resilience Testing**: Test offline/online transitions and queue processing
+**Module State Management:**
 
-**📋 Final Deliverables**:
+- [ ] Implement unified module state persistence
+- [ ] Create module data validation and sanitization
+- [ ] Set up module change tracking and auto-save
+- [ ] Implement module state recovery after errors
 
-- ✅ Complete data flow implementation
-- ✅ Zero data loss under any condition
-- ✅ < 100ms UI response time
-- ✅ 100% offline functionality
-- ✅ Construction site accessibility
-- ✅ Security compliance
-- ✅ Performance budget adherence
+**Integration Testing:**
 
-**🎯 Success Criteria**: All metrics from `data-flow-architecture.md` success section achieved
-
-### 🔧 **Implementation Details (Chapter 6):**
-
-**📋 Complete Technical Specifications**: See `form-plan/data-flow-architecture.md`
-
-**🔗 Quick Reference**:
-
-- **Security Implementation**: Chapter 6 of data-flow spec (Input sanitization, secure storage)
-- **Performance Optimization**: Chapter 7 of data-flow spec (Memory management, debouncing)
-- [ ] **Error Handling Patterns**: Chapter 5 of data-flow spec (Multi-layer error flows)
-- [ ] **API Service Architecture**: Chapter 2 of data-flow spec (Unified service layer)
-- [ ] **CRUD Operation Flows**: Chapter 3 of data-flow spec (Complete operation patterns)
-- [ ] **Offline/Online Sync**: Chapter 4 of data-flow spec (Queue management, connection handling)
-
-**🎯 Implementation Approach**:
-
-1. **Study the data-flow spec** before implementing each phase
-2. **Follow the exact patterns** defined in the architecture document
-3. **Reference specific chapters** for detailed implementation guidance
-4. **Validate against success metrics** defined in the data-flow spec
-
-**✅ All architectural decisions resolved** - Ready for implementation
+- [ ] Test dynamic module loading and assembly
+- [ ] Validate module communication and data sharing
+- [ ] Test performance with maximum module configuration
+- [ ] Verify module state persistence and recovery
 
 ---
 
-## Chapter 7: Form Workflows + Advanced Error Management + Auto-save Performance
+**Chapter 5.5 Success Criteria:**
 
-### 📋 **Chapter Overview**
+- ✅ **Module Registry**: All modules registered and discoverable
+- ✅ **Dynamic Assembly**: Forms can be built from any module configuration
+- ✅ **Rendering Modes**: Both Quick and Guided modes working optimally
+- ✅ **Performance**: Module rendering meets performance budgets
+- ✅ **State Management**: Module data persisted and synchronized
+- ✅ **Communication**: Inter-module data sharing functional
+- ✅ **Memory Management**: Efficient loading and cleanup of modules
+- ✅ **Validation**: Module configurations validated for compatibility
 
-- [ ] Now that core data operations work with comprehensive error protection and performance budgets, implement the two form interaction modes with advanced validation, offline error management, **and optimized auto-save performance with data limits**.
-
-### 🏗️ **Feature Architecture Notes**
-
-**Additional Features for Form Workflows:**
-
-- [ ] Create `frontend/src/features/form/components/workflows/QuickFillMode.tsx`
-- [ ] Create `frontend/src/features/form/components/workflows/GuidedMode.tsx`
-- [ ] Create `frontend/src/features/form/components/workflows/ModeSwitch.tsx`
-- [ ] Create `frontend/src/features/form/components/modules/GeneralInformation.tsx`
-- [ ] Create `frontend/src/features/form/components/modules/PreJobChecklist.tsx`
-- [ ] Create `frontend/src/features/form/components/modules/PPEPlatform.tsx`
-- [ ] Create `frontend/src/features/form/components/modules/TaskHazardControl.tsx` **← 6 entries max**
-- [ ] Create `frontend/src/features/form/components/modules/Signatures.tsx` **← 20 workers + 1 supervisor max**
-- [ ] Create `frontend/src/features/form/components/modules/Photos.tsx` **← 5 photos max**
-- [ ] Create `frontend/src/features/photo-capture/` # Camera integration, image compression
-- [ ] Create `frontend/src/features/pdf-generation/` # PDF creation from completed forms
-
-**Module Reference Implementation:**
-
-- [ ] **Source**: Use `HrdHatFLRApdf.html` as exact field definition reference
-- [ ] **Mapping**: HTML form fields → TypeScript interfaces → JSONB structure
-- [ ] **Validation**: Each module component handles its own validation rules
-- [ ] **Performance**: Each module implements data limits and optimized rendering
-
-### ⚡ **Data Limits & Performance Impact (Chapter 7):**
-
-```typescript
-interface ModulePerformanceLimits {
-  taskHazardControl: {
-    maxEntries: 6;           // Prevents DOM explosion
-    estimatedDOMNodes: 36;   // 6 entries × 6 fields each
-    impact: 'LOW';           // Manageable array size
-    autoSaveDebounce: 1200;  // Extra time for complex data
-  };
-  photos: {
-    maxPhotos: 5;            // Mobile storage friendly
-    maxFileSize: 5 * 1024 * 1024; // 5MB per photo
-    totalMaxSize: 25 * 1024 * 1024; // 25MB total
-    impact: 'MEDIUM';        // Controlled memory usage
-    compressionQuality: 0.8; // Balance quality vs size
-    maxDimensions: { width: 1920, height: 1080 };
-  };
-  signatures: {
-    maxWorkers: 20;          // Large crew support
-    maxSupervisors: 1;       // Single supervisor
-    estimatedCanvasNodes: 21; // 20 workers + 1 supervisor
-    impact: 'MEDIUM';        // Predictable canvas load
-    canvasOptimization: true; // Use blob URLs, not base64
-  };
-}
-```
-
-### **MODIFIED CHAPTER 7 PHASES (With Advanced Error Handling + Performance Optimization):**
-
-**Phase 7.1: Module Architecture with Data Limits + Essential Accessibility (Week 1)**
-
-- [ ] Implement module-based architecture with error boundaries
-- [ ] **NEW**: Enforce data limits in each module (6 tasks, 5 photos, 20 signatures)
-- [ ] **NEW**: Implement blob storage for photos (not base64 in JSONB)
-- [ ] **NEW**: Add canvas optimization for signatures
-- [ ] **NEW**: Create performance monitoring for each module
-- [ ] **NEW A11Y**: Implement keyboard navigation (Tab/Shift+Tab/Enter/Escape/Space/Arrow keys)
-- [ ] **NEW A11Y**: Add visible focus indicators (3px solid blue outline) on all interactive elements
-- [ ] **NEW A11Y**: Ensure logical tab order through all form modules
-- [ ] Test module performance under maximum data limits and keyboard-only navigation
-
-**Phase 7.2: Form Workflows with Optimized Auto-save + Keyboard Navigation (Week 2)**
-
-- [ ] Create Quick Fill mode with real-time validation
-- [ ] Create Guided mode with step-by-step error checking
-- [ ] Connect to data persistence with error handling
-- [ ] Add mode switching with state preservation
-- [ ] **NEW**: Implement optimized auto-save with module-specific debouncing
-- [ ] **NEW**: Add auto-save performance monitoring and feedback
-- [ ] **NEW**: Optimize payload sizes for different module types
-- [ ] **NEW A11Y**: Complete keyboard navigation implementation across both modes
-- [ ] **NEW A11Y**: Add keyboard shortcuts (Enter=Submit/Activate, Escape=Cancel/Close, Space=Toggle)
-- [ ] **NEW A11Y**: Test complete form workflow using only keyboard input
-
-**Phase 7.3: Validation & Error Display + Performance Feedback + Clear Error Messages (Week 3)**
-
-- [ ] Implement real-time validation system
-- [ ] Create error display components (inline, toast, modal)
-- [ ] Build notification system for offline/sync status
-- [ ] Test form workflows with validation errors
-- [ ] **NEW**: Add performance feedback in auto-save indicators
-- [ ] **NEW**: Implement "breathing room" animations during processing
-- [ ] **NEW**: Add data limit warnings and guidance
-- [ ] **NEW A11Y**: Implement clear, actionable error messages for construction workers
-- [ ] **NEW A11Y**: Add multiple error indicators (visual, text, focus management)
-- [ ] **NEW A11Y**: Ensure critical errors are always visible, never hidden
-- [ ] **NEW A11Y**: Test error message comprehension with construction worker language
-
-**Phase 7.4: Workflow Integration + Performance Testing (Week 4)**
-
-- [ ] Test offline form completion and sync
-- [ ] Verify both modes produce identical JSONB data
-- [ ] Validate error recovery workflows
-- [ ] Test validation system across all modules
-- [ ] **NEW**: Comprehensive performance testing with maximum data loads
-- [ ] **NEW**: Validate auto-save performance under stress
-- [ ] **NEW**: Test memory usage with all modules at capacity
-
-### 🔧 **Performance Implementation Details (Chapter 7):**
-
-**Photo Module Optimization:**
-
-```typescript
-// Photo upload with blob optimization and limits
-const useOptimizedPhotoUpload = () => {
-  const [photoMetrics, setPhotoMetrics] = useState({
-    totalSize: 0,
-    compressionRatio: 0,
-    uploadTime: 0,
-  });
-
-  const uploadPhoto = async (file: File) => {
-    // Enforce photo limits
-    if (photos.length >= 5) {
-      throw new Error('Maximum 5 photos allowed per form');
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      throw new Error('Photo must be smaller than 5MB');
-    }
-
-    const startTime = performance.now();
-
-    // 1. Create immediate blob URL for preview
-    const blobUrl = URL.createObjectURL(file);
-
-    // 2. Compress image client-side
-    const compressedFile = await compressImage(file, {
-      maxWidth: 1920,
-      maxHeight: 1080,
-      quality: 0.8,
-      format: 'webp',
-    });
-
-    // 3. Upload to Supabase Storage
-    const { data } = await supabase.storage
-      .from('form-photos')
-      .upload(`${formId}/${photoId}`, compressedFile);
-
-    const uploadTime = performance.now() - startTime;
-    const compressionRatio = compressedFile.size / file.size;
-
-    setPhotoMetrics(prev => ({
-      totalSize: prev.totalSize + compressedFile.size,
-      compressionRatio: (prev.compressionRatio + compressionRatio) / 2,
-      uploadTime,
-    }));
-
-    // 4. Store only URL in JSONB (not base64)
-    return {
-      id: photoId,
-      storageUrl: data.publicUrl,
-      thumbnailUrl: await generateThumbnail(compressedFile),
-      fileSize: compressedFile.size,
-      timestamp: new Date().toISOString(),
-    };
-  };
-
-  return { uploadPhoto, photoMetrics };
-};
-```
-
-**Task/Hazard/Control Module with Limits:**
-
-```typescript
-// Task/Hazard/Control with 6 entry limit
-const TaskHazardControlModule = () => {
-  const [entries, setEntries] = useState([]);
-  const maxEntries = 6;
-
-  const addEntry = () => {
-    if (entries.length >= maxEntries) {
-      showWarning(`Maximum ${maxEntries} tasks allowed for optimal performance`);
-      return;
-    }
-
-    setEntries(prev => [...prev, createNewEntry()]);
-  };
-
-  const removeEntry = (index) => {
-    setEntries(prev => prev.filter((_, i) => i !== index));
-  };
-
-  // Performance monitoring
-  const estimatedDOMNodes = entries.length * 6; // 6 fields per entry
-  const performanceImpact = estimatedDOMNodes > 30 ? 'MEDIUM' : 'LOW';
-
-  return (
-    <div className="task-hazard-module">
-      <div className="module-header">
-        <h3>Task/Hazard/Control Assessment</h3>
-        <div className="entry-counter">
-          {entries.length} / {maxEntries} tasks
-          {performanceImpact === 'MEDIUM' && (
-            <span className="performance-warning">
-              Consider fewer tasks for better performance
-            </span>
-          )}
-        </div>
-      </div>
-
-      {entries.map((entry, index) => (
-        <TaskHazardEntry
-          key={entry.id}
-          entry={entry}
-          onUpdate={(updatedEntry) => updateEntry(index, updatedEntry)}
-          onRemove={() => removeEntry(index)}
-        />
-      ))}
-
-      <button
-        onClick={addEntry}
-        disabled={entries.length >= maxEntries}
-        className="add-entry-button"
-      >
-        {entries.length >= maxEntries
-          ? `Maximum ${maxEntries} tasks reached`
-          : 'Add Task'
-        }
-      </button>
-    </div>
-  );
-};
-```
+**Ready for Chapter 8**: Form Instance Management can now work with dynamic module architecture
 
 ---
 
-## Chapter 8: Frontend Layout + Error UI Integration + Loading States & Animations
+## Chapter 10: Frontend Layout + Error UI Integration + Loading States & Animations
 
 ### 📋 **Chapter Overview**
 
@@ -1285,13 +1067,13 @@ const AutoSaveIndicator = ({ saveState, lastSaved, performanceMetrics }) => {
 
 ---
 
-## Chapter 9: PDF Generation + Error Recovery Testing + Performance Optimization
+## Chapter 11: PDF Generation + Error Recovery Testing + Performance Optimization
 
 ### 📋 **Chapter Overview**
 
 - [ ] Generate construction-site friendly PDFs with comprehensive error handling for generation failures, data integrity issues, robust error recovery testing across all systems, **and optimized PDF generation performance**.
 
-### ⚡ **PDF Performance Targets (Chapter 9):**
+### ⚡ **PDF Performance Targets (Chapter 11):**
 
 ```typescript
 interface PDFPerformanceTargets {
@@ -1316,9 +1098,9 @@ interface PDFPerformanceTargets {
 }
 ```
 
-### **MODIFIED CHAPTER 9 PHASES (With PDF Error Handling + Performance Optimization):**
+### **MODIFIED CHAPTER 11 PHASES (With PDF Error Handling + Performance Optimization):**
 
-**Phase 9.1: PDF Generation with Error Handling + Performance Monitoring (Week 1)**
+**Phase 11.1: PDF Generation with Error Handling + Performance Monitoring (Week 1)**
 
 - [ ] Evaluate PDF libraries with error handling capabilities
 - [ ] Implement `DataIntegrityManager` for PDF data validation
@@ -1328,7 +1110,7 @@ interface PDFPerformanceTargets {
 - [ ] **NEW**: Add memory usage tracking during PDF generation
 - [ ] **NEW**: Create PDF generation progress indicators
 
-**Phase 9.2: PDF Error Management + Generation Optimization (Week 2)**
+**Phase 11.2: PDF Error Management + Generation Optimization (Week 2)**
 
 - [ ] Build PDF generation error boundaries
 - [ ] Implement retry logic for failed PDF generation
@@ -1338,7 +1120,7 @@ interface PDFPerformanceTargets {
 - [ ] **NEW**: Implement streaming PDF generation for large forms
 - [ ] **NEW**: Add image compression and optimization
 
-**Phase 9.3: Integration & Testing + Performance Validation (Week 3)**
+**Phase 11.3: Integration & Testing + Performance Validation (Week 3)**
 
 - [ ] Test PDF generation under various error conditions
 - [ ] Verify PDF data integrity checks
@@ -1348,7 +1130,7 @@ interface PDFPerformanceTargets {
 - [ ] **NEW**: Memory stress testing during PDF generation
 - [ ] **NEW**: Validate PDF generation times meet targets
 
-**Phase 9.4: Comprehensive Error Testing + Performance Optimization (Week 4)**
+**Phase 11.4: Comprehensive Error Testing + Performance Optimization (Week 4)**
 
 - [ ] Comprehensive error scenario testing across all features
 - [ ] Performance testing with error handling overhead
@@ -1360,13 +1142,13 @@ interface PDFPerformanceTargets {
 
 ---
 
-## Chapter 10: Version Control & Git Workflow
+## Chapter 12: Version Control & Git Workflow
 
 ### 📋 **Chapter Overview**
 
 - [ ] Implement development workflow using the established multi-repository architecture with automated git scripts. Focus on coordinating frontend and backend development cycles while maintaining separation.
 
-### CHAPTER 10 PHASES:
+### CHAPTER 12 PHASES:
 
 **Phases:**
 
@@ -1393,7 +1175,7 @@ interface PDFPerformanceTargets {
 - [ ] **Chapter 6**: Zero data loss during CRUD operations, < 5s recovery time, 100% offline capability, **< 400ms auto-save response**, **100% input sanitization coverage**
 - [ ] **Chapter 7**: 100% form completion capability offline, 95% error recovery success, seamless device switching, **data limits enforced (6/5/20)**, **XSS protection on all text inputs**
 - [ ] **Chapter 8**: User-friendly error displays, 90% error message comprehension, intuitive error recovery, **< 2.5s initial page load**, **CSP headers implemented**
-- [ ] **Chapter 9**: 100% PDF generation reliability, robust failure recovery, comprehensive error testing, **< 10s PDF generation**, **secure PDF content sanitization**
+- [ ] **Chapter 11**: 100% PDF generation reliability, robust failure recovery, comprehensive error testing, **< 10s PDF generation**, **secure PDF content sanitization**
 
 ### **User Experience Metrics**
 
