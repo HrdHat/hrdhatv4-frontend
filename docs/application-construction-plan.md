@@ -121,6 +121,7 @@ interface DeviceSwitchStrategy {
 
    - User logs in once per device with same credentials
    - Automatic token refresh maintains session across devices
+   - Zustand is used for authentication state, holding the current user, loading, and error states, and is kept in sync with Supabase Auth. This enables protected routes and global access to user state throughout the app.
    - No complex session synchronization needed
 
 2. **Sync Timing**: On-focus sync + continuous auto-save
@@ -184,7 +185,7 @@ HrdHat uses a **custom routing solution** implemented directly in `App.tsx` rath
 - **Lightweight**: No external dependencies, smaller bundle size for mobile users
 - **Simple**: Only 6 main routes needed - no complex nested routing
 - **Fast**: Direct route switching without router overhead
-- **Integrated**: Seamless integration with Zustand state management
+- **Integrated**: Seamless integration with Zustand state management for both navigation and authentication state
 - **Controlled**: Full control over navigation logic and performance
 
 ### **Route Structure**

@@ -4,10 +4,10 @@ src
 |
 +-- app # application layer containing:
 | | # this folder might differ based on the meta framework used
-| +-- routes # application routes / can also be pages
-| +-- app.tsx # main application component
+| +-- routes # application routes / can also be pages (managed by React Router v6+)
+| +-- app.tsx # main application component (sets up React Router)
 | +-- provider.tsx # application provider that wraps the entire application with different global providers - this might also differ based on meta framework used
-| +-- router.tsx # application router configuration
+| +-- router.tsx # application router configuration (React Router v6+)
 +-- assets # assets folder can contain all the static files such as images, fonts, etc.
 |
 +-- components # shared components used across the entire application
@@ -149,3 +149,19 @@ Use ESLint rules to automatically enforce these patterns:
 ```
 
 This approach creates a **predictable, maintainable codebase** where dependencies flow in one clear direction, making the code easier to understand and debug.
+
+## Features Directory Note
+
+> **Note:** See `src/features/README.md` for the feature module structure and removability principle. Each feature must be self-contained and removable without breaking the app.
+
+## Routing Architecture
+
+- All routing and navigation logic is handled by React Router v6+.
+- Route definitions and navigation components live in the app layer (e.g., `src/app/routes/`, `src/app/app.tsx`).
+- Do not implement custom/manual routing or navigation state in Zustand.
+- Use React Router hooks (`useNavigate`, `useParams`, etc.) for navigation and URL parameter handling.
+
+## State Management
+
+- Zustand is used for application state only (e.g., form data, authentication, offline queue).
+- Do not use Zustand for navigation or routing state.

@@ -125,6 +125,10 @@ The goal is for this app to feel like a core "tool" for the daily safety paperwo
 
 Front-end: React, Vite, TypeScript
 
+**Routing:** React Router v6+ (official routing solution; all navigation and URL management handled by React Router)
+
+**State Management:** Zustand (modular, type-safe, persistent stores; used for application state only, including authentication state)
+
 Back-end: Supabase (Postgres + Edge Functions)
 
 Storage: Supabase Storage for photos/signatures
@@ -134,6 +138,44 @@ Styling: ITCSS,
 PDF: html2pdf or Puppeteer
 
 DevOps: GitHub Actions (build, lint, deploy), Docker (local Supabase emulation)
+
+## Essential Dependencies
+
+This project uses the following core dependencies:
+
+- **React**: UI library
+- **Vite**: Build tool
+- **TypeScript**: Type safety
+- **Zustand**: State management (modular, persistent, TypeScript-friendly)
+- **Supabase JS**: Backend client ([`@supabase/supabase-js`](https://github.com/supabase/supabase-js))
+- **DOMPurify**: Input sanitization and XSS protection (required for all user input handling)
+- [x] Install Vitest and React Testing Library
+
+### Installing Dependencies
+
+To install all dependencies, run:
+
+```bash
+npm install
+```
+
+To install Zustand (if not already present):
+
+```bash
+npm install zustand
+```
+
+To install Supabase client (if not already present):
+
+```bash
+npm install @supabase/supabase-js
+```
+
+Zustand is used for all application state management, with each store defined in its own file and TypeScript interfaces for type safety. Persistence and debugging are enabled via Zustand middleware.
+
+### Zustand for Authentication State
+
+Zustand is used to manage authentication state in HrdHat. It holds the current user, loading, and error states, and provides actions for login, signup, logout, and session refresh. Zustand is kept in sync with Supabase Auth, which remains the single source of truth for authentication and session management. This enables protected routes and global access to user state throughout the app. All sensitive data and true authentication/authorization is handled by Supabase and Row-Level Security (RLS).
 
 #Getting Started
 
@@ -368,3 +410,5 @@ Issue templates, Code of Conduct, where to ask questions
 License type (MIT, Apache 2.0, etc.)
 
 ## Who to contact/credit
+
+**Security Best Practice:** All user-generated content and dynamic HTML are sanitized using DOMPurify to prevent XSS attacks. This is a required dependency for secure frontend development in HrdHat.

@@ -181,6 +181,17 @@ Our styling follows ITCSS methodology with strict layer hierarchy:
 6. **Components** - UI components
 7. **Utilities** - Single-purpose classes
 
+## Routing Standards
+
+- React Router v6+ is the official routing solution for all navigation and URL management in HrdHat.
+- All route definitions and navigation logic must use React Router components and hooks.
+- Do not implement custom/manual routing or navigation state in Zustand.
+- Use Zustand only for application state (form data, authentication, offline queue, etc.), not for navigation.
+
+> **State Management Standard:**
+>
+> Zustand is the official state management library for HrdHat. All application state must be managed using modular Zustand stores, with TypeScript interfaces for type safety and middleware for persistence and debugging. This ensures state logic is consistent, maintainable, and aligned with our architectural and naming standards. Routing and navigation are handled exclusively by React Router v6+.
+
 ## Development Workflow
 
 ### Quality Checklist
@@ -334,3 +345,7 @@ Default handler named `handler` or `serve`
 | Constants                   | `UPPER_SNAKE_CASE`    | `MAX_FILE_SIZE`                |
 | Tables & columns (Postgres) | `snake_case`          | `form_instances`, `created_at` |
 | Env vars                    | `UPPER_SNAKE_CASE`    | `DATABASE_URL`                 |
+
+## Features Directory Note
+
+> **Note:** See `src/features/README.md` for the feature module structure and removability principle. Each feature must be self-contained and removable without breaking the app.

@@ -24,6 +24,12 @@ We have a form structure and every form is built of form modules(sections).
 
 **Validation Strategy**: Loosely enforced - fields recommended but not required. Guided mode prompts, Quick mode allows blanks. Backend accepts incomplete forms.
 
+---
+
+**Security Note:** All user input and dynamic HTML in HrdHat is sanitized using DOMPurify to prevent XSS attacks. This is a required security measure for all frontend features.
+
+---
+
 ## 📱 **Device Switching - Critical Construction Site Feature**
 
 **Why Device Switching Matters**: Construction workers frequently need to switch between devices during form completion due to harsh site conditions, battery failures, shared equipment, and different tasks requiring different devices.
@@ -106,8 +112,22 @@ The application contains the following models:
 To get started with the HrdHat application:
 
 1. **Prerequisites**: Ensure you have Node.js and npm installed
-2. **Installation**: Clone the repository and install dependencies
+2. **Installation**: Clone the repository and install dependencies (including `@supabase/supabase-js` for Supabase integration)
 3. **Configuration**: Set up your environment variables (see Configuration section in README)
 4. **Development**: Run the development server
 
+After cloning, run:
+
+```bash
+npm install @supabase/supabase-js
+```
+
+This ensures the Supabase client is available for all backend interactions.
+
+**Absolute Import Note:** The frontend is configured to support absolute imports using the `@/` alias, which maps to the `src` directory. You can import modules like `import X from '@/components/X'` instead of using relative paths.
+
 For detailed setup instructions, check the [README.md](../../README.md) file in the frontend directory.
+
+> **State Management Standard:**
+>
+> Zustand is the official state management solution for HrdHat. All application state is managed using modular Zustand stores, with TypeScript interfaces for type safety and middleware for persistence and debugging. This approach ensures state logic is consistent, maintainable, and in line with project standards.

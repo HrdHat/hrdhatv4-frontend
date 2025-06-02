@@ -663,6 +663,13 @@ jobs:
 
 ---
 
+## Logging Policy for Testing
+
+- All application logging must use the centralized logger utility (`src/utils/logger.ts`).
+- Direct use of `console.log`, `console.warn`, or `console.info` is not permitted in application code or tests.
+- The logger utility ensures that logs are only output in development mode, except for errors, which are always logged.
+- Tests may mock or spy on the logger to verify logging behavior.
+
 **Status**: 🚧 Ready for Implementation  
 **Next Steps**: Set up Jest + RTL configuration and create first form module tests  
 **Owner**: Development Team  

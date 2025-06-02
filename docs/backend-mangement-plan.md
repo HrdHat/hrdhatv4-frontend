@@ -122,6 +122,7 @@ Local Development → MCP Deployment → Testing
 - ✅ Schema design discussions
 - ✅ Performance optimization
 - ✅ Security considerations
+- ✅ The frontend uses DOMPurify to sanitize all user input and dynamic HTML, providing robust XSS protection as a required security measure.
 
 ### 5. **Safety & Quality Controls**
 

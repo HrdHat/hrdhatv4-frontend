@@ -69,3 +69,20 @@
 3. Document the relationship between planning and implementation docs
 
 **Status**: Resolved - Clear categorization established
+
+---
+
+## Issue #5: Incomplete Backend Enforcement of Email Verification
+
+**Date Found**: June 10, 2024  
+**Severity**: High  
+**Component**: Authentication & Security  
+**Description**: Email verification is currently enforced only in the frontend router. This leaves a security gap, as unverified users could potentially bypass frontend checks and access protected resources via direct API calls or other means.
+
+**Proposed Solutions**:
+
+1. Implement Row Level Security (RLS) policies in Supabase to restrict data access for unverified users.
+2. Create an Edge Function to validate email verification status on sensitive backend operations.
+3. Add backend-side checks to all protected endpoints, returning 403 for unverified users.
+
+**Status**: Unresolved - Frontend enforcement in place, backend enforcement pending. Resend verification email feature also pending.

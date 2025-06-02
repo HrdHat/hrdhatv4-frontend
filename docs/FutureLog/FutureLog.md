@@ -110,3 +110,27 @@
 **Description**: Lock form sections being edited to prevent conflicts before they occur
 **User Value**: Reduces conflicts and user confusion during device switching
 **Status**: Idea
+
+## Feature: Backend Enforcement for Unverified Users
+
+**Priority**: High  
+**Target Phase**: Next  
+**Description**: Enforce email verification at the backend level using Supabase RLS or Edge Functions to prevent unverified users from accessing protected data or actions.
+**User Value**: Ensures true security and compliance, closing the gap left by frontend-only enforcement.
+**Status**: Pending
+
+## Feature: Resend Verification Email Button
+
+**Priority**: Medium  
+**Target Phase**: Next  
+**Description**: Add a button to the VerifyEmail page to allow users to resend the verification email if needed.
+**User Value**: Improves user experience and reduces support requests for lost/expired verification emails.
+**Status**: Pending
+
+## Feature: Full Protected Route Wiring
+
+**Priority**: Medium  
+**Target Phase**: Next  
+**Description**: Complete the wiring of all protected routes in the router, ensuring only authenticated and verified users can access sensitive pages.
+**User Value**: Prevents unauthorized access and improves app reliability.
+**Status**: Pending

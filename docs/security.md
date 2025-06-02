@@ -20,6 +20,8 @@ In HrdHat, all authentication is managed via **Supabase Auth**.
 
 ## 🛡️ **XSS (Cross-Site Scripting) Protection**
 
+HrdHat uses the [DOMPurify](https://github.com/cure53/DOMPurify) library as the official solution for input sanitization and XSS protection in the frontend. All user-generated content and dynamic HTML are sanitized with DOMPurify before being rendered or stored, making it a required dependency for secure user input handling.
+
 XSS is a critical security vulnerability where attackers inject malicious JavaScript code that gets executed in users' browsers. For HrdHat, this is especially dangerous since we handle sensitive construction site data.
 
 ### **What is XSS?**
@@ -267,6 +269,14 @@ const useFormSecurity = () => {
 - **Role Storage**: User roles (e.g., `USER`, `SUPERVISOR`, `ADMIN`) can be stored as custom claims in Supabase or in the user profile table
 - **RLS Integration**: Use these roles in your RLS policies to control resource access at the database level
 - **Frontend vs Backend**: The frontend may display or hide features, but the backend always enforces actual permissions
+
+### Zustand for Authentication State
+
+HrdHat uses Zustand as the official state management library for authentication state on the frontend. Zustand holds the current user object, loading, and error states, and provides actions for login, signup, logout, and session refresh. Zustand is kept in sync with Supabase Auth, which remains the single source of truth for authentication and session management.
+
+- No sensitive data is ever stored outside the Supabase session.
+- Zustand state is used only for UI and application logic convenience.
+- All true authentication and authorization is enforced by Supabase and Row-Level Security (RLS) at the backend.
 
 ## Implementation Examples
 

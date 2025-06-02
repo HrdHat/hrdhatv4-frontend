@@ -1,5 +1,7 @@
 # Routes Directory Rules
 
+> **Note:** React Router v6+ is the official routing solution for all navigation and URL management in HrdHat. Do not implement custom/manual routing or navigation state in Zustand. All route logic should use React Router components and hooks.
+
 ## Purpose
 
 Contains application routes and page components.
