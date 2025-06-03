@@ -26,7 +26,7 @@ export default function VerifyEmail() {
         Resend Verification Email
       </button>
       <p style={{ marginTop: 16, color: '#888', fontSize: 14 }}>
-        (If you don't see the email, check your spam or junk folder.)
+        (If you don&apos;t see the email, check your spam or junk folder.)
       </p>
     </div>
   );

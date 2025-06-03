@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const isProd = import.meta.env.MODE === 'production';
 
 /**

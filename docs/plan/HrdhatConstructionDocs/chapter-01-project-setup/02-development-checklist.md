@@ -37,7 +37,7 @@
 ### Routing Implementation (React Router v6+)
 
 - [x] Install React Router v6+ (`react-router-dom`)
-- [ ] Configure React Router in `App.tsx`
+- [x] Configure React Router in `App.tsx`
 - [ ] Define route structure using `<Routes>` and `<Route>` components
 - [ ] Implement browser history support (handled by React Router)
 - [ ] Implement URL parameter handling for form IDs and modes (handled by React Router)
@@ -154,3 +154,35 @@
 - [ ] State management working across components
 - [ ] Development workflow efficient
 - [ ] Code quality standards enforced
+
+Preparation complete. Here’s what I found and what needs to be done:
+Current State
+Auth State:
+Managed by Zustand (useAuthStore).
+Provider (provider.tsx) syncs Supabase Auth to Zustand on mount and on auth state changes.
+Login/Signup Forms:
+Present, but both have // TODO: Call login/signup logic here and do not actually call the store or route on success.
+Routing:
+All routes currently render the "logged out" sidebar and login/signup forms.
+There are no routes or logic for the logged in experience (SidebarLoggedIn, LoggedinHomePage) yet.
+No conditional rendering based on auth state.
+What Needs to Happen
+Wire up login and signup forms:
+Call useAuthStore.getState().login and signup on submit.
+On success, route to / (dashboard).
+Update router to support logged in experience:
+If authenticated, render SidebarLoggedIn and LoggedinHomePage.
+If not, render the current logged out experience.
+Minimal implementation:
+Only wire up enough to show SidebarLoggedIn and LoggedinHomePage after login/signup.
+No extra features or UI polish.
+Implementation Plan
+Login.tsx / Signup.tsx
+Call the appropriate auth store method on submit.
+On success, use navigate('/') to go to the dashboard.
+router.tsx
+Add logic to check useAuthStore(state => state.user).
+If user is present, render a route tree with SidebarLoggedIn and LoggedinHomePage.
+If not, render the current logged out sidebar and forms.
+Ready to implement this minimal login/signup-to-logged-in wiring.
+Would you like to review this plan or should I proceed with the code changes?

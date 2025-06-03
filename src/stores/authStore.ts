@@ -1,6 +1,10 @@
 import { create } from 'zustand';
+
 import { supabase } from '../config/supabaseClient';
+
+// eslint-disable-next-line import/order
 import type { User } from '@supabase/supabase-js';
+import { logger } from '../utils/logger';
 
 interface AuthState {
   user: User | null;
@@ -22,54 +26,69 @@ export const useAuthStore = create<AuthState>(set => ({
   error: null,
 
   login: async (email, password) => {
+    logger.log('Login attempt', { email });
     set({ loading: true, error: null });
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
+      logger.error('Login error', error);
       set({ error: error.message, loading: false });
     } else {
+      logger.log('Login success', { user: data.user });
       set({ user: data.user, loading: false, error: null });
     }
   },
 
   signup: async (email, password, profile) => {
+    logger.log('Signup attempt', { email, profile });
     set({ loading: true, error: null });
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
+          // Supabase user metadata must be snake_case
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           first_name: profile.firstName,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           last_name: profile.lastName,
           company: profile.company,
         },
       },
     });
     if (error) {
+      logger.error('Signup error', error);
       set({ error: error.message, loading: false });
     } else {
+      logger.log('Signup success', { user: data.user });
       set({ user: data.user, loading: false, error: null });
     }
   },
 
   logout: async () => {
+    logger.log('Logout attempt');
     set({ loading: true, error: null });
     const { error } = await supabase.auth.signOut();
     if (error) {
+      logger.error('Logout error', error);
       set({ error: error.message, loading: false });
     } else {
+      logger.log('Logout success');
       set({ user: null, loading: false, error: null });
     }
   },
 
   refreshSession: async () => {
+    logger.log('Session refresh attempt');
     set({ loading: true, error: null });
     const { data, error } = await supabase.auth.getUser();
     if (error) {
+      logger.error('Session refresh error', error);
       set({ error: error.message, loading: false });
     } else {
+      logger.log('Session refresh success', { user: data.user });
       set({ user: data.user, loading: false, error: null });
     }
   },
