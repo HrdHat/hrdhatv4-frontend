@@ -22,6 +22,7 @@ import SidebarLoggedIn from './routes/SidebarLoggedIn';
 import SidebarLoggedOut from './routes/SidebarLoggedOut';
 import Signup from './routes/Signup';
 import Terms from './routes/Terms';
+import Profile from './routes/Profile';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 
 function RequireEmailVerified({ children }: { children: React.ReactNode }) {
@@ -57,6 +58,7 @@ export default function Router() {
             // Logged in experience
             <Route path='/' element={<SidebarLoggedInWrapper />}>
               <Route index element={<LoggedinHomePage />} />
+              <Route path='profile' element={<Profile />} />
             </Route>
           ) : (
             // Logged out experience

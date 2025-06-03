@@ -1,5 +1,5 @@
 @echo off
-REM Simple Git Auto-Push Script
+REM Simple Git Auto-Push Script (reliable branch detection)
 
 REM Get commit message or use default
 if "%~1"=="" (
@@ -16,8 +16,10 @@ git add .
 REM Commit changes
 git commit -m "%COMMIT_MSG%"
 
+REM Get current branch name reliably
+for /f "delims=" %%b in ('git rev-parse --abbrev-ref HEAD') do set CURRENT_BRANCH=%%b
+
 REM Push to current branch
-for /f %%i in ('git branch --show-current') do set CURRENT_BRANCH=%%i
-git push origin !CURRENT_BRANCH!
+git push origin %CURRENT_BRANCH%
 
 REM Done 
