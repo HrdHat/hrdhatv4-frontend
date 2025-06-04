@@ -134,3 +134,10 @@
 **Description**: Complete the wiring of all protected routes in the router, ensuring only authenticated and verified users can access sensitive pages.
 **User Value**: Prevents unauthorized access and improves app reliability.
 **Status**: Pending
+
+## [Planned] Route Guards for Auth-Protected Routes
+
+- Implement route guards to restrict access to certain routes (e.g., dashboard, forms, profile) to authenticated users only.
+- Use a wrapper component (e.g., <RequireAuth>) to check authentication state and redirect to /login if not authenticated.
+- Ensure this is done in accordance with project standards and after team review.
+- Not required for current phase; scheduled for future implementation.

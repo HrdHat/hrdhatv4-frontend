@@ -5,8 +5,8 @@ export default function Maintenance() {
     <div>
       <h1>Maintenance Mode</h1>
       <p>
-        The application is currently undergoing maintenance. Please check back
-        later.
+        We're currently performing scheduled maintenance. Please check back
+        soon!
       </p>
       {/* TODO: Add offline/maintenance detection logic */}
     </div>

@@ -23,6 +23,14 @@ import SidebarLoggedOut from './routes/SidebarLoggedOut';
 import Signup from './routes/Signup';
 import Terms from './routes/Terms';
 import Profile from './routes/Profile';
+import FormEditor from './routes/FormEditor';
+import GuidedEditor from './routes/GuidedEditor';
+import FAQ from './routes/FAQ';
+import ErrorPage from './routes/ErrorPage';
+import Unauthorized from './routes/Unauthorized';
+import Maintenance from './routes/Maintenance';
+import ArchivedFormsList from './routes/ArchivedFormsList';
+import NewFormList from './routes/NewFormList';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 
 function RequireEmailVerified({ children }: { children: React.ReactNode }) {
@@ -50,6 +58,7 @@ function RequireEmailVerified({ children }: { children: React.ReactNode }) {
 
 export default function Router() {
   const user = useAuthStore(state => state.user);
+  logger.log('Router rendered', { user });
   return (
     <BrowserRouter>
       <RequireEmailVerified>
@@ -59,6 +68,8 @@ export default function Router() {
             <Route path='/' element={<SidebarLoggedInWrapper />}>
               <Route index element={<LoggedinHomePage />} />
               <Route path='profile' element={<Profile />} />
+              <Route path='form/:id' element={<FormEditor />} />
+              <Route path='form/:id/guided' element={<GuidedEditor />} />
             </Route>
           ) : (
             // Logged out experience
@@ -74,8 +85,10 @@ export default function Router() {
           <Route path='/terms' element={<Terms />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/report-bug' element={<ReportBug />} />
-          {/* <Route path='/faq' element={<FAQ />} /> */}{' '}
-          {/* TODO: Add FAQ route when component exists */}
+          <Route path='/faq' element={<FAQ />} />
+          <Route path='/500' element={<ErrorPage />} />
+          <Route path='/unauthorized' element={<Unauthorized />} />
+          <Route path='/maintenance' element={<Maintenance />} />
           {/* 404 Not Found */}
           <Route path='*' element={<NotFound />} />
         </Routes>

@@ -38,6 +38,7 @@ export const useAuthStore = create<AuthState>(set => ({
     } else {
       logger.log('Login success', { user: data.user });
       set({ user: data.user, loading: false, error: null });
+      logger.log('User state updated after login', { user: data.user });
     }
   },
 
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthState>(set => ({
     } else {
       logger.log('Signup success', { user: data.user });
       set({ user: data.user, loading: false, error: null });
+      logger.log('User state updated after signup', { user: data.user });
     }
   },
 
@@ -77,6 +79,7 @@ export const useAuthStore = create<AuthState>(set => ({
     } else {
       logger.log('Logout success');
       set({ user: null, loading: false, error: null });
+      logger.log('User state cleared after logout');
     }
   },
 
@@ -87,9 +90,13 @@ export const useAuthStore = create<AuthState>(set => ({
     if (error) {
       logger.error('Session refresh error', error);
       set({ error: error.message, loading: false });
+      logger.log('User state cleared after session refresh error or no user');
     } else {
       logger.log('Session refresh success', { user: data.user });
       set({ user: data.user, loading: false, error: null });
+      logger.log('User state updated after session refresh', {
+        user: data.user,
+      });
     }
   },
 }));
