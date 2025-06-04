@@ -1,4 +1,4 @@
-# Git Branching Policy & Code of Conduct
+# Github Branching Policy & Code of Conduct
 
 ## Branch Overview
 
@@ -55,7 +55,7 @@
 
 - Write clear, descriptive commit messages.
 - No force pushes to `main` or `live`.
-- All merges to `main` and `live` must be reviewed by at least one other team member.
+- All merges to `main` and `live` must be reviewed
 - Keep `live` branch lightweight—no docs or unnecessary files.
 - Use feature branches for major features or experiments.
 - Keep documentation up to date in `sandbox-chapter-1` and `main`.
