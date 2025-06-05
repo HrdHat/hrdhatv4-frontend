@@ -226,3 +226,5 @@ Let me propose our first backend setup session:
 **Status**: Proposal - Awaiting approval to begin implementation
 **Created**: December 2024
 **Last Updated**: December 2024
+
+> **Planned Enhancement:** In Phase 2, a GIN index will be added to JSONB columns (form_definitions, form_instances) to support recall and advanced search. See form-plan/README.md and appplansteps.md for details.

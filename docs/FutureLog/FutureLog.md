@@ -141,3 +141,7 @@
 - Use a wrapper component (e.g., <RequireAuth>) to check authentication state and redirect to /login if not authenticated.
 - Ensure this is done in accordance with project standards and after team review.
 - Not required for current phase; scheduled for future implementation.
+
+### [2025-06-04] Form Metadata Phase 2 Planning
+
+- Organization ID, Project ID, and Submission Timestamp will be added as optional metadata fields in Phase 2 for forms. These are not required in the initial implementation. See form-plan/README.md for details.

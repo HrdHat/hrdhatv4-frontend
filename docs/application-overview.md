@@ -131,3 +131,5 @@ For detailed setup instructions, check the [README.md](../../README.md) file in 
 > **State Management Standard:**
 >
 > Zustand is the official state management solution for HrdHat. All application state is managed using modular Zustand stores, with TypeScript interfaces for type safety and middleware for persistence and debugging. This approach ensures state logic is consistent, maintainable, and in line with project standards.
+
+> **Planned Enhancement:** In Phase 2, a GIN index will be added to the JSONB columns in form_definitions and form_instances to support fast recall and advanced search. See form-plan/README.md and appplansteps.md for details.
