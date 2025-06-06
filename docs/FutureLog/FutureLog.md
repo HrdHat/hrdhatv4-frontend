@@ -145,3 +145,43 @@
 ### [2025-06-04] Form Metadata Phase 2 Planning
 
 - Organization ID, Project ID, and Submission Timestamp will be added as optional metadata fields in Phase 2 for forms. These are not required in the initial implementation. See form-plan/README.md for details.
+
+## Feature: Backend Testing Strategy Implementation
+
+**Priority**: High
+**Target Phase**: Phase 2
+**Description**: Comprehensive backend testing plan for Edge Functions, triggers, storage, and performance limits. Includes acceptance criteria and test checklists for all critical backend features.
+**User Value**: Ensures reliability and correctness of backend operations, reduces risk of undetected bugs.
+**Status**: Deferred from Phase 1 - Implementation ready
+
+## Feature: Error Handling & Logging Architecture
+
+**Priority**: High
+**Target Phase**: Phase 2
+**Description**: Robust error boundaries, backend error/event logging, and security event monitoring for all backend operations.
+**User Value**: Improves observability, enables faster debugging, and enhances security monitoring.
+**Status**: Deferred from Phase 1 - Implementation ready
+
+## Feature: Performance Monitoring Infrastructure
+
+**Priority**: High
+**Target Phase**: Phase 2
+**Description**: Backend performance_metrics table, auto-save/DOM node monitoring, and metrics collection for performance optimization.
+**User Value**: Enables proactive performance tuning and ensures the app meets construction site requirements.
+**Status**: Deferred from Phase 1 - Implementation ready
+
+## Feature: Backend Security Enhancements
+
+**Priority**: High
+**Target Phase**: Phase 2
+**Description**: Backend-side input sanitization logging, XSS attempt tracking, and security event monitoring for all backend endpoints and Edge Functions.
+**User Value**: Strengthens security posture and compliance, reduces risk of vulnerabilities.
+**Status**: Deferred from Phase 1 - Implementation ready
+
+## Feature: Offline Sync Infrastructure
+
+**Priority**: High
+**Target Phase**: Phase 2
+**Description**: Full offline sync queue, conflict resolution, and emergency sync support for robust offline-first experience.
+**User Value**: Enables reliable form completion and data integrity in low/no connectivity environments.
+**Status**: Deferred from Phase 1 - Implementation ready

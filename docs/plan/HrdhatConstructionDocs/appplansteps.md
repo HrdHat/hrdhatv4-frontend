@@ -220,183 +220,59 @@ interface NavigationState {
 
 ## **Chapter 1.5: 🔥 BACKEND - Supabase Setup & Database Implementation (1 week)**
 
-### **🎯 Overview**
+### **Key Adjustments for Phase 1.5**
 
-Establish complete backend infrastructure including Supabase project setup, database schema implementation, MCP connection configuration, and Edge Functions deployment. This chapter creates the foundation that all subsequent development depends on.
+#### 1. Form Lifecycle & Status
 
-### **📋 Prerequisites**
+- [ ] Only a `status` column (`'active'`/`'archived'`) in `form_instances`.
+- [ ] Users archive forms manually in the UI.
+- [ ] No automatic 16-hour cutoff in the DB.
+- [ ] Add a Supabase Edge Function (`stale-forms`) to report forms older than 16 hours (GET, returns count).
+- [ ] Add a scheduled Edge Function (`archive-forms`) to archive forms older than 16 hours (runs daily at 4 AM).
 
-- ✅ Chapter 1 completed: Project structure and TypeScript configuration ready
-- ✅ Chapter 3.5 completed: Form analysis and module definitions finalized
-- ✅ Database schema designed and approved
-- ✅ MCP connection available and tested
+#### 2. Photo Storage
 
-### **Phase 1.5.1: Supabase Project Setup & Configuration (Days 1-2)**
+- [ ] Create a private Supabase Storage bucket (`form-photos`).
+- [ ] Client-side compress images to <5MB before upload.
+- [ ] (Optional) Add a `form_photos` table for metadata:
+  - [ ] `id`, `form_instance_id`, `storage_path`, `file_size`, `uploaded_at`
+  - [ ] (Optional) Add a trigger to enforce max 5 photos per form.
+- [ ] Otherwise, enforce max 5 photos in the frontend.
 
-**Supabase Project Initialization:**
+#### 3. Task Limit & Injection Protection
 
-- [ ] Create new Supabase project via MCP (`mcp_supabase_create_project`)
-- [ ] Configure project settings (region: us-east-1, organization setup)
-- [ ] Set up authentication providers and security settings
-- [ ] Configure Supabase CLI for local development
-- [ ] Set up environment variables in `frontend/src/config/.env`
+- [ ] Enforce "max 6 tasks" in React/TypeScript UI only.
+- [ ] Use parameterized queries or Supabase client for all DB operations (no raw SQL interpolation).
+- [ ] (Optional) Add a DB trigger to enforce max 6 tasks as a fallback.
 
-**Database Extensions & Configuration:**
+#### 4. Minimal Validation & Auditing
 
-- [ ] Enable required PostgreSQL extensions (`uuid-ossp`, `pg_cron`)
-- [ ] Configure Row-Level Security (RLS) policies foundation
-- [ ] Set up database triggers for updated_at timestamps
-- [ ] Configure database backup and recovery settings
+- [ ] Only two CHECK constraints on `form_data` in `form_instances`:
+  - [ ] `form_data_not_empty` (must be an object)
+  - [ ] `form_data_has_modules` (must have a 'modules' object)
+- [ ] No deep field-by-field validation in the DB.
+- [ ] No audit_logs table in Phase 1.5; rely on Supabase logs if needed.
 
-### **Phase 1.5.2: Core Database Schema Implementation (Days 3-4)**
+#### 5. Skip Offline Sync (Phase 1)
 
-**Primary Tables Creation:**
-
-- [ ] `users` table with profile extensions
-- [ ] `form_instances` table with complete JSONB structure (from Chapter 3.5)
-- [ ] `form_templates` table for future module configurations
-- [ ] `audit_logs` table for security and compliance tracking
-
-**Database Schema Implementation:**
-
-```sql
--- Implementation via MCP mcp_supabase_apply_migration
-CREATE TABLE form_instances (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-
-  -- Form metadata
-  form_type VARCHAR(50) DEFAULT 'flra' NOT NULL,
-  status VARCHAR(20) DEFAULT 'active' NOT NULL,
-  title VARCHAR(255),
-
-  -- Complete module data structure (finalized in Chapter 3.5)
-  form_data JSONB NOT NULL DEFAULT '{
-    "modules": {
-      "generalInformation": {},
-      "flraChecklist": {},
-      "ppePlatform": {},
-      "taskHazardControl": {"entries": []},
-      "signatures": {"workers": [], "supervisor": null},
-      "photos": {"entries": []}
-    },
-    "metadata": {
-      "currentModule": null,
-      "completionPercentage": 0,
-      "lastDeviceInfo": {}
-    }
-  }',
-
-  -- Timestamps and metadata
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  archived_at TIMESTAMPTZ,
-
-  -- Performance and query optimization
-  completion_percentage INTEGER DEFAULT 0,
-  last_module_updated VARCHAR(50),
-  device_last_updated JSONB,
-
-  -- Constraints
-  CONSTRAINT valid_status CHECK (status IN ('active', 'archived', 'deleted')),
-  CONSTRAINT valid_completion CHECK (completion_percentage >= 0 AND completion_percentage <= 100)
-);
-
--- Indexes for performance
-CREATE INDEX idx_form_instances_user_status ON form_instances(user_id, status);
-CREATE INDEX idx_form_instances_created_at ON form_instances(created_at);
-CREATE INDEX idx_form_instances_updated_at ON form_instances(updated_at);
-```
-
-**Security Implementation:**
-
-- [ ] Row-Level Security (RLS) policies for all tables
-- [ ] User access controls and permissions
-- [ ] Data encryption for sensitive fields
-- [ ] API key management and rotation
-
-### **Phase 1.5.3: Storage & Edge Functions Setup (Days 5-6)**
-
-**Supabase Storage Configuration:**
-
-- [ ] Create `form-photos` storage bucket with appropriate policies
-- [ ] Set up image compression and optimization rules
-- [ ] Configure file size limits and security policies
-- [ ] Test photo upload and retrieval workflows
-
-**Edge Functions Deployment:**
-
-- [ ] Deploy auto-archive Edge Function for 16-hour form cleanup
-- [ ] Set up cron job scheduling via `pg_cron`
-- [ ] Deploy form data validation Edge Function
-- [ ] Create backup and cleanup utility functions
-
-**Auto-Archive Edge Function:**
-
-```typescript
-// Deploy via MCP mcp_supabase_deploy_edge_function
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-serve(async req => {
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  );
-
-  // Archive forms older than 16 hours
-  const cutoffTime = new Date(Date.now() - 16 * 60 * 60 * 1000);
-
-  const { data, error } = await supabase
-    .from('form_instances')
-    .update({ status: 'archived', archived_at: new Date().toISOString() })
-    .eq('status', 'active')
-    .lt('updated_at', cutoffTime.toISOString());
-
-  return new Response(
-    JSON.stringify({ archived_count: data?.length || 0, error }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
-});
-```
-
-### **Phase 1.5.4: MCP Integration & Testing (Day 7)**
-
-**MCP Connection Validation:**
-
-- [ ] Test all MCP functions with the new Supabase project
-- [ ] Validate database operations via MCP commands
-- [ ] Test Edge Function deployment and execution
-- [ ] Verify storage operations and file management
-
-**Integration Testing:**
-
-- [ ] End-to-end database operation testing
-- [ ] Security policy validation
-- [ ] Performance baseline establishment
-- [ ] Backup and recovery testing
-
-**Frontend Integration Preparation:**
-
-- [ ] Generate TypeScript types via MCP (`mcp_supabase_generate_typescript_types`)
-- [ ] Create initial Supabase client configuration
-- [ ] Set up environment variables and API keys
-- [ ] Document connection and authentication flows
+- [ ] No offline sync queue or client-side queuing in Phase 1.5.
+- [ ] Forms are online-only until Phase 2.
 
 ---
 
-**Chapter 1.5 Success Criteria:**
+### Remove or Defer
 
-- ✅ **Supabase Project**: Fully configured and operational
-- ✅ **Database Schema**: Complete implementation matching Chapter 3.5 specifications
-- ✅ **RLS Security**: All tables protected with appropriate policies
-- ✅ **Storage Setup**: Photo storage bucket configured and tested
-- ✅ **Edge Functions**: Auto-archive and utility functions deployed
-- ✅ **MCP Integration**: All backend operations functional via MCP
-- ✅ **Type Safety**: TypeScript types generated and available for frontend
-- ✅ **Performance**: Database indexed and optimized for form operations
+- Remove/Defer: Any mention of offline sync infrastructure, deep JSONB validation, audit logs, or advanced triggers not listed above.
+- Move: Any advanced validation, audit logging, or offline sync to Phase 2 or later.
 
-**Ready for Chapter 2**: Authentication can now connect to functional backend infrastructure
+---
+
+### Success Criteria (Revised)
+
+- ✅ Minimal, robust backend supporting manual archiving, photo uploads, and basic validation.
+- ✅ No offline sync or audit logging in Phase 1.5.
+- ✅ Edge Functions for stale/archiving forms in place and scheduled.
+- ✅ All critical constraints enforced in the frontend, with optional DB triggers as a safety net.
 
 ---
 
