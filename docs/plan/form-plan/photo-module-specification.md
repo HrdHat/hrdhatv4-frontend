@@ -14,42 +14,40 @@ The Photo Module allows construction workers to capture and attach photos to saf
 
 ## 📋 **Module Specification**
 
-### **TypeScript Interface**
+### **Dynamic Data Structure**
 
-```typescript
-interface PhotoModule {
-  photos: Array<{
-    id: string; // Unique photo identifier
-    storageUrl: string; // Supabase Storage URL
-    thumbnailUrl: string; // Compressed preview URL
-    caption?: string; // Optional photo description
-    timestamp: Date; // When photo was taken
-    location?: GeoLocation; // GPS coordinates if available
-    fileSize: number; // File size in bytes
-    compressed: boolean; // Whether photo was compressed
-    originalFileName?: string; // Original file name from device
-  }>;
+> **⚠️ ARCHITECTURAL NOTE**: This module uses dynamic data handling instead of rigid TypeScript interfaces. Data structure is flexible and determined at runtime.
 
-  // Module Configuration
-  maxPhotos: 5; // Maximum photos per form
-  maxFileSize: 5242880; // 5MB per photo (5 * 1024 * 1024)
-  compressionQuality: 0.8; // 80% quality for compression
-  allowedFormats: ['jpeg', 'jpg', 'png', 'webp'];
+**Photo Data Format** (stored in JSONB):
 
-  // Module Metadata
-  moduleId: 'photos';
-  moduleTitle: 'Photos';
-  moduleDescription: 'Attach photos to document site conditions';
-  required: false; // Photos are optional
-  order: 6; // Display order in form
-}
-
-interface GeoLocation {
-  latitude: number;
-  longitude: number;
-  accuracy?: number; // GPS accuracy in meters
+```json
+{
+  "photos": [
+    {
+      "id": "uuid",
+      "storageUrl": "string",
+      "thumbnailUrl": "string",
+      "caption": "string (optional)",
+      "timestamp": "ISO date string",
+      "location": {
+        "latitude": "number (optional)",
+        "longitude": "number (optional)",
+        "accuracy": "number (optional)"
+      },
+      "fileSize": "number",
+      "compressed": "boolean",
+      "originalFileName": "string (optional)"
+    }
+  ]
 }
 ```
+
+**Module Configuration** (runtime constants):
+
+- `maxPhotos`: 5 per form
+- `maxFileSize`: 5242880 bytes (5MB)
+- `compressionQuality`: 0.8 (80%)
+- `allowedFormats`: ['jpeg', 'jpg', 'png', 'webp']
 
 ---
 

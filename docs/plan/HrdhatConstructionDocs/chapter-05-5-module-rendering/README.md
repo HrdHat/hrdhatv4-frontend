@@ -34,7 +34,9 @@
 - ✅ Chapter 5 completed: Core modules (Photos, Signatures, Form Header) implemented
 - ✅ Chapter 3.5 completed: All module specifications finalized
 - ✅ Database schema ready: JSONB structure supporting dynamic modules
-- ✅ TypeScript interfaces defined for all modules
+- ✅ Dynamic module system architecture finalized (no rigid TypeScript interfaces)
+
+> **⚠️ ARCHITECTURAL NOTE**: This chapter implements runtime module discovery and dynamic assembly. No rigid TypeScript interfaces are used - modules are discovered and validated at runtime.
 
 ## ✅ Success Criteria
 

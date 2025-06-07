@@ -105,36 +105,58 @@ Each entry:
 
 _Note: This module requires a custom renderer for dynamic rows and risk selectors._
 
-#### **E. Photos Module** (Custom Render, See photo-module-specification.md)
+#### **E. Photos Module** (Custom Render, Separate Table Storage)
 
-Each photo object:
-| Field Key | Label | Type | Required | helperText1 | helperText2 |
-|-------------------|------------------|----------|----------|---------------------------------------------|-------------|
-| id | Photo ID | string | false | "Automatically captured; not editable." | "Unique photo identifier." |
-| storage_url | Storage URL | string | false | "Automatically captured; not editable." | "URL where photo is stored." |
-| thumbnail_url | Thumbnail URL | string | false | "Automatically captured; not editable." | "URL for thumbnail image." |
-| caption | Caption | string | false | "Describe this image." | "Optional but recommended." |
-| timestamp | Timestamp | datetime | false | "Time photo was taken." | "Auto-filled if available. Date format: YYYY-MM-DD HH:mm." |
-| location | Location | string | false | "Where was this photo taken?" | "Optional." |
-| file_size | File Size | integer | false | "Automatically captured; not editable." | "File size in bytes." |
-| compressed | Compressed | boolean | false | "Automatically captured; not editable." | "Indicates if photo was compressed." |
-| original_file_name| Original Name | string | false | "Automatically captured; not editable." | "Original file name." |
+**Storage Architecture:**
 
-#### **F. Signature and Confirmation** (Custom Render)
+```typescript
+photos: Array<string>; // Array of form_photos.id references (UUIDs)
+```
 
-- **workers**: array of
-  - name: { value: string; helperText1: "Name of the worker signing."; helperText2: "Autofilled from profile if available." }
-  - signature_data: { value: blob; helperText1: "Worker's digital signature."; helperText2: "Automatically captured; not editable." }
-  - timestamp: { value: string; helperText1: "Time of signature."; helperText2: "Auto-filled. Date format: YYYY-MM-DD HH:mm." }
-- **supervisor**:
-  - name: { value: string; helperText1: "Supervisor's name."; helperText2: "Autofilled from profile if available." } // required
-  - signature_data: { value: blob; helperText1: "Supervisor's digital signature (required)."; helperText2: "Submission is not valid without supervisor signature. Automatically captured; not editable." } // required
-  - timestamp: { value: string; helperText1: "Time of supervisor signature."; helperText2: "Auto-filled. Date format: YYYY-MM-DD HH:mm." } // required
+**Database Storage:**
 
-> **Note:** All supervisor signature fields are required for valid submission. Workers' signature fields are optional.
-> **Note:** signature_data is stored as a blob (not type64) in the database and TypeScript interface.
+- **Table**: `form_photos` stores metadata and Supabase Storage references
+- **File Storage**: Photo files stored in Supabase Storage (max 5MB per photo)
+- **Constraints**: Maximum 5 photos per form (enforced in frontend)
+- **Fields**: id (uuid), form_instance_id, storage_path, file_size, uploaded_at, caption
 
-_Note: This module requires a custom renderer for signature pads and dynamic worker rows. Only supervisor signature is required for submission._
+**Photo Upload Process:**
+
+1. User selects/captures photo → Upload to Supabase Storage
+2. Create record in `form_photos` table with storage reference
+3. Add photo record ID to form JSONB `photos` array
+
+#### **F. Signature and Confirmation** (Custom Render, Separate Table Storage)
+
+**Storage Architecture:**
+
+```typescript
+signatures: Array<string>; // Array of form_signatures.id references (UUIDs)
+```
+
+**Database Storage:**
+
+- **Table**: `form_signatures` stores metadata and Supabase Storage references
+- **File Storage**: Signature images stored as PNG files in Supabase Storage (max 100KB per signature)
+- **Flexible Roles**: `signer_role` field supports worker, supervisor, foreman, safety_officer, management, etc.
+- **Legacy Support**: `signer_type` field maintained for backwards compatibility (worker/supervisor)
+- **Immutable Records**: Signatures CANNOT be deleted once created (audit compliance)
+- **Fields**: id (uuid), form_instance_id, signer_type, signer_role, signer_name, storage_path, file_size, signed_at
+
+**Signature Capture Process:**
+
+1. User draws signature on canvas → Convert to PNG
+2. Upload PNG to Supabase Storage
+3. Create record in `form_signatures` table with storage reference and signer details
+4. Add signature record ID to form JSONB `signatures` array
+
+**Validation Rules:**
+
+- ✅ **NO SIGNATURES REQUIRED** for form submission (all signatures are optional)
+- Multiple workers and supervisors can sign the same form
+- Each signature is immutable once captured for audit compliance
+
+_Note: This module requires a custom renderer for signature pads and dynamic signer management._
 
 ---
 
@@ -222,51 +244,27 @@ interface FLRAFormInstance {
         };
       }>;
     };
-    photos: Array<{
-      id: { value: string; helperText1: string; helperText2: string };
-      storageUrl: { value: string; helperText1: string; helperText2: string };
-      thumbnailUrl: { value: string; helperText1: string; helperText2: string };
-      caption: { value: string; helperText1: string; helperText2: string };
-      timestamp: { value: string; helperText1: string; helperText2: string };
-      location: { value: string; helperText1: string; helperText2: string };
-      fileSize: { value: number; helperText1: string; helperText2: string };
-      compressed: { value: boolean; helperText1: string; helperText2: string };
-      originalFileName: {
-        value: string;
-        helperText1: string;
-        helperText2: string;
-      };
-    }>;
-    signatures: {
-      workers: Array<{
-        name: { value: string; helperText1: string; helperText2: string };
-        signatureData: {
-          value: Blob;
-          helperText1: string;
-          helperText2: string;
-        };
-        timestamp: { value: string; helperText1: string; helperText2: string };
-      }>;
-      supervisor: {
-        name: { value: string; helperText1: string; helperText2: string };
-        signatureData: {
-          value: Blob;
-          helperText1: string;
-          helperText2: string;
-        };
-        timestamp: { value: string; helperText1: string; helperText2: string };
-      };
-    };
+    photos: Array<string>; // Array of form_photos.id references
+    signatures: Array<string>; // Array of form_signatures.id references
   };
 }
 ```
+
+> **Storage Architecture Note:**
+>
+> Photos and signatures are stored in separate database tables (`form_photos`, `form_signatures`) with files in Supabase Storage. The form JSONB only contains array references (UUIDs) to these records. This architecture ensures:
+>
+> - **Optimal Performance**: Large binary data doesn't bloat JSONB queries
+> - **Proper File Management**: Direct Supabase Storage integration
+> - **Audit Compliance**: Immutable signature records for legal requirements
+> - **Scalability**: Independent scaling of file storage and form data
 
 ---
 
 ## ✅ Validation & Completion Rules
 
-- **Supervisor signature is the only required field for submission. All supervisor signature fields (name, signatureData, timestamp) are required.**
-- All other fields are optional; UI/UX will encourage completion via progress tracker, guided mode, and helper texts.
+- **NO SIGNATURES REQUIRED for form submission.** All fields including signatures are optional for maximum flexibility.
+- UI/UX will encourage completion via progress tracker, guided mode, and helper texts, but nothing blocks submission.
 - General Information fields are autofilled from user profile where possible.
 - Every field must include `helperText1` and `helperText2` for tooltips/guided mode.
 - For all date/time fields, specify the expected format in helperText2.
@@ -277,7 +275,7 @@ interface FLRAFormInstance {
 
 - [ ] Implement all modules as described above.
 - [ ] Use the versioning and metadata standards from the main plan.
-- [ ] Validate only supervisor signature as required.
+- [ ] Implement optional signature capture with separate table storage.
 - [ ] Add `helperText1` and `helperText2` to every field in the schema.
 - [ ] Integrate photo and signature modules per their specifications.
 - [ ] Ensure all user input is sanitized (see security section).

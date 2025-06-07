@@ -27,7 +27,7 @@
 ### Essential Dependencies
 
 - [x] ✅ Install Zustand for state management
-- [x] Install DOMPurify for XSS protection
+- [x] Plan bullet proof UI components for XSS protection
 - [x] ✅ Install Supabase client
 - [x] Install Vitest and React Testing Library
 - [x] Configure all development dependencies

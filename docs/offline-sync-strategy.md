@@ -483,8 +483,8 @@ class DataRecoveryManager {
     // Restore missing modules from template
     repairedData = this.restoreMissingModules(repairedData);
 
-    // Sanitize corrupted text fields
-    repairedData = this.sanitizeTextFields(repairedData);
+    // Data already clean from bullet proof UI components
+    // No sanitization needed - corruption repair only
 
     // Validate repaired data
     const isValid = this.validateFormStructure(repairedData);

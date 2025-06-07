@@ -29,7 +29,7 @@ HrdHat uses **dynamic module assembly**, NOT dynamic field creation:
 
 ### **What "Dynamic" Does NOT Mean:**
 
-- ❌ **Field Creation**: Individual fields within modules are hardcoded TypeScript interfaces
+- ✅ **Field Creation**: Dynamic field handling with flexible JSONB storage (no rigid TypeScript interfaces)
 - ❌ **Schema Generation**: Field types and validation rules are predefined
 - ❌ **Runtime Field Definition**: No user-created custom fields
 
@@ -148,7 +148,7 @@ This project uses the following core dependencies:
 - **TypeScript**: Type safety
 - **Zustand**: State management (modular, persistent, TypeScript-friendly)
 - **Supabase JS**: Backend client ([`@supabase/supabase-js`](https://github.com/supabase/supabase-js))
-- **DOMPurify**: Input sanitization and XSS protection (required for all user input handling)
+- **Bullet Proof UI Components**: XSS protection through input prevention (no runtime sanitization needed)
 - [x] Install Vitest and React Testing Library
 
 ### Installing Dependencies
@@ -171,7 +171,7 @@ To install Supabase client (if not already present):
 npm install @supabase/supabase-js
 ```
 
-Zustand is used for all application state management, with each store defined in its own file and TypeScript interfaces for type safety. Persistence and debugging are enabled via Zustand middleware.
+Zustand is used for all application state management, with each store defined in its own file. Dynamic typing is used for flexible data structures. Persistence and debugging are enabled via Zustand middleware.
 
 ### Zustand for Authentication State
 
@@ -411,4 +411,4 @@ License type (MIT, Apache 2.0, etc.)
 
 ## Who to contact/credit
 
-**Security Best Practice:** All user-generated content and dynamic HTML are sanitized using DOMPurify to prevent XSS attacks. This is a required dependency for secure frontend development in HrdHat.
+**Security Best Practice:** All user input is handled through bullet proof UI components that prevent XSS attacks at the input level. No runtime sanitization needed - components guarantee clean data by design.

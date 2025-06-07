@@ -190,7 +190,7 @@ Our styling follows ITCSS methodology with strict layer hierarchy:
 
 > **State Management Standard:**
 >
-> Zustand is the official state management library for HrdHat. All application state must be managed using modular Zustand stores, with TypeScript interfaces for type safety and middleware for persistence and debugging. This ensures state logic is consistent, maintainable, and aligned with our architectural and naming standards. Routing and navigation are handled exclusively by React Router v6+.
+> Zustand is the official state management library for HrdHat. All application state must be managed using modular Zustand stores, with dynamic typing for flexible data structures and middleware for persistence and debugging. This ensures state logic is consistent, maintainable, and aligned with our architectural and naming standards. Routing and navigation are handled exclusively by React Router v6+.
 
 ## Development Workflow
 

@@ -54,11 +54,11 @@ Establish the foundational architecture for HrdHat v4, including project structu
 {
   "dependencies": {
     "zustand": "^4.4.7", // State management (decided)
-    "dompurify": "^3.0.5", // XSS protection
+    // XSS protection through bullet proof UI components
     "@supabase/supabase-js": "^2.38.0" // Backend integration
   },
   "devDependencies": {
-    "@types/dompurify": "^3.0.5",
+    // No @types/dompurify needed - using bullet proof UI
     "vitest": "^1.0.0", // Testing framework
     "@testing-library/react": "^14.0.0"
   }
@@ -218,55 +218,6 @@ interface NavigationState {
 
 ---
 
-## **Chapter 1.5: 🔥 BACKEND - Supabase Setup & Database Implementation (1 week)**
-
-### **Key Adjustments for Phase 1.5**
-
-#### 1. Form Lifecycle & Status
-
-- [ ] Only a `status` column (`'active'`/`'archived'`) in `form_instances`.
-- [ ] Users archive forms manually in the UI.
-- [ ] No automatic 16-hour cutoff in the DB.
-- [ ] Add a Supabase Edge Function (`stale-forms`) to report forms older than 16 hours (GET, returns count).
-- [ ] Add a scheduled Edge Function (`archive-forms`) to archive forms older than 16 hours (runs daily at 4 AM).
-
-#### 2. Photo Storage
-
-- [ ] Create a private Supabase Storage bucket (`form-photos`).
-- [ ] Client-side compress images to <5MB before upload.
-- [ ] (Optional) Add a `form_photos` table for metadata:
-  - [ ] `id`, `form_instance_id`, `storage_path`, `file_size`, `uploaded_at`
-  - [ ] (Optional) Add a trigger to enforce max 5 photos per form.
-- [ ] Otherwise, enforce max 5 photos in the frontend.
-
-#### 3. Task Limit & Injection Protection
-
-- [ ] Enforce "max 6 tasks" in React/TypeScript UI only.
-- [ ] Use parameterized queries or Supabase client for all DB operations (no raw SQL interpolation).
-- [ ] (Optional) Add a DB trigger to enforce max 6 tasks as a fallback.
-
-#### 4. Minimal Validation & Auditing
-
-- [ ] Only two CHECK constraints on `form_data` in `form_instances`:
-  - [ ] `form_data_not_empty` (must be an object)
-  - [ ] `form_data_has_modules` (must have a 'modules' object)
-- [ ] No deep field-by-field validation in the DB.
-- [ ] No audit_logs table in Phase 1.5; rely on Supabase logs if needed.
-
-#### 5. Skip Offline Sync (Phase 1)
-
-- [ ] No offline sync queue or client-side queuing in Phase 1.5.
-- [ ] Forms are online-only until Phase 2.
-
----
-
-### Remove or Defer
-
-- Remove/Defer: Any mention of offline sync infrastructure, deep JSONB validation, audit logs, or advanced triggers not listed above.
-- Move: Any advanced validation, audit logging, or offline sync to Phase 2 or later.
-
----
-
 ### Success Criteria (Revised)
 
 - ✅ Minimal, robust backend supporting manual archiving, photo uploads, and basic validation.
@@ -294,7 +245,7 @@ Develop the three critical form modules that require specialized functionality: 
 
 **Core Photo Module Features:**
 
-- [ ] Create `PhotoModule` component with TypeScript interface
+- [ ] Create `PhotoModule` component with dynamic data handling
 - [ ] Implement photo array management (max 5 photos)
 - [ ] Add photo caption functionality
 - [ ] Implement file size validation (max 5MB per photo)
@@ -453,7 +404,7 @@ Implement the core form rendering engine that dynamically assembles and manages 
 - ✅ Chapter 5 completed: Core modules (Photos, Signatures, Form Header) implemented
 - ✅ Chapter 3.5 completed: All module specifications finalized
 - ✅ Database schema ready: JSONB structure supporting dynamic modules
-- ✅ TypeScript interfaces defined for all modules
+- ✅ Dynamic module system architecture finalized
 
 ### **Phase 5.5.1: Module Registry & Discovery System (Days 1-2)**
 
@@ -903,10 +854,10 @@ interface PDFPerformanceTargets {
 
 ### **Security Metrics (New)**
 
-- [ ] **XSS Prevention**: 100% of user inputs sanitized, zero successful XSS attacks in testing
+- [ ] **XSS Prevention**: 100% of user inputs use bullet proof components, zero successful XSS attacks in testing
 - [ ] **Data Integrity**: 100% data integrity maintained across all operations
 - [ ] **Access Control**: RLS policies prevent 100% of unauthorized data access attempts
-- [ ] **Input Validation**: All form inputs validated and sanitized before storage
+- [ ] **Input Safety**: All form inputs use bullet proof components preventing invalid data
 - [ ] **Secure Storage**: Sensitive data encrypted in local storage and transit
 - [ ] **Audit Compliance**: All data access and modifications logged for security auditing
 - [ ] **Vulnerability Assessment**: Zero high-severity security vulnerabilities in production
