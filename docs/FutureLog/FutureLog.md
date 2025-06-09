@@ -111,6 +111,14 @@
 **User Value**: Reduces conflicts and user confusion during device switching
 **Status**: Idea
 
+## Feature: 24-Hour Email Verification Grace Period
+
+**Priority**: Medium  
+**Target Phase**: Phase 3  
+**Description**: Allow users to use the application for 24 hours without email verification, then enforce verification requirement. Would require custom Edge Function logic to bypass Supabase's native email confirmation requirement during the grace period.
+**User Value**: Improves initial user experience by allowing immediate app usage while maintaining security.
+**Status**: Deferred - Standard email verification implemented instead
+
 ## Feature: Backend Enforcement for Unverified Users
 
 **Priority**: High  
@@ -125,7 +133,7 @@
 **Target Phase**: Next  
 **Description**: Add a button to the VerifyEmail page to allow users to resend the verification email if needed.
 **User Value**: Improves user experience and reduces support requests for lost/expired verification emails.
-**Status**: Pending
+**Status**: ✅ COMPLETED - Implemented with loading states, success/error messaging, and proper UX
 
 ## Feature: Full Protected Route Wiring
 

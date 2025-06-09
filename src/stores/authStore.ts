@@ -28,15 +28,31 @@ export const useAuthStore = create<AuthState>(set => ({
   login: async (email, password) => {
     logger.log('Login attempt', { email });
     set({ loading: true, error: null });
+
+    // Check current session first
+    const { data: sessionData } = await supabase.auth.getSession();
+    logger.log('Current session before login', {
+      session: sessionData.session,
+    });
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
       logger.error('Login error', error);
+      logger.log('Login error details', {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      });
       set({ error: error.message, loading: false });
     } else {
       logger.log('Login success', { user: data.user });
+      logger.log('User email verified?', {
+        email_confirmed_at: data.user?.email_confirmed_at,
+        created_at: data.user?.created_at,
+      });
       set({ user: data.user, loading: false, error: null });
       logger.log('User state updated after login', { user: data.user });
     }

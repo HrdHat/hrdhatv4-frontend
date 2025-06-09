@@ -162,6 +162,7 @@ This structure is modular, scalable, and aligns with HrdHat's project rules and 
 - **Frontend Enforcement**: Email verification is enforced in the router. If a user is logged in but not verified, they are redirected to `/verify-email` (handled by `VerifyEmail.tsx`).
 - **Backend Enforcement**: Not yet implemented. Future work will add Row Level Security (RLS) or Edge Function checks to ensure unverified users cannot access protected data via API.
 - **Resend Verification**: A button to resend the verification email will be added to `VerifyEmail.tsx`.
+- **Standard Flow**: Users must verify their email before accessing the application. No grace period is implemented.
 
 ### Routing Logic (2024)
 

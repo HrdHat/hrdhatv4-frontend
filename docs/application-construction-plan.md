@@ -39,7 +39,7 @@ PHASED APPROACH:
 - **Signup**
 
   - New users enter First Name, Last Name, Company, Email
-  - Email authentication only required after 24 hours;
+  - Email verification required before accessing the application
 
 - **Create & Fill Form**
 
@@ -375,7 +375,7 @@ This routing strategy provides a solid foundation for HrdHat's navigation needs 
 
 1. **Account & Auth:**
 
-   - Minimal sign-up flow, with email auth required after 24 hours
+   - Minimal sign-up flow, with immediate email verification required
 
 2. **Form Creation & Life-Cycle:**
 
@@ -414,7 +414,7 @@ There will be mobile-only features (e.g. camera upload)
 
 A form will have a life cycle. A new form will be created as an "Active Form". Either by the users request or after 16h the form will Auto Archive.
 
-The goal for creating an account should be as simple as possible with minimum authentication (email only, Only required after 24h.). When the person create and account it should be First Name, last name, company and thats it.
+The goal for creating an account should be as simple as possible with standard email verification. When the person creates an account it should be First Name, last name, company and email verification required.
 
 Each new form is instantiated from the user's default module template. In Phase 1, everyone's forms start with this predefined set of modules. (Module customization comes in Phase 2.)
 

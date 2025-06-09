@@ -5,7 +5,6 @@ import { logger } from '../../utils/logger';
 
 export default function Profile() {
   const user = useAuthStore(state => state.user);
-  const setUser = useAuthStore.setState;
 
   // Editable profile fields
   const [firstName, setFirstName] = useState(
@@ -34,6 +33,22 @@ export default function Profile() {
     setProfileSuccess(null);
     setProfileLoading(true);
     logger.log('Profile save submitted', { firstName, lastName, company });
+
+    // Check session first and refresh if needed
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+    logger.log('Current session check', {
+      session: sessionData.session,
+      error: sessionError,
+    });
+
+    if (!sessionData.session) {
+      setProfileError('Session expired. Please log in again.');
+      logger.error('No active session found');
+      setProfileLoading(false);
+      return;
+    }
+
     const { error, data } = await supabase.auth.updateUser({
       data: {
         first_name: firstName,
@@ -47,7 +62,7 @@ export default function Profile() {
     } else {
       setProfileSuccess('Profile updated successfully.');
       logger.log('Profile updated', data.user);
-      setUser({ user: data.user });
+      useAuthStore.setState({ user: data.user });
     }
     setProfileLoading(false);
   };

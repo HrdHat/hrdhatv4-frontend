@@ -52,7 +52,20 @@ export default function Login() {
           Login
         </button>
       </form>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && (
+        <div style={{ color: 'red' }}>
+          {error}
+          {error === 'Email not confirmed' && (
+            <div style={{ marginTop: 8, fontSize: '0.9em' }}>
+              <p>
+                Please check your email inbox (and spam folder) for a
+                verification link.
+              </p>
+              <p>You must verify your email address before you can log in.</p>
+            </div>
+          )}
+        </div>
+      )}
       <button
         type='button'
         onClick={() => {

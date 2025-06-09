@@ -10,6 +10,8 @@ export default function Signup() {
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
   const signup = useAuthStore(state => state.signup);
   const loading = useAuthStore(state => state.loading);
@@ -17,6 +19,24 @@ export default function Signup() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Clear previous password error
+    setPasswordError('');
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      logger.error('Signup validation failed: passwords do not match');
+      return;
+    }
+
+    // Validate password length (basic validation)
+    if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      logger.error('Signup validation failed: password too short');
+      return;
+    }
+
     logger.log('Signup form submitted', {
       email,
       firstName,
@@ -86,10 +106,21 @@ export default function Signup() {
             required
           />
         </div>
+        <div>
+          <label htmlFor='signup-confirm-password'>Confirm Password</label>
+          <input
+            id='signup-confirm-password'
+            type='password'
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
         <button type='submit' disabled={loading}>
           Sign Up
         </button>
       </form>
+      {passwordError && <div style={{ color: 'red' }}>{passwordError}</div>}
       {error && <div style={{ color: 'red' }}>{error}</div>}
       <button
         type='button'

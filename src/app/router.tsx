@@ -31,6 +31,7 @@ import Unauthorized from './routes/Unauthorized';
 import Maintenance from './routes/Maintenance';
 import ArchivedFormsList from './routes/ArchivedFormsList';
 import NewFormList from './routes/NewFormList';
+import VerifyEmail from './routes/VerifyEmail';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 
 function RequireEmailVerified({ children }: { children: React.ReactNode }) {
@@ -41,12 +42,7 @@ function RequireEmailVerified({ children }: { children: React.ReactNode }) {
 
   const needsVerification = useMemo(() => {
     if (!user) return false;
-    const notVerified = !user.email_confirmed_at;
-    const createdAt = user.created_at ? new Date(user.created_at) : null;
-    const now = Date.now();
-    const msIn24h = 24 * 60 * 60 * 1000;
-    const expired = createdAt && now - createdAt.getTime() > msIn24h;
-    return notVerified && expired;
+    return !user.email_confirmed_at;
   }, [user]);
 
   if (needsVerification && location.pathname !== '/auth/verify-email') {
@@ -79,6 +75,8 @@ export default function Router() {
               <Route path='auth/signup' element={<Signup />} />
             </Route>
           )}
+          {/* Auth pages (accessible regardless of login status) */}
+          <Route path='/auth/verify-email' element={<VerifyEmail />} />
           {/* General pages (footer links) */}
           <Route path='/about' element={<About />} />
           <Route path='/blog' element={<SafetyBlog />} />
