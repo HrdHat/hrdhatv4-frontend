@@ -23,8 +23,8 @@ export const MODULE_CONSTRAINTS = {
     captionMaxLength: 200,
     compressionQuality: 0.8, // JPEG compression quality
     // UI behavior
-    uploadButtonText: 'Add Photo',
-    dragDropText: 'Drop photos here or click to browse',
+    uploadButtonText: 'Select Photos (up to 5)',
+    dragDropText: 'Drop photos here or click to select multiple photos',
     previewSize: { width: 150, height: 150 },
   },
 
@@ -125,7 +125,7 @@ export const getMaxEntries = (
 };
 
 export const isValidFileType = (file: File, moduleType: 'photos'): boolean => {
-  return MODULE_CONSTRAINTS[moduleType].allowedTypes.includes(file.type);
+  return MODULE_CONSTRAINTS[moduleType].allowedTypes.includes(file.type as any);
 };
 
 export const formatFileSize = (bytes: number): string => {
@@ -138,14 +138,14 @@ export const formatFileSize = (bytes: number): string => {
 
 export const getRiskColor = (riskLevel: number): string => {
   return (
-    MODULE_CONSTRAINTS.taskHazardControl.riskScale.colors[riskLevel] ||
+    (MODULE_CONSTRAINTS.taskHazardControl.riskScale.colors as any)[riskLevel] ||
     '#9E9E9E'
   );
 };
 
 export const getRiskLabel = (riskLevel: number): string => {
   return (
-    MODULE_CONSTRAINTS.taskHazardControl.riskScale.labels[riskLevel] ||
+    (MODULE_CONSTRAINTS.taskHazardControl.riskScale.labels as any)[riskLevel] ||
     'Unknown'
   );
 };

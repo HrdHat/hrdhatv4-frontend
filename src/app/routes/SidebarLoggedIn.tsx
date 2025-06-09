@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuthStore } from '../../stores/authStore';
+import { useFormStore } from '../../stores/formStore';
 import { logger } from '../../utils/logger';
 import ActiveFormsList from './ActiveFormsList';
 import ArchivedFormsList from './ArchivedFormsList';
@@ -10,9 +12,15 @@ import NewFormList from './NewFormList';
 export default function SidebarLoggedIn() {
   const logout = useAuthStore(state => state.logout);
   const loading = useAuthStore(state => state.loading);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [panel, setPanel] = useState<'active' | 'archived' | 'profile' | 'new'>(
     'active'
   );
+  const [drawerOpen, setDrawerOpen] = useState(true);
+
+  // Form store state for checking if a form is currently open
+  const { currentForm, hasUnsavedChanges } = useFormStore();
 
   useEffect(() => {
     logger.log('SidebarLoggedIn rendered');
@@ -23,42 +31,112 @@ export default function SidebarLoggedIn() {
     logout();
   };
 
-  let content;
-  switch (panel) {
-    case 'active':
-      content = <ActiveFormsList />;
-      break;
-    case 'archived':
-      content = <ArchivedFormsList />;
-      break;
-    case 'profile':
-      content = <Profile />;
-      break;
-    case 'new':
-      content = <NewFormList />;
-      break;
-    default:
-      content = null;
-  }
+  const handleCreateNewFLRA = () => {
+    logger.log('Create New FLRA button clicked');
+
+    // Check if there's a form currently open
+    if (currentForm) {
+      const message = hasUnsavedChanges
+        ? 'Are you sure you want to close this form and start a new one? You have unsaved changes that will be lost.'
+        : 'Are you sure you want to close this form and start a new one?';
+
+      const confirmed = window.confirm(message);
+      if (!confirmed) {
+        logger.log('User cancelled creating new form');
+        return;
+      }
+    }
+
+    // Navigate to the new form route
+    navigate('/form/new');
+  };
+
+  const handlePanelChange = (
+    newPanel: 'active' | 'archived' | 'profile' | 'new'
+  ) => {
+    setPanel(newPanel);
+    setDrawerOpen(true); // Open drawer when selecting a panel
+  };
+
+  // Render drawer content based on selected panel
+  const renderDrawerContent = () => {
+    switch (panel) {
+      case 'active':
+        return <ActiveFormsList />;
+      case 'archived':
+        return <ArchivedFormsList />;
+      case 'profile':
+        return <Profile />;
+      case 'new':
+        return <NewFormList />;
+      default:
+        return <ActiveFormsList />;
+    }
+  };
 
   return (
-    <div>
-      <aside>
-        <nav>
-          <button onClick={() => setPanel('active')}>Active Forms</button>
-          <button onClick={() => setPanel('archived')}>Archived Forms</button>
-          <button onClick={() => setPanel('profile')}>Profile</button>
-          <button onClick={() => setPanel('new')}>New Form</button>
+    <div className='sidebar-layout'>
+      {/* Sidebar with Navigation and Drawer */}
+      <aside
+        className={`sidebar ${drawerOpen ? 'drawer-open' : 'drawer-closed'}`}
+      >
+        {/* Navigation */}
+        <nav className='sidebar-nav'>
+          <button
+            onClick={() => handlePanelChange('active')}
+            className={panel === 'active' ? 'active' : ''}
+          >
+            Active Forms
+          </button>
+          <button
+            onClick={() => handlePanelChange('archived')}
+            className={panel === 'archived' ? 'active' : ''}
+          >
+            Archived Forms
+          </button>
+          <button
+            onClick={() => handlePanelChange('profile')}
+            className={panel === 'profile' ? 'active' : ''}
+          >
+            Profile
+          </button>
+          <button
+            onClick={() => handlePanelChange('new')}
+            className={panel === 'new' ? 'active' : ''}
+          >
+            New Form
+          </button>
+          <button onClick={handleCreateNewFLRA}>Create New FLRA</button>
           <button
             onClick={handleLogout}
             disabled={loading}
-            style={{ marginLeft: 16 }}
+            className='logout-btn'
           >
             {loading ? 'Logging out...' : 'Log Out'}
           </button>
         </nav>
+
+        {/* Drawer Content */}
+        {drawerOpen && (
+          <div className='drawer'>
+            <div className='drawer-header'>
+              <button
+                onClick={() => setDrawerOpen(false)}
+                className='drawer-close'
+                aria-label='Close drawer'
+              >
+                ✕
+              </button>
+            </div>
+            <div className='drawer-content'>{renderDrawerContent()}</div>
+          </div>
+        )}
       </aside>
-      <main>{content}</main>
+
+      {/* Main Content Area */}
+      <main className='main-content'>
+        <Outlet />
+      </main>
     </div>
   );
 }

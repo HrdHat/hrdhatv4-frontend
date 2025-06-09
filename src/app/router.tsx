@@ -64,6 +64,7 @@ export default function Router() {
             <Route path='/' element={<SidebarLoggedInWrapper />}>
               <Route index element={<LoggedinHomePage />} />
               <Route path='profile' element={<Profile />} />
+              <Route path='form/new' element={<FormEditor />} />
               <Route path='form/:id' element={<FormEditor />} />
               <Route path='form/:id/guided' element={<GuidedEditor />} />
             </Route>
