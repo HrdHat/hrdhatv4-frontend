@@ -47,6 +47,7 @@ export default function SidebarLoggedIn() {
       }
     }
 
+    setDrawerOpen(false); // Close the drawer after confirmation
     // Navigate to the new form route
     navigate('/form/new');
   };
@@ -54,8 +55,24 @@ export default function SidebarLoggedIn() {
   const handlePanelChange = (
     newPanel: 'active' | 'archived' | 'profile' | 'new'
   ) => {
-    setPanel(newPanel);
-    setDrawerOpen(true); // Open drawer when selecting a panel
+    if (newPanel === 'new') {
+      // If a form is open, prompt the user
+      if (currentForm) {
+        const message = hasUnsavedChanges
+          ? 'Are you sure you want to close this form and start a new one? You have unsaved changes that will be lost.'
+          : 'Are you sure you want to close this form and start a new one?';
+        const confirmed = window.confirm(message);
+        if (!confirmed) {
+          logger.log('User cancelled creating new form from panel');
+          return;
+        }
+      }
+      setPanel('new');
+      setDrawerOpen(false); // Close the drawer after confirmation
+    } else {
+      setPanel(newPanel);
+      setDrawerOpen(true); // Open drawer for other panels
+    }
   };
 
   // Render drawer content based on selected panel

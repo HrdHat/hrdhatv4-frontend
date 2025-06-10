@@ -460,10 +460,20 @@ export class FormService {
    */
   static async getUserLogo(userId: string): Promise<string | null> {
     try {
-      // Assume logos are stored as 'user-logos/{userId}.png'
+      const filePath = `user-logos/${userId}.png`;
+
+      // Try to download the file (this will fail if it doesn't exist)
+      const { error } = await supabase.storage.from('logos').download(filePath);
+
+      if (error) {
+        // File doesn't exist, return null so fallback can run
+        return null;
+      }
+
+      // File exists, get public URL
       const { data } = await supabase.storage
         .from('logos')
-        .getPublicUrl(`user-logos/${userId}.png`);
+        .getPublicUrl(filePath);
       return data?.publicUrl || null;
     } catch (error) {
       logger.error('Failed to get user logo', error);
