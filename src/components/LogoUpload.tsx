@@ -39,12 +39,26 @@ export const LogoUpload: React.FC<LogoUploadProps> = ({
         throw new Error('Logo file must be less than 1MB');
       }
 
-      // Upload logo
+      // Upload logo with detailed debugging
+      console.log(
+        'FormService methods:',
+        Object.getOwnPropertyNames(FormService)
+      );
+      console.log(
+        'FormService.uploadUserLogo exists:',
+        typeof FormService.uploadUserLogo
+      );
+      console.log('Starting upload for file:', file.name, 'size:', file.size);
+
       const newLogoUrl = await FormService.uploadUserLogo(user.id, file);
+      console.log('Upload completed, new URL:', newLogoUrl);
 
       // Notify parent component
+      console.log('Calling onLogoUpdated callback with:', newLogoUrl);
       if (onLogoUpdated) {
         onLogoUpdated(newLogoUrl);
+      } else {
+        console.warn('onLogoUpdated callback is not provided');
       }
 
       logger.log('Logo uploaded successfully', { logoUrl: newLogoUrl });

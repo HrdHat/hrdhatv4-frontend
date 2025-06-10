@@ -44,7 +44,10 @@ export const FormHeader: React.FC<FormHeaderProps> = ({
   }, [user]);
 
   const handleLogoUpdate = (newLogoUrl: string) => {
+    console.log('FormHeader handleLogoUpdate called with:', newLogoUrl);
+    console.log('Current logoUrl state:', logoUrl);
     setLogoUrl(newLogoUrl);
+    console.log('Logo state updated to:', newLogoUrl);
     if (onLogoUpdated) {
       onLogoUpdated(newLogoUrl);
     }

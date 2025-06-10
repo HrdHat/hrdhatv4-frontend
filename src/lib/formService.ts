@@ -480,4 +480,50 @@ export class FormService {
       return null;
     }
   }
+
+  /**
+   * Upload a user's logo to Supabase Storage
+   */
+  static async uploadUserLogo(userId: string, file: File): Promise<string> {
+    try {
+      logger.log('Uploading user logo', { userId, fileSize: file.size });
+
+      const filePath = `user-logos/${userId}.png`;
+
+      // Upload the file (upsert to replace existing logo)
+      const { error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true, // Replace existing file
+        });
+
+      if (uploadError) {
+        logger.error('Failed to upload user logo', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      // Get the public URL for the uploaded file with cache busting
+      const { data } = await supabase.storage
+        .from('logos')
+        .getPublicUrl(filePath);
+
+      if (!data?.publicUrl) {
+        throw new Error('Failed to get uploaded logo URL');
+      }
+
+      // Add cache-busting timestamp to force browser to reload new image
+      const cacheBustingUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+      logger.log('User logo uploaded successfully', {
+        userId,
+        logoUrl: cacheBustingUrl,
+      });
+
+      return cacheBustingUrl;
+    } catch (error) {
+      logger.error('Error in uploadUserLogo', error);
+      throw error;
+    }
+  }
 }
