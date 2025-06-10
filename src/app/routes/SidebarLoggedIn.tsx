@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 
 import { useAuthStore } from '../../stores/authStore';
 import { useFormStore } from '../../stores/formStore';
 import { logger } from '../../utils/logger';
+
 import ActiveFormsList from './ActiveFormsList';
 import ArchivedFormsList from './ArchivedFormsList';
-import Profile from './Profile';
 import NewFormList from './NewFormList';
 
 export default function SidebarLoggedIn() {
   const logout = useAuthStore(state => state.logout);
   const loading = useAuthStore(state => state.loading);
   const navigate = useNavigate();
-  const location = useLocation();
   const [panel, setPanel] = useState<'active' | 'archived' | 'profile' | 'new'>(
     'active'
   );
@@ -69,6 +68,21 @@ export default function SidebarLoggedIn() {
       }
       setPanel('new');
       setDrawerOpen(false); // Close the drawer after confirmation
+    } else if (newPanel === 'profile') {
+      // Handle profile navigation - check for open forms first, then navigate to main area
+      if (currentForm) {
+        const message = hasUnsavedChanges
+          ? 'Are you sure you want to close this form and go to your profile? You have unsaved changes that will be lost.'
+          : 'Are you sure you want to close this form and go to your profile?';
+        const confirmed = window.confirm(message);
+        if (!confirmed) {
+          logger.log('User cancelled navigating to profile');
+          return;
+        }
+      }
+      // Navigate to profile page in main content area
+      setDrawerOpen(false); // Close the drawer
+      navigate('/profile');
     } else {
       setPanel(newPanel);
       setDrawerOpen(true); // Open drawer for other panels
@@ -82,8 +96,6 @@ export default function SidebarLoggedIn() {
         return <ActiveFormsList />;
       case 'archived':
         return <ArchivedFormsList />;
-      case 'profile':
-        return <Profile />;
       case 'new':
         return <NewFormList />;
       default:

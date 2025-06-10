@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { useAuthStore } from '../../stores/authStore';
+import React, { useState } from 'react';
+
+import { LogoUpload } from '../../components/LogoUpload';
 import { supabase } from '../../config/supabaseClient';
+import { FormService } from '../../lib/formService';
+import { useAuthStore } from '../../stores/authStore';
 import { logger } from '../../utils/logger';
 
 export default function Profile() {
@@ -8,10 +11,10 @@ export default function Profile() {
 
   // Editable profile fields
   const [firstName, setFirstName] = useState(
-    user?.user_metadata?.first_name || ''
+    user?.user_metadata?.firstName || user?.user_metadata?.first_name || ''
   );
   const [lastName, setLastName] = useState(
-    user?.user_metadata?.last_name || ''
+    user?.user_metadata?.lastName || user?.user_metadata?.last_name || ''
   );
   const [company, setCompany] = useState(user?.user_metadata?.company || '');
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -25,6 +28,10 @@ export default function Profile() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
+
+  // Logo management
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoLoading, setLogoLoading] = useState(true);
 
   // Save profile handler
   const handleProfileSave = async (e: React.FormEvent) => {
@@ -51,8 +58,8 @@ export default function Profile() {
 
     const { error, data } = await supabase.auth.updateUser({
       data: {
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
         company,
       },
     });
@@ -124,10 +131,71 @@ export default function Profile() {
     setPasswordLoading(false);
   };
 
+  // Load user logo on component mount
+  React.useEffect(() => {
+    const loadLogo = async () => {
+      if (!user?.id) {
+        setLogoLoading(false);
+        return;
+      }
+
+      try {
+        let userLogoUrl = null;
+        userLogoUrl = await FormService.getUserLogo(user.id);
+
+        if (userLogoUrl) {
+          setLogoUrl(userLogoUrl);
+        } else {
+          // Load default logo as fallback
+          const { data } = await supabase.storage
+            .from('logos')
+            .getPublicUrl('HRDHAT LOGO & ICONT.svg');
+          if (data.publicUrl) {
+            setLogoUrl(data.publicUrl);
+          }
+        }
+      } catch (error) {
+        logger.error('Failed to load logo', error);
+      } finally {
+        setLogoLoading(false);
+      }
+    };
+
+    loadLogo();
+  }, [user]);
+
+  // Handle logo update
+  const handleLogoUpdate = (newLogoUrl: string) => {
+    setLogoUrl(newLogoUrl);
+    logger.log('Profile logo updated', { logoUrl: newLogoUrl });
+  };
+
   return (
-    <div style={{ maxWidth: 400, margin: '0 auto', padding: 24 }}>
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: 24 }}>
       <h1>Profile</h1>
+
+      {/* Logo Management Section */}
       <section style={{ marginBottom: 32 }}>
+        <h2>Logo</h2>
+        <p style={{ color: '#666', marginBottom: 16 }}>
+          Upload your company logo to appear on forms and PDFs.
+        </p>
+        {logoLoading ? (
+          <div style={{ textAlign: 'center', padding: 20 }}>
+            Loading logo...
+          </div>
+        ) : (
+          <LogoUpload
+            currentLogoUrl={logoUrl || undefined}
+            onLogoUpdated={handleLogoUpdate}
+            className='profile-logo-upload'
+          />
+        )}
+      </section>
+
+      {/* Profile Information Section */}
+      <section style={{ marginBottom: 32 }}>
+        <h2>Profile Information</h2>
         <form onSubmit={handleProfileSave}>
           <div>
             <label htmlFor='profile-first-name'>First Name:</label>
@@ -177,7 +245,9 @@ export default function Profile() {
           <div style={{ color: 'green', marginTop: 8 }}>{profileSuccess}</div>
         )}
       </section>
-      <section>
+
+      {/* Password Change Section */}
+      <section style={{ marginBottom: 32 }}>
         <h2>Change Password</h2>
         <form onSubmit={handlePasswordChange}>
           <div>
