@@ -454,4 +454,20 @@ export class FormService {
       throw error;
     }
   }
+
+  /**
+   * Retrieve the user's uploaded logo from Supabase Storage
+   */
+  static async getUserLogo(userId: string): Promise<string | null> {
+    try {
+      // Assume logos are stored as 'user-logos/{userId}.png'
+      const { data } = await supabase.storage
+        .from('logos')
+        .getPublicUrl(`user-logos/${userId}.png`);
+      return data?.publicUrl || null;
+    } catch (error) {
+      logger.error('Failed to get user logo', error);
+      return null;
+    }
+  }
 }

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { ModuleRenderer } from '@/components/form/ModuleRenderer';
 import { logger } from '@/utils/logger';
 import '@/styles/components/form-editor.css';
+import { FormHeader } from '@/components/form/FormHeader';
 
 export default function FormEditor() {
   const { id } = useParams<{ id: string }>();
@@ -141,48 +142,7 @@ export default function FormEditor() {
   return (
     <div className='form-editor'>
       {/* Form Header */}
-      <div className='form-header'>
-        <div className='form-title-section'>
-          <h1>FLRA Form Editor</h1>
-          <div className='form-metadata'>
-            <span className='form-number'>Form #{currentForm.form_number}</span>
-            {currentForm.title && (
-              <span className='form-title'>{currentForm.title}</span>
-            )}
-          </div>
-        </div>
-
-        <div className='form-status'>
-          <div className='save-status'>
-            {saving && <span className='saving'>Saving...</span>}
-            {hasUnsavedChanges && !saving && (
-              <span className='unsaved'>Unsaved changes</span>
-            )}
-            {lastSaved && !hasUnsavedChanges && (
-              <span className='saved'>
-                Saved: {new Date(lastSaved).toLocaleTimeString()}
-              </span>
-            )}
-          </div>
-
-          <div className='form-actions'>
-            <button
-              onClick={handleSaveForm}
-              disabled={saving || !hasUnsavedChanges}
-              className='save-button'
-            >
-              {saving ? 'Saving...' : 'Save Form'}
-            </button>
-            <button
-              onClick={handleGeneratePDF}
-              disabled={saving}
-              className='pdf-button'
-            >
-              Generate PDF
-            </button>
-          </div>
-        </div>
-      </div>
+      <FormHeader form={currentForm} />
 
       {/* Form Content */}
       <div className='form-content'>
