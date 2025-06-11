@@ -1,12 +1,6 @@
 import React from 'react';
 import { useMemo } from 'react';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import { useAuthStore } from '../stores/authStore';
 import { logger } from '../utils/logger';
@@ -29,8 +23,6 @@ import FAQ from './routes/FAQ';
 import ErrorPage from './routes/ErrorPage';
 import Unauthorized from './routes/Unauthorized';
 import Maintenance from './routes/Maintenance';
-import ArchivedFormsList from './routes/ArchivedFormsList';
-import NewFormList from './routes/NewFormList';
 import VerifyEmail from './routes/VerifyEmail';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 
@@ -52,47 +44,45 @@ function RequireEmailVerified({ children }: { children: React.ReactNode }) {
   return children;
 }
 
-export default function Router() {
+export default function AppRoutes() {
   const user = useAuthStore(state => state.user);
   logger.log('Router rendered', { user });
   return (
-    <BrowserRouter>
-      <RequireEmailVerified>
-        <Routes>
-          {user ? (
-            // Logged in experience
-            <Route path='/' element={<SidebarLoggedInWrapper />}>
-              <Route index element={<LoggedinHomePage />} />
-              <Route path='profile' element={<Profile />} />
-              <Route path='form/new' element={<FormEditor />} />
-              <Route path='form/:id' element={<FormEditor />} />
-              <Route path='form/:id/guided' element={<GuidedEditor />} />
-            </Route>
-          ) : (
-            // Logged out experience
-            <Route path='/' element={<SidebarLoggedOutWrapper />}>
-              <Route index element={<Login />} />
-              <Route path='auth/login' element={<Login />} />
-              <Route path='auth/signup' element={<Signup />} />
-            </Route>
-          )}
-          {/* Auth pages (accessible regardless of login status) */}
-          <Route path='/auth/verify-email' element={<VerifyEmail />} />
-          {/* General pages (footer links) */}
-          <Route path='/about' element={<About />} />
-          <Route path='/blog' element={<SafetyBlog />} />
-          <Route path='/terms' element={<Terms />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/report-bug' element={<ReportBug />} />
-          <Route path='/faq' element={<FAQ />} />
-          <Route path='/500' element={<ErrorPage />} />
-          <Route path='/unauthorized' element={<Unauthorized />} />
-          <Route path='/maintenance' element={<Maintenance />} />
-          {/* 404 Not Found */}
-          <Route path='*' element={<NotFound />} />
-        </Routes>
-      </RequireEmailVerified>
-    </BrowserRouter>
+    <RequireEmailVerified>
+      <Routes>
+        {user ? (
+          // Logged in experience
+          <Route path='/' element={<SidebarLoggedInWrapper />}>
+            <Route index element={<LoggedinHomePage />} />
+            <Route path='profile' element={<Profile />} />
+            <Route path='form/new' element={<FormEditor />} />
+            <Route path='form/:id' element={<FormEditor />} />
+            <Route path='form/:id/guided' element={<GuidedEditor />} />
+          </Route>
+        ) : (
+          // Logged out experience
+          <Route path='/' element={<SidebarLoggedOutWrapper />}>
+            <Route index element={<Login />} />
+            <Route path='auth/login' element={<Login />} />
+            <Route path='auth/signup' element={<Signup />} />
+          </Route>
+        )}
+        {/* Auth pages (accessible regardless of login status) */}
+        <Route path='/auth/verify-email' element={<VerifyEmail />} />
+        {/* General pages (footer links) */}
+        <Route path='/about' element={<About />} />
+        <Route path='/blog' element={<SafetyBlog />} />
+        <Route path='/terms' element={<Terms />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/report-bug' element={<ReportBug />} />
+        <Route path='/faq' element={<FAQ />} />
+        <Route path='/500' element={<ErrorPage />} />
+        <Route path='/unauthorized' element={<Unauthorized />} />
+        <Route path='/maintenance' element={<Maintenance />} />
+        {/* 404 Not Found */}
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+    </RequireEmailVerified>
   );
 }
 

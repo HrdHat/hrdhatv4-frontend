@@ -1,13 +1,13 @@
-import Provider from './provider';
-import Router from './router';
-import ResponsiveLayout from '../components/ResponsiveLayout/ResponsiveLayout';
+import AppProvider from './AppProvider';
+import ResponsiveLayout from '@/components/ResponsiveLayout/ResponsiveLayout';
+import AppRoutes from './router';
 
 export default function App() {
   return (
-    <Provider>
+    <AppProvider>
       <ResponsiveLayout>
-        <Router />
+        <AppRoutes />
       </ResponsiveLayout>
-    </Provider>
+    </AppProvider>
   );
 }
