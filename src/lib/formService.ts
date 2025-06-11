@@ -474,7 +474,9 @@ export class FormService {
       const { data } = await supabase.storage
         .from('logos')
         .getPublicUrl(filePath);
-      return data?.publicUrl || null;
+
+      // Add cache-busting timestamp to force browser to reload new image
+      return data?.publicUrl ? `${data.publicUrl}?t=${Date.now()}` : null;
     } catch (error) {
       logger.error('Failed to get user logo', error);
       return null;

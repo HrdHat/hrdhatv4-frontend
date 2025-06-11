@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFormStore } from '@/stores/formStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -27,7 +27,11 @@ export default function FormEditor() {
     checkFormExists,
   } = useFormStore();
 
+  const lastInitializedId = useRef<string | undefined>(undefined);
+
   useEffect(() => {
+    if (lastInitializedId.current === id) return;
+    lastInitializedId.current = id;
     logger.log('FormEditor opened', { formId: id, userId: user?.id });
 
     if (!user) {
@@ -35,14 +39,11 @@ export default function FormEditor() {
       return;
     }
 
-    // Check if this is a new form or existing form
     const isNewForm = !id || id === 'new';
     const formId = isNewForm ? undefined : id;
 
-    // Initialize form (new or existing)
     initializeForm(user.id, formId)
       .then(resultFormId => {
-        // If we just created a new form, navigate to its URL
         if (isNewForm && resultFormId) {
           navigate(`/form/${resultFormId}`, { replace: true });
         }
@@ -51,11 +52,10 @@ export default function FormEditor() {
         logger.error('Form initialization failed', error);
       });
 
-    // Cleanup on unmount
     return () => {
       reset();
     };
-  }, [id, user?.id, initializeForm, reset]);
+  }, [id, user?.id, initializeForm, reset, navigate]);
 
   // Check if form still exists (handle deletion from drawer/other tabs)
   useEffect(() => {
