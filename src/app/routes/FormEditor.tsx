@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useFormStore } from '@/stores/formStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ModuleRenderer } from '@/components/form/ModuleRenderer';
 import { logger } from '@/utils/logger';
 import '@/styles/components/form-editor.css';
 import { FormHeader } from '@/components/form/FormHeader';
+import FormModeProvider from '@/features/form-editor/FormModeProvider';
+import FormLayout from '@/features/form-editor/FormLayout';
 
 export default function FormEditor() {
   const { id } = useParams<{ id: string }>();
@@ -140,7 +142,12 @@ export default function FormEditor() {
   const modules = formDefinition.definition_jsonb?.modules || {};
   const moduleList = formDefinition.definition_jsonb?.moduleList || [];
 
-  return (
+  const location = useLocation();
+  const initialMode = location.pathname.endsWith('/guided')
+    ? 'guided'
+    : 'quick';
+
+  const editorContent = (
     <div className='form-editor'>
       {/* Form Header */}
       <FormHeader form={currentForm} />
@@ -183,5 +190,11 @@ export default function FormEditor() {
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <FormModeProvider initialMode={initialMode}>
+      <FormLayout>{editorContent}</FormLayout>
+    </FormModeProvider>
   );
 }
