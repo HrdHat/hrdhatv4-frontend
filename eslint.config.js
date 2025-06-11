@@ -196,6 +196,9 @@ export default tseslint.config(
       'jsx-a11y/aria-unsupported-elements': 'error',
       'jsx-a11y/role-has-required-aria-props': 'error',
       'jsx-a11y/role-supports-aria-props': 'error',
+
+      // Import Rules - Parent Relative Imports
+      'import/no-relative-parent-imports': 'error',
     },
   }
 );

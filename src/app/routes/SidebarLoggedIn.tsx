@@ -25,9 +25,10 @@ export default function SidebarLoggedIn() {
     logger.log('SidebarLoggedIn rendered');
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     logger.log('Logout button clicked');
-    logout();
+    await logout();
+    navigate('/');
   };
 
   const handleCreateNewFLRA = () => {

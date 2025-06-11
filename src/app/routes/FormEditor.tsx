@@ -30,7 +30,8 @@ export default function FormEditor() {
   const lastInitializedId = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (lastInitializedId.current === id) return;
+    // Skip re-initialization only if this specific form id has already been initialized
+    if (id && lastInitializedId.current === id) return;
     lastInitializedId.current = id;
     logger.log('FormEditor opened', { formId: id, userId: user?.id });
 
