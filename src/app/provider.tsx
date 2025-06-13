@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { supabase } from '../config/supabaseClient';
-import { useAuthStore } from '../stores/authStore';
-import { logger } from '../utils/logger';
+import { supabase } from '@/config/supabaseClient';
+import { useAuthStore } from '@/stores/authStore';
+import { logger } from '@/utils/logger';
 
 interface ProviderProps {
   children: ReactNode;

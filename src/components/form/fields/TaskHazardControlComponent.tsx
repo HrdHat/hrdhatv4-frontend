@@ -1,11 +1,8 @@
 /* eslint-disable react/no-unescaped-entities, jsx-a11y/label-has-associated-control */
 import React from 'react';
 
-import {
-  MODULE_CONSTRAINTS,
-  getRiskColor,
-  getRiskLabel,
-} from '@/config/moduleConstraints';
+import { MODULE_CONSTRAINTS } from '@/config/moduleConstraints';
+import { getRiskColor, getRiskLabel } from '@/config/moduleConstraints';
 
 interface TaskHazardControlComponentProps {
   moduleData: any;

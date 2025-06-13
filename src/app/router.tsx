@@ -2,8 +2,8 @@ import React from 'react';
 import { useMemo } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
-import { useAuthStore } from '../stores/authStore';
-import { logger } from '../utils/logger';
+import { useAuthStore } from '@/stores/authStore';
+import { logger } from '@/utils/logger';
 
 import About from './routes/About';
 import Contact from './routes/Contact';

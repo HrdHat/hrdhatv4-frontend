@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useAuthStore } from '../../stores/authStore';
-import { logger } from '../../utils/logger';
+import { useAuthStore } from '@/stores/authStore';
+import { logger } from '@/utils/logger';
 
 export default function Login() {
   const [email, setEmail] = useState('');

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-import { LogoUpload } from '../../components/LogoUpload';
-import { supabase } from '../../config/supabaseClient';
-import { FormService } from '../../lib/formService';
-import { useAuthStore } from '../../stores/authStore';
-import { logger } from '../../utils/logger';
+import { LogoUpload } from '@/components/LogoUpload';
+import { supabase } from '@/config/supabaseClient';
+import { FormService } from '@/lib/formService';
+import { useAuthStore } from '@/stores/authStore';
+import { logger } from '@/utils/logger';
 
 export default function Profile() {
   const user = useAuthStore(state => state.user);

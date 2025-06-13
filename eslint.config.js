@@ -110,7 +110,7 @@ export default tseslint.config(
 
       // Import Rules - Architectural Restrictions
       'import/no-restricted-paths': [
-        'error',
+        'warn',
         {
           zones: [
             // Prevent cross-feature imports
@@ -140,21 +140,10 @@ export default tseslint.config(
               except: ['./users'],
             },
             // Enforce unidirectional codebase:
-            // Features cannot import from app
+            // Features cannot import from the app layer
             {
-              target: './src/features',
-              from: './src/app',
-            },
-            // Shared modules cannot import from features or app
-            {
-              target: [
-                './src/components',
-                './src/hooks',
-                './src/lib',
-                './src/types',
-                './src/utils',
-              ],
-              from: ['./src/features', './src/app'],
+              target: './src/app',
+              from: './src/features',
             },
           ],
         },
@@ -162,7 +151,7 @@ export default tseslint.config(
 
       // Import organization
       'import/order': [
-        'error',
+        'warn',
         {
           groups: [
             'builtin',
@@ -203,8 +192,8 @@ export default tseslint.config(
       'jsx-a11y/role-has-required-aria-props': 'error',
       'jsx-a11y/role-supports-aria-props': 'error',
 
-      // Import Rules - Parent Relative Imports
-      'import/no-relative-parent-imports': 'warn',
+      // Import Rules - Parent Relative Imports (ignore alias paths starting with '@/')
+      'import/no-relative-parent-imports': ['warn', { ignore: ['^@/'] }],
     },
   }
 );

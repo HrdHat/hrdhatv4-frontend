@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FormService } from '@/lib/formService';
@@ -15,11 +15,7 @@ export default function ActiveFormsList() {
   const user = useAuthStore(state => state.user);
   const { currentForm, reset } = useFormStore();
 
-  useEffect(() => {
-    loadActiveForms();
-  }, [user]);
-
-  const loadActiveForms = async () => {
+  const loadActiveForms = useCallback(async () => {
     if (!user) {
       setError('User not authenticated');
       setLoading(false);
@@ -38,7 +34,11 @@ export default function ActiveFormsList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    void loadActiveForms();
+  }, [user, loadActiveForms]);
 
   const handleOpenForm = (formId: string) => {
     logger.log('Opening form', { formId });

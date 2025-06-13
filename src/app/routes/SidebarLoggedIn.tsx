@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 
-import { useAuthStore } from '../../stores/authStore';
-import { useFormStore } from '../../stores/formStore';
-import { logger } from '../../utils/logger';
+import { useAuthStore } from '@/stores/authStore';
+import { useFormStore } from '@/stores/formStore';
+import { logger } from '@/utils/logger';
 
 import ActiveFormsList from './ActiveFormsList';
 import ArchivedFormsList from './ArchivedFormsList';

@@ -1,10 +1,8 @@
 import { create } from 'zustand';
 
-import { supabase } from '../config/supabaseClient';
-
-// eslint-disable-next-line import/order
+import { supabase } from '@/config/supabaseClient';
 import type { User } from '@supabase/supabase-js';
-import { logger } from '../utils/logger';
+import { logger } from '@/utils/logger';
 
 interface AuthState {
   user: User | null;

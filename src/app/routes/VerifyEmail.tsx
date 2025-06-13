@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import { supabase } from '../../config/supabaseClient';
-import { useAuthStore } from '../../stores/authStore';
-import { logger } from '../../utils/logger';
+import { supabase } from '@/config/supabaseClient';
+import { useAuthStore } from '@/stores/authStore';
+import { logger } from '@/utils/logger';
 
 export default function VerifyEmail() {
   const [resendLoading, setResendLoading] = useState(false);
