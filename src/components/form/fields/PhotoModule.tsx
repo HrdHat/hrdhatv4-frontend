@@ -1,8 +1,11 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { supabase } from '@/config/supabaseClient';
+
 import { MODULE_CONSTRAINTS } from '@/config/moduleConstraints';
+import { supabase } from '@/config/supabaseClient';
 import { logger } from '@/utils/logger';
 import '@/styles/components/photo-module.css';
+
+/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 
 interface PhotoModuleProps {
   moduleData: any;

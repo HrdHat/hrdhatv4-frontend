@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useAuthStore } from '../../stores/authStore';
+
 import { supabase } from '../../config/supabaseClient';
+import { useAuthStore } from '../../stores/authStore';
 import { logger } from '../../utils/logger';
 
 export default function VerifyEmail() {

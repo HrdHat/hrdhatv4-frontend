@@ -1,30 +1,39 @@
+/* eslint-disable import/order */
 import React, { useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useFormStore } from '@/stores/formStore';
-import { useAuthStore } from '@/stores/authStore';
-import { ModuleRenderer } from '@/components/form/ModuleRenderer';
-import { logger } from '@/utils/logger';
-import '@/styles/components/form-editor.css';
+
+// Shared/UI components (alphabetical within group)
+// eslint-disable-next-line import/order
 import { FormHeader } from '@/components/form/FormHeader';
-import FormModeProvider from '@/features/form-editor/FormModeProvider';
+import { ModuleRenderer } from '@/components/form/ModuleRenderer';
+
+// Feature-specific layout/providers
+// eslint-disable-next-line import/order
 import FormLayout from '@/features/form-editor/FormLayout';
+import FormModeProvider from '@/features/form-editor/FormModeProvider';
+
+// Stores & utilities
+import { useAuthStore } from '@/stores/authStore';
+import { useFormStore } from '@/stores/formStore';
+import { logger } from '@/utils/logger';
+
+// Styles (side-effect import should stay last in internal group)
+import '@/styles/components/form-editor.css';
 
 export default function FormEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
   const {
     currentForm,
     formDefinition,
     loading,
-    saving,
     error,
     lastSaved,
-    hasUnsavedChanges,
     initializeForm,
     updateFormData,
     updateModuleData,
-    saveForm,
     reset,
     checkFormExists,
   } = useFormStore();
@@ -82,21 +91,11 @@ export default function FormEditor() {
     return () => clearInterval(checkInterval);
   }, [currentForm?.id, id, checkFormExists, reset, navigate]);
 
-  const handleSaveForm = async () => {
-    try {
-      await saveForm();
-      logger.log('Form saved manually');
-    } catch (error) {
-      logger.error('Manual save failed', error);
-    }
-  };
+  const initialMode = location.pathname.endsWith('/guided')
+    ? 'guided'
+    : 'quick';
 
-  const handleGeneratePDF = () => {
-    logger.log('PDF generation requested');
-    // TODO: Implement PDF generation
-    alert('PDF generation coming soon!');
-  };
-
+  // Guard: user not authenticated
   if (!user) {
     return (
       <div className='form-editor-error'>
@@ -139,14 +138,6 @@ export default function FormEditor() {
     );
   }
 
-  const modules = formDefinition.definition_jsonb?.modules || {};
-  const moduleList = formDefinition.definition_jsonb?.moduleList || [];
-
-  const location = useLocation();
-  const initialMode = location.pathname.endsWith('/guided')
-    ? 'guided'
-    : 'quick';
-
   const editorContent = (
     <div className='form-editor'>
       {/* Form Header */}
@@ -154,8 +145,9 @@ export default function FormEditor() {
 
       {/* Form Content */}
       <div className='form-content'>
-        {moduleList.map((moduleKey: string) => {
-          const moduleDefinition = modules[moduleKey];
+        {formDefinition.definition_jsonb.moduleList.map((moduleKey: string) => {
+          const moduleDefinition =
+            formDefinition.definition_jsonb.modules[moduleKey];
           const moduleData = currentForm.form_data?.modules?.[moduleKey];
 
           if (!moduleDefinition) {

@@ -1,14 +1,15 @@
 import React from 'react';
-import { logger } from '@/utils/logger';
+
 import type { ModuleDefinition } from '@/types/form';
+import { logger } from '@/utils/logger';
 
 // Field components
-import { TextFieldComponent } from './fields/TextFieldComponent';
 import { BooleanFieldComponent } from './fields/BooleanFieldComponent';
 import { DateFieldComponent } from './fields/DateFieldComponent';
-import { TaskHazardControlComponent } from './fields/TaskHazardControlComponent';
 import { PhotoModule } from './fields/PhotoModule';
 import { SignatureModule } from './fields/SignatureModule';
+import { TaskHazardControlComponent } from './fields/TaskHazardControlComponent';
+import { TextFieldComponent } from './fields/TextFieldComponent';
 
 interface ModuleRendererProps {
   moduleKey: string;

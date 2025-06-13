@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+
 import { FormService } from '@/lib/formService';
 import { useAuthStore } from '@/stores/authStore';
 import { logger } from '@/utils/logger';
@@ -101,6 +102,14 @@ export const LogoUpload: React.FC<LogoUploadProps> = ({
     <div className={`logo-upload ${className}`}>
       <div
         className={`logo-upload-area ${uploading ? 'uploading' : ''}`}
+        role='button'
+        tabIndex={0}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
         onClick={handleClick}
         onDrop={handleDrop}
         onDragOver={handleDragOver}

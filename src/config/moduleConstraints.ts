@@ -58,34 +58,36 @@ export const MODULE_CONSTRAINTS = {
   // Task Hazard Control Module Constraints
   taskHazardControl: {
     maxEntries: 6,
+    /* eslint-disable @typescript-eslint/naming-convention */
     riskScale: {
       min: 1,
       max: 10,
       labels: {
-        1: 'Very Low',
-        2: 'Low',
-        3: 'Low-Medium',
-        4: 'Medium',
-        5: 'Medium',
-        6: 'Medium-High',
-        7: 'High',
-        8: 'High',
-        9: 'Very High',
-        10: 'Extreme',
+        '1': 'Very Low',
+        '2': 'Low',
+        '3': 'Low-Medium',
+        '4': 'Medium',
+        '5': 'Medium',
+        '6': 'Medium-High',
+        '7': 'High',
+        '8': 'High',
+        '9': 'Very High',
+        '10': 'Extreme',
       },
       colors: {
-        1: '#4CAF50', // Green
-        2: '#4CAF50',
-        3: '#8BC34A',
-        4: '#CDDC39',
-        5: '#FFEB3B', // Yellow
-        6: '#FFC107',
-        7: '#FF9800', // Orange
-        8: '#FF5722',
-        9: '#F44336', // Red
-        10: '#B71C1C',
+        '1': '#4CAF50', // Green
+        '2': '#4CAF50',
+        '3': '#8BC34A',
+        '4': '#CDDC39',
+        '5': '#FFEB3B', // Yellow
+        '6': '#FFC107',
+        '7': '#FF9800', // Orange
+        '8': '#FF5722',
+        '9': '#F44336', // Red
+        '10': '#B71C1C',
       },
     },
+    /* eslint-enable @typescript-eslint/naming-convention */
     fieldMaxLengths: {
       task: 200,
       hazard: 300,

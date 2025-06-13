@@ -1,5 +1,6 @@
-import AppProvider from './AppProvider';
 import ResponsiveLayout from '@/components/ResponsiveLayout/ResponsiveLayout';
+
+import AppProvider from './AppProvider';
 import AppRoutes from './router';
 
 export default function App() {

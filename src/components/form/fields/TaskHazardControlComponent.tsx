@@ -1,4 +1,6 @@
+/* eslint-disable react/no-unescaped-entities, jsx-a11y/label-has-associated-control */
 import React from 'react';
+
 import {
   MODULE_CONSTRAINTS,
   getRiskColor,

@@ -7,22 +7,22 @@ import { logger } from '../utils/logger';
 
 import About from './routes/About';
 import Contact from './routes/Contact';
+import ErrorPage from './routes/ErrorPage';
+import FAQ from './routes/FAQ';
+import FormEditor from './routes/FormEditor';
+import GuidedEditor from './routes/GuidedEditor';
 import LoggedinHomePage from './routes/LoggedinHomePage';
 import Login from './routes/Login';
+import Maintenance from './routes/Maintenance';
 import NotFound from './routes/NotFound';
+import Profile from './routes/Profile';
 import ReportBug from './routes/ReportBug';
 import SafetyBlog from './routes/SafetyBlog';
 import SidebarLoggedIn from './routes/SidebarLoggedIn';
 import SidebarLoggedOut from './routes/SidebarLoggedOut';
 import Signup from './routes/Signup';
 import Terms from './routes/Terms';
-import Profile from './routes/Profile';
-import FormEditor from './routes/FormEditor';
-import GuidedEditor from './routes/GuidedEditor';
-import FAQ from './routes/FAQ';
-import ErrorPage from './routes/ErrorPage';
 import Unauthorized from './routes/Unauthorized';
-import Maintenance from './routes/Maintenance';
 import VerifyEmail from './routes/VerifyEmail';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 

@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
-import { useFormMode } from './FormModeProvider';
-import QuickFillRenderer from './quick/QuickFillRenderer';
-import GuidedRenderer from './guided/GuidedRenderer';
+
 import ModeDeviceBanner from '@/components/Debug/ModeDeviceBanner';
+
+import { useFormMode } from './FormModeProvider';
+import GuidedRenderer from './guided/GuidedRenderer';
+import QuickFillRenderer from './quick/QuickFillRenderer';
 
 interface FormLayoutProps {
   children: ReactNode;

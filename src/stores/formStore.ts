@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { logger } from '@/utils/logger';
+
 import { FormService } from '@/lib/formService';
 import type {
   FormDefinition,
@@ -7,6 +7,7 @@ import type {
   FormLoadingState,
   FormMode,
 } from '@/types/form';
+import { logger } from '@/utils/logger';
 
 interface FormState extends FormLoadingState {
   // Current form data

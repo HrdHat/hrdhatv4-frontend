@@ -95,10 +95,16 @@ export default tseslint.config(
           selector: 'enum',
           format: ['PascalCase'],
         },
-        // Object properties: camelCase (for interfaces)
+        // Object properties: camelCase or snake_case (to allow DB columns)
+        {
+          selector: ['property', 'objectLiteralProperty', 'typeProperty'],
+          format: ['camelCase', 'snake_case'],
+        },
+        // Ignore quoted properties (e.g., numeric keys in constraints objects)
         {
           selector: 'property',
-          format: ['camelCase'],
+          modifiers: ['requiresQuotes'],
+          format: null,
         },
       ],
 

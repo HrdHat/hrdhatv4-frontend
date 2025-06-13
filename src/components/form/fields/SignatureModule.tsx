@@ -144,7 +144,7 @@ export const SignatureModule: React.FC<SignatureModuleProps> = ({
 
   // Add event listeners to canvas
   const addCanvasEventListeners = useCallback(
-    (canvas: HTMLCanvasElement, canvasType: 'supervisor' | 'worker') => {
+    (canvas: HTMLCanvasElement, _canvasType: 'supervisor' | 'worker') => {
       const handleMouseDown = (e: MouseEvent) => {
         startDrawing(canvas, e);
       };

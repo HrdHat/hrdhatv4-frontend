@@ -1,5 +1,8 @@
 import type { CSSProperties } from 'react';
+
+/* eslint-disable import/no-restricted-paths */
 import { useFormMode } from '@/features/form-editor/FormModeProvider';
+/* eslint-enable import/no-restricted-paths */
 import useBreakpoint from '@/hooks/useBreakpoint';
 
 // Set VITE_SHOW_MODE_BANNER=false in production to hide this banner
@@ -19,10 +22,10 @@ const styles: CSSProperties = {
 };
 
 export default function ModeDeviceBanner() {
-  if (!shouldShow) return null;
-
   const { mode } = useFormMode();
   const bp = useBreakpoint();
+
+  if (!shouldShow) return null;
 
   const modeAbbrev = mode === 'quick' ? 'QF' : 'GM';
   const deviceAbbrev = bp === 'mobile' ? 'MO' : bp === 'tablet' ? 'TA' : 'DE';

@@ -1,10 +1,11 @@
 import React from 'react';
-import { supabase } from '@/config/supabaseClient';
+
 import { LogoUpload } from '@/components/LogoUpload';
-import { logger } from '@/utils/logger';
+import { supabase } from '@/config/supabaseClient';
 import { FormService } from '@/lib/formService';
 import { useAuthStore } from '@/stores/authStore';
 import type { FormInstance } from '@/types/form';
+import { logger } from '@/utils/logger';
 
 interface FormHeaderProps {
   form: FormInstance;

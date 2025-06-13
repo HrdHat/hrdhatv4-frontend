@@ -6,13 +6,13 @@
  */
 
 import { supabase } from '@/config/supabaseClient';
-import { logger } from '@/utils/logger';
 import type {
   FormDefinition,
   FormInstance,
   CreateFormResponse,
   AutofillData,
 } from '@/types/form';
+import { logger } from '@/utils/logger';
 
 export class FormService {
   /**
