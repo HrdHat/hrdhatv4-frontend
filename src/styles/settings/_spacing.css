@@ -13,4 +13,6 @@
   --control-height: 40px; /* Standard form control/button height */
   --button-padding-inline: 20px; /* Horizontal padding for buttons */
   --button-min-width: 160px; /* Minimum button width */
+  --page-margin-mobile: 20px; /* Distance of paper from viewport edge on small screens */
+  --page-margin-desktop: 50px; /* Distance of paper from viewport edge on large screens */
 }

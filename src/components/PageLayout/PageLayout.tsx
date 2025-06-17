@@ -28,16 +28,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, hideSidebar }) => {
             type='button'
             onClick={() => setOpen(prev => !prev)}
             aria-label={open ? 'Close sidebar' : 'Open sidebar'}
-            style={{
-              position: 'fixed',
-              top: '1rem',
-              left: '1rem',
-              zIndex: 1100,
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
+            className='c-sidebar-toggle'
+            style={{ background: 'transparent', border: 'none', padding: 0 }}
           >
             <DoubleArrowIcon direction={open ? 'left' : 'right'} />
           </button>

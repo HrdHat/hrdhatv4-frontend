@@ -1,0 +1,30 @@
+/* Viewport frame – adds persistent black border around viewport */
+
+:root {
+  --frame-size: 10px; /* mobile default */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --frame-size: 40px; /* tablet & desktop */
+  }
+}
+
+body {
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: var(--frame-size);
+}
+
+/* Overlay frame with rounded inside corners */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* allow clicks through */
+  border: var(--frame-size) solid var(--color-black);
+  /* Outer radius = inner radius + frame-size */
+  border-radius: calc(var(--radius-rounded) + var(--frame-size));
+  box-sizing: border-box;
+  z-index: 9999; /* Above content but non-interactive */
+}

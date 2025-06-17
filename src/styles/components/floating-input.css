@@ -5,6 +5,7 @@
 .form-group {
   position: relative;
   display: inline-block;
+  margin-block: 5px;
 }
 
 .field-input {

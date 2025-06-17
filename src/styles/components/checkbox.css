@@ -1,0 +1,46 @@
+/* Checkbox component – neon green outline */
+
+.c-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  color: var(--color-neon-green);
+  font-size: 1rem;
+  margin-block: 5px;
+}
+
+/* Hide default checkbox */
+.c-checkbox__input {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid var(--color-neon-green);
+  border-radius: var(--radius-rounded);
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Checkmark */
+.c-checkbox__input::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background-color: var(--color-neon-green);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  border-radius: 2px;
+}
+
+.c-checkbox__input:checked::after {
+  opacity: 1;
+}
+
+/* Focus ring */
+.c-checkbox__input:focus-visible {
+  outline: 2px solid var(--color-neon-green);
+  outline-offset: 2px;
+}

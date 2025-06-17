@@ -7,7 +7,6 @@
   bottom: 0;
   width: var(--spacing-sidebar-width);
   background-color: var(--color-black);
-  border-right: var(--spacing-grid-line-thin) solid var(--color-grid-line-thin);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 1000; /* ensure overlay */

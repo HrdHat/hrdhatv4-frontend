@@ -7,8 +7,10 @@
 @import './settings/_typography.css';
 @import './settings/_spacing.css';
 @import './base/typography.css';
+@import './base/frame.css';
 @import './objects/grid-background.css';
 @import './objects/page-layout.css';
 @import './objects/scroll-snap.css';
+@import './objects/paper.css';
 @import './components/sidebar.css';
 @import './components/message-box.css';

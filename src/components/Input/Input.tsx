@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import '@/styles/components/floating-input.css';
-import MessageBox from '@/components/MessageBox/MessageBox';
+import Tooltip from '@/components/Tooltip/Tooltip';
+import InfoIcon from '@/components/Icon/InfoIcon';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   /** Floating label text */
   label: string;
-  /** Optional helper text displayed after delay */
-  helperText?: string;
-  /** Position of the tooltip */
-  position?: 'above' | 'below';
+  /** Tooltip content shown on hover/focus */
+  tooltip?: React.ReactNode;
 }
 
 /**
@@ -21,47 +20,14 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
  */
 const Input: React.FC<InputProps> = ({
   label,
-  helperText,
   id,
   className = '',
-  position = 'below',
+  tooltip,
   ...rest
 }) => {
   // If the caller doesn't supply an id, generate a stable one per instance
   const generatedId = React.useId();
   const inputId = id ?? generatedId;
-
-  const [showHelper, setShowHelper] = useState(false);
-  const timerRef = useRef<number | null>(null);
-
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (helperText && e.currentTarget.value === '') {
-      timerRef.current = window.setTimeout(() => {
-        setShowHelper(true);
-      }, 10000);
-    }
-  };
-
-  const clearHelper = () => {
-    if (timerRef.current !== null) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    setShowHelper(false);
-  };
-
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value !== '') {
-      clearHelper();
-    }
-    rest.onChange?.(e);
-  };
-
-  const handleBlur = () => {
-    clearHelper();
-  };
-
-  const tooltipPos = showHelper ? position : 'below';
 
   return (
     <div className='form-group'>
@@ -69,18 +35,17 @@ const Input: React.FC<InputProps> = ({
         id={inputId}
         className={`field-input ${className}`.trim()}
         placeholder=' '
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onChange={handleInput}
         {...rest}
       />
       <label className='field-label' htmlFor={inputId}>
         {label}
       </label>
-      {helperText && showHelper && (
-        <div className={`helper-tooltip helper-tooltip--${position}`}>
-          <MessageBox variant='helper'>{helperText}</MessageBox>
-        </div>
+      {tooltip && (
+        <span style={{ position: 'absolute', top: 0, right: '2px' }}>
+          <Tooltip content={tooltip}>
+            <InfoIcon size={16} />
+          </Tooltip>
+        </span>
       )}
     </div>
   );

@@ -1,0 +1,51 @@
+/* Tooltip component – 2025-06-17 */
+
+.c-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger element (text or icon) */
+.c-tooltip__trigger {
+  cursor: help;
+  color: var(--color-neon-green);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Tooltip bubble */
+.c-tooltip__content {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.5rem);
+  width: max-content;
+  max-width: 220px;
+
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--color-neon-yellow);
+  border-radius: var(--radius-rounded);
+
+  background-color: var(--color-black);
+  color: var(--color-neon-yellow);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
+
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  z-index: 5; /* Above other inline elements */
+}
+
+/* Show tooltip on hover or keyboard focus */
+.c-tooltip:hover .c-tooltip__content,
+.c-tooltip:focus-within .c-tooltip__content {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-0.75rem);
+}
