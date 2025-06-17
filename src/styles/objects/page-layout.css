@@ -1,0 +1,22 @@
+/* Page layout object – centres content with side padding on desktop */
+
+.l-page {
+  box-sizing: border-box;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem; /* small gutter on mobile */
+}
+
+@media (min-width: var(--breakpoint-desktop)) {
+  .l-page {
+    max-width: calc(100% - 2 * var(--spacing-page-side));
+    padding-inline: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .l-page {
+    max-width: calc(100% - 2 * var(--spacing-page-side));
+    padding-inline: 0;
+  }
+}

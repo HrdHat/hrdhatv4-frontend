@@ -24,6 +24,7 @@ import Signup from './routes/Signup';
 import Terms from './routes/Terms';
 import Unauthorized from './routes/Unauthorized';
 import VerifyEmail from './routes/VerifyEmail';
+import Gallery from './routes/Gallery';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 
 function RequireEmailVerified({ children }: { children: React.ReactNode }) {
@@ -76,6 +77,8 @@ export default function AppRoutes() {
         <Route path='/contact' element={<Contact />} />
         <Route path='/report-bug' element={<ReportBug />} />
         <Route path='/faq' element={<FAQ />} />
+        {/* Dev component gallery */}
+        <Route path='/gallery' element={<Gallery />} />
         <Route path='/500' element={<ErrorPage />} />
         <Route path='/unauthorized' element={<Unauthorized />} />
         <Route path='/maintenance' element={<Maintenance />} />

@@ -1,0 +1,16 @@
+/* Reset – CSS stripped on 2025-06-16 */
+
+/* Spacing settings – last updated 2025-06-16 */
+:root {
+  --spacing-grid-cell: 40px;
+  --spacing-grid-line-thin: 1px;
+  --spacing-grid-line-thick: 4px;
+  --spacing-sidebar-width: 320px;
+  --spacing-heading-paragraph: 24px; /* Space between h3 and following paragraph */
+  --spacing-page-side: 360px;
+  --breakpoint-desktop: 1024px;
+  --radius-rounded: 4px; /* Standard 4px border radius */
+  --control-height: 40px; /* Standard form control/button height */
+  --button-padding-inline: 20px; /* Horizontal padding for buttons */
+  --button-min-width: 160px; /* Minimum button width */
+}

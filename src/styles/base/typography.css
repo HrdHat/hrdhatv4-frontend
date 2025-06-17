@@ -1,0 +1,32 @@
+/* Reset – CSS stripped on 2025-06-16 */
+
+/* Typography base styles – last updated 2025-06-16 */
+
+body {
+  color: var(--color-white);
+  font-family: var(--font-primary);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+}
+
+p {
+  margin: 0 0 1em;
+}

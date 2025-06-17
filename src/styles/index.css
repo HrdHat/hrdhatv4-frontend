@@ -1,0 +1,14 @@
+/* Global ITCSS entry point – minimal bootstrap after CSS reset.
+   This file is intentionally slim while we rebuild the styling layers.
+*/
+
+@import './generic/_reset.css';
+@import './settings/_colors.css';
+@import './settings/_typography.css';
+@import './settings/_spacing.css';
+@import './base/typography.css';
+@import './objects/grid-background.css';
+@import './objects/page-layout.css';
+@import './objects/scroll-snap.css';
+@import './components/sidebar.css';
+@import './components/message-box.css';

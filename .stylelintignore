@@ -1,4 +1,13 @@
 node_modules/
 dist/
 build/
-*.min.css 
+*.min.css
+# Ignore legacy styles until fully migrated
+src/styles/base/**
+src/styles/generic/**
+src/styles/objects/**
+src/styles/utilities/**
+src/styles/examples/**
+src/styles/components/form-editor.css
+src/styles/components/photo-module.css
+src/styles/components/signature-module.css 

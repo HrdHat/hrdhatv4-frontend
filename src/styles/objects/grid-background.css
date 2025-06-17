@@ -1,0 +1,27 @@
+/* Reset – CSS stripped on 2025-06-16 */
+
+/* Grid background object – last updated 2025-06-16 */
+.o-bg-grid {
+  /* Hide accidental horizontal scrollbars while allowing vertical scroll */
+  overflow-x: hidden;
+  background-color: var(--color-bg-base);
+  background-image:
+    radial-gradient(
+      circle at 66% 34%,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      var(--color-grid-line-thin) var(--spacing-grid-line-thin),
+      transparent var(--spacing-grid-line-thin)
+    ),
+    linear-gradient(
+      90deg,
+      var(--color-grid-line-thin) var(--spacing-grid-line-thin),
+      transparent var(--spacing-grid-line-thin)
+    );
+  background-size:
+    100% 100%,
+    var(--spacing-grid-cell) var(--spacing-grid-cell),
+    var(--spacing-grid-cell) var(--spacing-grid-cell);
+}

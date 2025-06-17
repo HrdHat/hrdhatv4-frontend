@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . && npm run stylelint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -15,8 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "stylelint": "stylelint 'src/styles/**/*.css'",
-    "stylelint:fix": "stylelint 'src/styles/**/*.css' --fix",
+    "stylelint": "stylelint \"src/**/*.css\"",
+    "stylelint:fix": "stylelint \"src/**/*.css\" --fix",
     "predev": "npm run lint",
     "prebuild": "npm run lint"
   },
@@ -52,6 +52,12 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard": "^35.0.0",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-order": "^6.0.3",
+    "@stylistic/stylelint-plugin": "^3.1.2",
+    "@stylistic/stylelint-config": "^2.0.0"
   }
 }

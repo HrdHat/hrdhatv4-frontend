@@ -1,7 +1,12 @@
 {
-  "extends": ["stylelint-config-standard", "stylelint-config-prettier"],
+  "extends": [
+    "stylelint-config-recommended",
+    "@stylistic/stylelint-config",
+    "stylelint-config-prettier"
+  ],
+  "plugins": ["stylelint-order", "@stylistic/stylelint-plugin"],
   "rules": {
-    "color-no-hex": true,
+    "color-no-hex": [true, { "severity": "warning" }],
     "declaration-no-important": [true, { "severity": "warning" }],
     "selector-class-pattern": [
       "^[a-z0-9\\-]+$",
@@ -13,6 +18,24 @@
     "selector-max-type": 0,
     "selector-no-qualifying-type": true,
     "no-duplicate-selectors": true,
-    "at-rule-no-unknown": [true, { "ignoreAtRules": ["mixin", "include"] }]
+    "at-rule-no-unknown": [true, { "ignoreAtRules": ["mixin", "include"] }],
+    "order/order": [
+      [
+        "custom-properties",
+        "dollar-variables",
+        {
+          "type": "at-rule",
+          "name": "import"
+        },
+        {
+          "type": "at-rule",
+          "name": "mixin"
+        },
+        "declarations",
+        "rules",
+        "at-rules"
+      ]
+    ],
+    "order/properties-alphabetical-order": true
   }
 }

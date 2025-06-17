@@ -1,0 +1,21 @@
+/* Scroll-snap layout object – last updated 2025-06-16
+   Provides vertical full-viewport snapping sections.
+   Usage:
+   <div class="o-snap-y">
+     <section>…</section>
+     <section>…</section>
+   </div>
+*/
+
+.o-snap-y {
+  /* Enable vertical mandatory snapping */
+  scroll-snap-type: y mandatory;
+  overflow-y: auto; /* ensures this element is the scroll container */
+  height: 100vh; /* occupy full viewport so child sections snap cleanly */
+}
+
+/* Snap children at the start of the container */
+.o-snap-y > * {
+  scroll-snap-align: start;
+  min-height: 100vh; /* each section takes at least one viewport */
+}

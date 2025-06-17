@@ -1,0 +1,20 @@
+/* Sidebar component – last updated 2025-06-16 */
+
+.c-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--spacing-sidebar-width);
+  background-color: var(--color-black);
+  border-right: var(--spacing-grid-line-thin) solid var(--color-grid-line-thin);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000; /* ensure overlay */
+  overflow-y: auto;
+}
+
+/* Modifier when sidebar is open */
+.c-sidebar.is-open {
+  transform: translateX(0);
+}

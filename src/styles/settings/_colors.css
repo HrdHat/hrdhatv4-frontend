@@ -1,0 +1,13 @@
+/* Reset – CSS stripped on 2025-06-16 */
+
+/* Core color palette – last updated 2025-06-16 */
+:root {
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-neon-green: #2fff05;
+  --color-neon-yellow: #ffff00;
+  --color-neon-red: #ff0033;
+  --color-grid-line-thin: #2c2f36;
+  --color-grid-line-thick: #44474e;
+  --color-bg-base: #0b0c10;
+}

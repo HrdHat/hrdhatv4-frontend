@@ -41,6 +41,24 @@ Keep your code style consistent. For example, if you name your components using 
 
 If your component is accepting too many props you might consider splitting it into multiple components or use the composition technique via children or slots.
 
+#### Pluggable Component CSS
+
+Every visual component **MUST** own its styles:
+
+- Create a folder `src/components/ComponentName/` containing both `ComponentName.tsx` and `component-name.css`.
+- Import the CSS **inside the component file** (e.g., `import './button.css';`).
+- Never list the file in a global `index.css`. Vite will tree-shake the CSS when the component is not used.
+- Deleting the component (and any references to it) must remove its CSS from the production bundle automatically.
+- The file belongs to the ITCSS **components** layer: keep only visual rules, no layout utilities.
+
+Example directory:
+
+```
+src/components/Button/
+├── Button.tsx   // import './button.css'
+└── button.css   // .btn styles only
+```
+
 ## ITCSS Styling Architecture
 
 This project follows **ITCSS (Inverted Triangle CSS)** methodology for scalable and maintainable styling. ITCSS organizes CSS in layers from generic to specific:
@@ -95,6 +113,19 @@ This project follows **ITCSS (Inverted Triangle CSS)** methodology for scalable 
 - **No type-qualified selectors** (e.g. `input[type=checkbox]`)
 - **No duplicate selectors** across layers
 - **No overrides in `components/`** — use `utilities/` or new class
+
+### 🔧 ITCSS Practical Tips
+
+The guidelines below summarise lessons from Harry Roberts' ITCSS material and the Xfive field-study article (2016-2021):
+
+- **One folder, one file per component.** Keep `ComponentName.tsx` and `component-name.css` together; never mix multiple components in one stylesheet.
+- **Namespace prefixes.** Use BEM-IT prefixes to signal layer intent: `.c-` (component), `.o-` (object), `.u-` (utility).
+- **Limit nesting to two levels.** Deep Sass nesting creates over-qualified selectors and specificity headaches.
+- **Objects vs. Components.** When in doubt, treat a pattern as a Component; over-using Objects leads to class soup.
+- **Spacing is separate.** Margins/padding live in utilities or layout objects, not inside component CSS.
+- **Accept small repetition.** Minor duplication is preferable to tangled abstractions.
+
+> For an in-depth walkthrough see Harry Roberts' Skillshare class and the original Xfive ITCSS article.
 
 ### Example ITCSS Structure
 
@@ -195,3 +226,25 @@ export const Secondary: Story = {
 - **Responsive Testing**: Use Storybook viewport addon for mobile/desktop testing
 
 This approach ensures our styling is maintainable, scalable, and well-documented through Storybook's visual interface.
+
+## Grid Spacing Tokens
+
+**Status:** Active  
+**Last updated:** 2025-06-16  
+**Cross-references:** [ITCSS settings layer], [objects/grid-background.css]
+
+The following design tokens are used for grid backgrounds and spacing:
+
+| Token Name                | Value  | Usage Context                             |
+| ------------------------- | ------ | ----------------------------------------- |
+| --spacing-grid-cell       | 40px   | Size of each grid cell                    |
+| --spacing-grid-line-thin  | 1px    | Thickness of thin grid lines              |
+| --spacing-grid-line-thick | 4px    | Thickness of thick grid lines             |
+| --spacing-sidebar-width   | 320px  | Width of the sidebar component            |
+| --font-size-h1            | 80px   | Base font size for H1 headings            |
+| --font-size-h2            | 50px   | Base font size for H2 headings            |
+| --font-size-h3            | 31px   | Base font size for H3 headings            |
+| --spacing-page-side       | 360px  | Side padding for page content on desktop  |
+| --breakpoint-desktop      | 1024px | Minimum viewport width considered desktop |
+
+These tokens are defined in `src/styles/settings/_spacing.css` and used in `objects/grid-background.css` to ensure a consistent, token-driven 4x4 grid background with thick outer borders.

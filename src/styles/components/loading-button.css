@@ -1,0 +1,40 @@
+/* Reset – CSS stripped on 2025-06-16 */
+
+/* LoadingButton component styles – last updated 2025-06-16 */
+
+.gear-icon {
+  margin-left: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+}
+
+/* Continuous spin */
+@keyframes spin360 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.gear-icon--spin {
+  animation: spin360 0.8s linear infinite;
+}
+
+@keyframes snapShrink {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(0deg) scale(0.8);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.gear-icon--snap {
+  animation: snapShrink 0.25s ease-out forwards;
+}

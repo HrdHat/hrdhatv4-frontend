@@ -1,0 +1,11 @@
+/* Reset – CSS stripped on 2025-06-16 */
+
+/* Typography settings – last updated 2025-06-16 */
+:root {
+  --font-primary: 'Roboto', 'Arial', sans-serif;
+  --font-size-h1: 80px;
+  --font-size-h2: 50px;
+  --font-size-h3: 31px;
+  --font-button: 'Roboto Mono', 'Roboto', monospace;
+  --letter-spacing-button: 0.05em;
+}

@@ -1,0 +1,66 @@
+# UI/UX Design Implementation Plan
+
+**Status:** Draft (working document)
+**Last updated:** 2025-06-16
+
+---
+
+## Purpose
+
+This plan formalises how we will structure, style, and document all UI elements in HrdHat going forward. It aligns with the project‐wide standards defined in `components-and-styling.md`, ITCSS methodology, and our component architecture rules.
+
+## Key Principles
+
+1. **ITCSS Layer Discipline** – All new CSS must live in the correct layer (`settings → tools → generic → base → objects → components → utilities`).
+2. **Pluggable Components** – Every visual element must be encapsulated in its own React component **and** a co-located component-layer CSS file, imported inside the component (e.g., `import './button.css'`). Deleting the TSX module automatically removes its CSS from the bundle.
+3. **Zero Inline Styles** – Inline `style={{…}}` is forbidden in production code (allowed in Storybook examples only).
+4. **Design Tokens Only** – Use `var(--color-*)`, `var(--space-*)`, etc.; no raw hex codes.
+5. **Storybook‐First** – Components are demonstrated and documented via Storybook stories.
+
+## Legacy CSS Acknowledgement
+
+We still have blocks of **legacy CSS** (e.g. `form-editor.css`) that pre-date these rules. They may contain:
+
+- Raw hex colours
+- Type selectors
+- Mixed concerns (layout + visuals)
+
+These rules remain in place temporarily to avoid breaking existing flows, but they are **deprecated**.
+
+## Migration Roadmap
+
+| Phase | Scope              | Goal                                                                                                                                                                                    |
+| ----- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Dev Gallery        | Ensure every example (Button, LoadingButton, Input, HelperText, ErrorMessage, etc.) is a pluggable component importing its own CSS. All inline styles replaced by Object‐layer classes. |
+| 2     | Shared Components  | One component at a time, move any orphan selectors out of `form-editor.css` into their component folders. Replace raw hex codes with tokens.                                            |
+| 3     | Feature Modules    | Audit each feature (`src/features/*`) and migrate local CSS to ITCSS layers. Remove barrel files and cross-feature imports.                                                             |
+| 4     | Purge Legacy Files | Once all selectors are owned by components or utilities, delete `form-editor.css` and other monolithic files. Run lint rules to enforce no forbidden selectors.                         |
+
+## Gallery as Canonical Reference
+
+The **Dev Gallery** route will serve as the living style guide:
+
+- Each column showcases a component class or UI pattern.
+- The gallery should compile with **no** reliance on legacy CSS.
+- We will maintain one Storybook story per gallery example so developers can reference usage and variants.
+
+## Next Actions
+
+1. Complete Input, HelperText, ErrorMessage pluggable components.
+2. Replace inline flexbox spacing in Gallery with `.o-stack` / `.o-grid` classes.
+3. Create Object-layer layout utilities (`o-flex`, `o-stack--vert-lg`, etc.).
+4. Write Storybook stories for the new components.
+5. Begin extracting `form-editor.css` rules.
+
+## Appendix – ITCSS Practical Tips
+
+Borrowed from Harry Roberts’ guidance and the Xfive case study:
+
+- One folder, one CSS file per component; no mixed files.
+- Prefix classes with `.c-`, `.o-`, `.u-` to communicate layer intent.
+- Nest selectors no deeper than two levels.
+- Treat ambiguous patterns as Components rather than Objects.
+- Keep spacing utilities independent of component CSS.
+- Small style repetition is acceptable—clarity over premature abstraction.
+
+For deeper reading see Harry Roberts’ Skillshare course and Xfive’s 2016 ITCSS article.
