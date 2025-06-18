@@ -9,7 +9,7 @@
   background-color: var(--color-black);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
-  z-index: 1000; /* ensure overlay */
+  z-index: 99998; /* above drawer (99997) */
   overflow-y: auto;
 }
 

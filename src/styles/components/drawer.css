@@ -1,0 +1,43 @@
+/* Drawer component – sandbox only – last updated 2025-06-17 */
+
+.c-drawer {
+  position: fixed;
+  /* Height rules */
+  height: auto;
+  max-height: calc(100vh - 2rem); /* Leave breathing room at top/bottom */
+  min-height: var(
+    --spacing-sidebar-width
+  ); /* 320px – matches sidebar width token */
+  top: 1rem;
+  /* Placement */
+  left: 0;
+
+  /* Visual */
+  background-color: var(--color-black);
+  color: var(--color-white);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+
+  /* Slide-in animation */
+  /* Start hidden off-canvas */
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 99997;
+  overflow-y: auto;
+
+  width: var(--spacing-sidebar-width);
+  box-sizing: border-box; /* include padding within width */
+}
+
+/* Open state */
+.c-drawer.is-open {
+  transform: translateX(0);
+}
+
+/* Tablet & Desktop default already set with left var spacing */
+
+/* Tablet & Desktop – when open, slide to the right of sidebar */
+@media (min-width: 600px) {
+  .c-drawer.is-open {
+    transform: translateX(var(--spacing-sidebar-width));
+  }
+}

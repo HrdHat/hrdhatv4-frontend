@@ -1,5 +1,5 @@
 import React from 'react';
-import PageLayout from '@/components/PageLayout/PageLayout';
+import { GalleryLayout } from '@/components/GalleryLayout/GalleryLayout';
 import TypographySection from '@/components/Gallery/TypographySection';
 import ButtonsSection from '@/components/Gallery/ButtonsSection';
 import FieldSection from '@/components/Gallery/FieldSection';
@@ -8,7 +8,7 @@ import FormStyleSection from '@/components/Gallery/FormStyleSection';
 
 const Gallery: React.FC = () => {
   return (
-    <PageLayout>
+    <GalleryLayout>
       <div className='o-snap-y'>
         <TypographySection />
         <ButtonsSection />
@@ -16,7 +16,7 @@ const Gallery: React.FC = () => {
         <MessageBoxesSection />
         <FormStyleSection />
       </div>
-    </PageLayout>
+    </GalleryLayout>
   );
 };
 
