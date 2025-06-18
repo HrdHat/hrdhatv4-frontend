@@ -41,3 +41,9 @@
     transform: translateX(var(--spacing-sidebar-width));
   }
 }
+
+@media (max-width: 599px) {
+  .c-drawer {
+    top: 80px; /* leave space for arrow and status bars */
+  }
+}

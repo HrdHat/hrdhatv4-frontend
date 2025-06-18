@@ -17,20 +17,27 @@ export const GalleryLayout: React.FC<{ children: React.ReactNode }> = ({
   const [drawerOpen, setDrawerOpen] = useState(false); // drawer visibility
   const bp = useBreakpoint();
 
-  // Hide sidebar entirely on mobile when drawer is open to save space
-  const shouldRenderSidebar = !(bp === 'mobile' && drawerOpen);
-
   return (
     <GalleryDrawerContext.Provider
-      value={{ open: drawerOpen, toggle: () => setDrawerOpen(prev => !prev) }}
+      value={{
+        open: drawerOpen,
+        toggle: () => {
+          setDrawerOpen(prev => {
+            const next = !prev;
+            // On mobile screens, close sidebar when opening drawer and vice-versa
+            if (bp === 'mobile') {
+              setSidebarOpen(!next);
+            }
+            return next;
+          });
+        },
+      }}
     >
-      {/* Sidebar */}
-      {shouldRenderSidebar && (
-        <Sidebar isOpen={sidebarOpen}>
-          {/* Button inside sidebar to open/close drawer */}
-          <DrawerToggleButton />
-        </Sidebar>
-      )}
+      {/* Sidebar – always rendered; its isOpen state drives animation */}
+      <Sidebar isOpen={sidebarOpen}>
+        {/* Button inside sidebar to open/close drawer */}
+        <DrawerToggleButton />
+      </Sidebar>
 
       {/* Drawer – appears next to sidebar on desktop/tablet, overlays on mobile */}
       <GalleryDrawer />
@@ -50,8 +57,8 @@ export const GalleryLayout: React.FC<{ children: React.ReactNode }> = ({
         aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
         style={{
           position: 'fixed',
-          top: '1rem',
-          left: '1rem',
+          top: bp === 'mobile' ? '1rem' : '20px',
+          left: bp === 'mobile' ? '1rem' : '20px',
           zIndex: 99999,
           background: 'transparent',
           border: 'none',
