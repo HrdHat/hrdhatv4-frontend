@@ -25,8 +25,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, children, onClose }) => {
       {isOpen && onClose && (
         <div
           role='button'
+          tabIndex={0}
           aria-label='Close sidebar overlay'
           onClick={onClose}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClose();
+            }
+          }}
           style={{
             position: 'fixed',
             inset: 0,

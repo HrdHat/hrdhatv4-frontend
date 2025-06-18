@@ -12,5 +12,6 @@
 @import './objects/page-layout.css';
 @import './objects/scroll-snap.css';
 @import './objects/paper.css';
+@import './objects/stack.css';
 @import './components/sidebar.css';
 @import './components/message-box.css';

@@ -17,7 +17,7 @@ export const GalleryDrawer: React.FC<{ children?: React.ReactNode }> = ({
   const { open, toggle } = useGalleryDrawer();
 
   return (
-    <aside className={`c-drawer ${open ? 'is-open' : ''}`} role='complementary'>
+    <aside className={`c-drawer ${open ? 'is-open' : ''}`}>
       {/* Close drawer button (visible only when open) */}
       {open && (
         <Button

@@ -193,3 +193,11 @@
 **Description**: Full offline sync queue, conflict resolution, and emergency sync support for robust offline-first experience.
 **User Value**: Enables reliable form completion and data integrity in low/no connectivity environments.
 **Status**: Deferred from Phase 1 - Implementation ready
+
+## Feature: Custom-Styled Credential Dropdown
+
+**Priority**: Low
+**Target Phase**: Phase 3
+**Description**: Replace browser-native username/password autofill list with an in-app dropdown that matches HrdHat neon theme (black background, white text, neon-yellow highlight).
+**User Value**: Visual consistency and brand experience during login; avoids browser-dependent styling quirks.
+**Status**: Idea – requires disabling native autocomplete and implementing secure local credential storage or browser API integration.

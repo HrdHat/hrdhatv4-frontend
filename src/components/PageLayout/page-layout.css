@@ -4,17 +4,16 @@
 
 /* Sidebar toggle button positioning */
 .c-sidebar-toggle {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 10001; /* Above frame */
   cursor: pointer;
+  left: 1rem;
+  top: 1rem;
+  z-index: 10001; /* Above frame */
 }
 
 @media (min-width: 768px) {
   .c-sidebar-toggle {
-    top: calc(var(--frame-size) / 2);
     left: calc(var(--frame-size) / 2);
+    top: calc(var(--frame-size) / 2);
     transform: translate(-50%, -50%);
   }
 }

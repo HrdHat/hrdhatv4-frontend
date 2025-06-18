@@ -3,10 +3,10 @@
 /* LoadingButton component styles – last updated 2025-06-16 */
 
 .gear-icon {
-  margin-left: 0.5rem;
   display: inline-block;
-  vertical-align: middle;
+  margin-left: 0.5rem;
   transition: transform 0.3s ease;
+  vertical-align: middle;
 }
 
 /* Continuous spin */

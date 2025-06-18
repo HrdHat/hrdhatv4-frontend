@@ -13,6 +13,8 @@ interface LoadingButtonProps
   onClick?: () => Promise<void> | void;
   /** Button visual variant (maps to Button component variant) */
   variant?: 'primary' | 'error' | 'neutral' | 'neon' | 'green';
+  /** Make the button take full width of its container */
+  fullWidth?: boolean;
 }
 
 /**
@@ -26,6 +28,9 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
   onClick,
   disabled,
   variant = 'primary',
+  fullWidth = false,
+  className = '',
+  style,
   ...rest
 }) => {
   const [loading, setLoading] = useState(false);
@@ -62,10 +67,14 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
   return (
     <Button
       variant={variant}
+      fullWidth={fullWidth}
       {...rest}
       onClick={handleClick}
-      className={busy ? 'btn--loading' : ''}
-      style={busy ? { pointerEvents: 'none' } : undefined}
+      className={`${className} ${busy ? 'btn--loading' : ''}`.trim()}
+      style={{
+        ...((style as React.CSSProperties) ?? {}),
+        ...(busy ? { pointerEvents: 'none' } : {}),
+      }}
     >
       <span>{label}</span>
       <GearIcon size='2em' className={iconClass} />

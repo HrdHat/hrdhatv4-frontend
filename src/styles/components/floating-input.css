@@ -3,38 +3,40 @@
 /* Floating label input component – restored on 2025-06-17 */
 
 .form-group {
-  position: relative;
-  display: inline-block;
+  display: block;
   margin-block: 5px;
+  position: relative;
+  width: 100%;
 }
 
 .field-input {
-  width: 100%;
-  height: var(--control-height);
-  padding: 0 var(--button-padding-inline);
+  background-color: var(--color-black);
   border: 2px solid var(--color-neon-green);
   border-radius: var(--radius-rounded);
-  background-color: var(--color-black);
   color: var(--color-neon-green);
   font-family: var(--font-primary);
   font-size: 1rem;
-  line-height: 1;
+  height: var(--control-height);
+  line-height: var(--control-height);
+  padding: 0 var(--button-padding-inline);
+  width: 100%;
 }
 
 /* Remove default input focus outline */
 .field-input:focus {
-  outline: none;
   box-shadow: 0 0 4px rgba(47, 255, 5, 0.3);
+  outline: none;
 }
 
 .field-label {
-  position: absolute;
-  left: var(--button-padding-inline);
-  top: 50%;
-  transform: translateY(-50%);
   color: var(--color-neon-green);
   font-size: 1rem;
+  /* keep automatic line-height */
+  left: var(--button-padding-inline);
   pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   transition:
     top 0.18s ease,
     transform 0.18s ease,
@@ -44,7 +46,22 @@
 /* Shrink & move label when input has focus or text */
 .field-input:focus + .field-label,
 .field-input:not(:placeholder-shown) + .field-label {
+  font-size: 0.75rem;
   top: -16px;
   transform: none;
-  font-size: 0.75rem;
+}
+
+/* Removed override that affected gallery */
+
+/* Chrome autofill override */
+.field-input:-webkit-autofill,
+.field-input:-webkit-autofill:hover,
+.field-input:-webkit-autofill:focus,
+.field-input:-webkit-autofill:active {
+  box-shadow: 0 0 0px 1000px var(--color-black) inset !important;
+  -webkit-text-fill-color: var(--color-neon-green) !important;
+  border: 2px solid var(--color-neon-green) !important;
+  transition:
+    background-color 600000s 0s,
+    color 600000s 0s;
 }

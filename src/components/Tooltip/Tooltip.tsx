@@ -20,10 +20,15 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content }) => {
 
   return (
     <span className='c-tooltip'>
-      <span className='c-tooltip__trigger' tabIndex={0} aria-describedby={id}>
+      <span
+        className='c-tooltip-trigger'
+        role='button'
+        tabIndex={0}
+        aria-describedby={id}
+      >
         {children}
       </span>
-      <span className='c-tooltip__content' role='tooltip' id={id}>
+      <span className='c-tooltip-content' role='tooltip' id={id}>
         {content}
       </span>
     </span>

@@ -2,12 +2,12 @@
 
 /* Core color palette – last updated 2025-06-16 */
 :root {
-  --color-black: #000000;
-  --color-white: #ffffff;
-  --color-neon-green: #2fff05;
-  --color-neon-yellow: #ffff00;
-  --color-neon-red: #ff0033;
-  --color-grid-line-thin: #2c2f36;
-  --color-grid-line-thick: #44474e;
-  --color-bg-base: #0b0c10;
+  --color-black: hsl(0 0% 0%);
+  --color-white: hsl(0 0% 100%);
+  --color-neon-green: hsl(110 100% 51%);
+  --color-neon-yellow: hsl(60 100% 50%);
+  --color-neon-red: hsl(348 100% 50%);
+  --color-grid-line-thin: hsl(223 10% 19%);
+  --color-grid-line-thick: hsl(223 7% 29%);
+  --color-bg-base: hsl(228 19% 5%);
 }

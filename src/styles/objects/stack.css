@@ -1,0 +1,28 @@
+/* Vertical Stack utility – ITCSS Objects layer
+   Author: Cursor AI – 2025-06-18
+   Usage:
+     <div class="o-stack o-stack--sm">…children…</div>
+   The container applies a vertical flex layout with a CSS gap controlled by
+   the custom property --spacing-stack. Modifiers set common presets.
+*/
+
+.o-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack, 1rem); /* default 16px */
+}
+
+/* Dense stack – good for sidebars and mobile forms */
+.o-stack--sm {
+  --spacing-stack: 1.125rem; /* 18px */
+}
+
+/* Relaxed stack for spacious desktop layouts */
+.o-stack--lg {
+  --spacing-stack: 1.5rem; /* 24px */
+}
+
+/* When inputs are inside a stack, reset their own margins */
+.o-stack .form-group {
+  margin: 0;
+}

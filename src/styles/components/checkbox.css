@@ -1,46 +1,46 @@
 /* Checkbox component – neon green outline */
 
 .c-checkbox {
-  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-family: var(--font-primary);
   color: var(--color-neon-green);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-primary);
   font-size: 1rem;
+  gap: 0.5rem;
   margin-block: 5px;
 }
 
 /* Hide default checkbox */
-.c-checkbox__input {
+.c-checkbox-input {
   appearance: none;
-  width: 20px;
-  height: 20px;
-  margin: 0;
   border: 2px solid var(--color-neon-green);
   border-radius: var(--radius-rounded);
-  position: relative;
   cursor: pointer;
   display: inline-block;
+  height: 20px;
+  margin: 0;
+  position: relative;
+  width: 20px;
 }
 
 /* Checkmark */
-.c-checkbox__input::after {
-  content: '';
-  position: absolute;
-  inset: 4px;
+.c-checkbox-input::after {
   background-color: var(--color-neon-green);
-  opacity: 0;
-  transition: opacity 0.15s ease;
   border-radius: 2px;
+  content: '';
+  inset: 4px;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 0.15s ease;
 }
 
-.c-checkbox__input:checked::after {
+.c-checkbox-input:checked::after {
   opacity: 1;
 }
 
 /* Focus ring */
-.c-checkbox__input:focus-visible {
+.c-checkbox-input:focus-visible {
   outline: 2px solid var(--color-neon-green);
   outline-offset: 2px;
 }

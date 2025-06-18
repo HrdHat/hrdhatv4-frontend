@@ -20,7 +20,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
       <input
         type='checkbox'
         id={inputId}
-        className='c-checkbox__input'
+        className='c-checkbox-input'
         {...rest}
       />
       <span>{label}</span>

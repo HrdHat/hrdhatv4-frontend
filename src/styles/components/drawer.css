@@ -1,31 +1,31 @@
 /* Drawer component – sandbox only – last updated 2025-06-17 */
 
 .c-drawer {
-  position: fixed;
+
+  /* Visual */
+  background-color: var(--color-black);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+  box-sizing: border-box; /* include padding within width */
+  color: var(--color-white);
   /* Height rules */
   height: auto;
+  /* Placement */
+  left: 0;
   max-height: calc(100vh - 2rem); /* Leave breathing room at top/bottom */
   min-height: var(
     --spacing-sidebar-width
   ); /* 320px – matches sidebar width token */
+  overflow-y: auto;
+  position: fixed;
   top: 1rem;
-  /* Placement */
-  left: 0;
-
-  /* Visual */
-  background-color: var(--color-black);
-  color: var(--color-white);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
 
   /* Slide-in animation */
   /* Start hidden off-canvas */
   transform: translateX(-100%);
   transition: transform 0.3s ease;
-  z-index: 99997;
-  overflow-y: auto;
 
   width: var(--spacing-sidebar-width);
-  box-sizing: border-box; /* include padding within width */
+  z-index: 99997;
 }
 
 /* Open state */

@@ -3,47 +3,47 @@
 /* Button component styles – last updated 2025-06-16 */
 
 .btn {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  height: var(--control-height);
-  min-height: var(--control-height);
-  padding-inline: var(--button-padding-inline);
-  font-size: 1rem;
-  font-family: var(--font-button);
-  letter-spacing: var(--letter-spacing-button);
-  font-weight: 600;
-  border-radius: var(--radius-rounded);
-  border: 2px solid transparent;
   background-color: var(--color-black);
+  border: 2px solid transparent;
+  border-radius: var(--radius-rounded);
   color: var(--color-white);
   cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-button);
+  font-size: 1rem;
+  font-weight: 600;
+  height: var(--control-height);
+  justify-content: center;
+  letter-spacing: var(--letter-spacing-button);
+  min-height: var(--control-height);
+  min-width: var(--button-min-width);
+  padding-inline: var(--button-padding-inline);
   transition:
     background 0.2s ease,
     box-shadow 0.2s ease,
     color 0.2s ease,
     transform 0.1s ease;
-  min-width: var(--button-min-width);
 }
 
 /* Neon green outline variant */
 .btn--neon {
-  color: var(--color-neon-green);
   border-color: var(--color-neon-green);
   /* Subtle neon glow */
   box-shadow: 0 0 4px rgba(47, 255, 5, 0.3);
+  color: var(--color-neon-green);
 }
 
 .btn--neon:hover:not(:disabled) {
   background-color: var(--color-neon-green);
-  color: var(--color-black);
   box-shadow: 0 0 8px rgba(47, 255, 5, 0.4);
+  color: var(--color-black);
 }
 
 /* Disabled state */
 .btn:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Full width modifier */
@@ -59,9 +59,9 @@
 /* Filled neon green variant */
 .btn--green {
   background-color: var(--color-neon-green);
-  color: var(--color-black);
   border-color: var(--color-neon-green);
   box-shadow: none;
+  color: var(--color-black);
 }
 
 .btn--green:hover:not(:disabled) {
