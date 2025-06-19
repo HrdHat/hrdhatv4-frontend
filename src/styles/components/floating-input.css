@@ -58,9 +58,9 @@
 .field-input:-webkit-autofill:hover,
 .field-input:-webkit-autofill:focus,
 .field-input:-webkit-autofill:active {
+  border: 2px solid var(--color-neon-green) !important;
   box-shadow: 0 0 0px 1000px var(--color-black) inset !important;
   -webkit-text-fill-color: var(--color-neon-green) !important;
-  border: 2px solid var(--color-neon-green) !important;
   transition:
     background-color 600000s 0s,
     color 600000s 0s;

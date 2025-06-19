@@ -15,32 +15,39 @@ export default function SidebarLoggedOut() {
         {/* Login form (and other unauth routes) offset below arrow toggle */}
         <div
           style={{
-            marginTop: bp === 'mobile' ? '4rem' : '5rem',
-            padding: '0 1rem',
+            padding: bp === 'mobile' ? '1rem' : '1.5rem 1rem 0',
+            paddingTop: bp === 'mobile' ? '1.75rem' : '2.25rem',
           }}
         >
-          <Outlet />
+          <Outlet
+            context={{
+              toggleSidebar: () => setSidebarOpen(prev => !prev),
+              sidebarOpen,
+            }}
+          />
         </div>
       </Sidebar>
 
-      {/* Arrow toggle button (same behaviour as Gallery) */}
-      <button
-        type='button'
-        onClick={() => setSidebarOpen(prev => !prev)}
-        aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
-        style={{
-          position: 'fixed',
-          top: bp === 'mobile' ? '1rem' : '20px',
-          left: bp === 'mobile' ? '1rem' : '20px',
-          zIndex: 99999,
-          background: 'transparent',
-          border: 'none',
-          padding: 0,
-          cursor: 'pointer',
-        }}
-      >
-        <DoubleArrowIcon direction={sidebarOpen ? 'left' : 'right'} />
-      </button>
+      {/* Arrow toggle button for when sidebar is closed (so user can reopen) */}
+      {!sidebarOpen && (
+        <button
+          type='button'
+          onClick={() => setSidebarOpen(true)}
+          aria-label='Open sidebar'
+          style={{
+            position: 'fixed',
+            top: bp === 'mobile' ? '1.75rem' : '2.25rem',
+            left: '1rem',
+            zIndex: 99999,
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+        >
+          <DoubleArrowIcon direction='right' />
+        </button>
+      )}
 
       {/* Main content area can host marketing / public info later */}
       <main className='main-content' />

@@ -48,3 +48,19 @@
   transform: translateX(-50%) translateY(-0.75rem);
   visibility: visible;
 }
+
+.c-tooltip.is-open .c-tooltip-content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-0.75rem);
+  visibility: visible;
+}
+
+.c-tooltip--right .c-tooltip-content {
+  left: auto;
+  right: 0;
+  transform: translateY(-0.5rem);
+}
+
+.c-tooltip.is-open.c-tooltip--right .c-tooltip-content {
+  transform: translateY(-0.75rem);
+}

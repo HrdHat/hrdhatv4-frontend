@@ -8,6 +8,8 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   /** Tooltip content shown on hover/focus */
   tooltip?: React.ReactNode;
+  /** Validation error message to display */
+  error?: string;
 }
 
 /**
@@ -23,6 +25,7 @@ const Input: React.FC<InputProps> = ({
   id,
   className = '',
   tooltip,
+  error,
   ...rest
 }) => {
   // If the caller doesn't supply an id, generate a stable one per instance
@@ -40,9 +43,13 @@ const Input: React.FC<InputProps> = ({
       <label className='field-label' htmlFor={inputId}>
         {label}
       </label>
-      {tooltip && (
+      {(tooltip || error) && (
         <span style={{ position: 'absolute', top: 0, right: '2px' }}>
-          <Tooltip content={tooltip}>
+          <Tooltip
+            content={error ?? tooltip}
+            forceOpen={Boolean(error)}
+            placement='right'
+          >
             <InfoIcon size={16} />
           </Tooltip>
         </span>
