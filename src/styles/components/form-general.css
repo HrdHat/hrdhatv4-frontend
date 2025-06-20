@@ -1,0 +1,54 @@
+.form-module {
+  position: relative;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0 20px 1.5rem;
+  background: #fff;
+}
+
+.form-module__label {
+  position: absolute;
+  top: -0.7rem;
+  left: 1rem;
+  background: #fff;
+  padding: 0 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: #000;
+}
+
+/* Responsive grid */
+.general-info-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* default mobile */
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+
+.general-info-grid label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #000;
+}
+
+.general-info-grid input {
+  width: 100%;
+  padding: 0.3rem;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  color: #000;
+}
+
+@media (min-width: 650px) {
+  .general-info-grid {
+    /* Four columns: label / field / label / field */
+    grid-template-columns: 180px minmax(0, 1fr) 180px minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .form-module {
+    margin-inline: 40px;
+  }
+}

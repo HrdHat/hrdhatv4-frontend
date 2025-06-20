@@ -7,6 +7,8 @@
   --color-neon-green: hsl(110 100% 51%);
   --color-neon-yellow: hsl(60 100% 50%);
   --color-neon-red: hsl(348 100% 50%);
+  /* New dark gray panel colour – matches screenshot */
+  --color-panel-bg: hsl(220 8% 20%);
   --color-grid-line-thin: hsl(223 10% 19%);
   --color-grid-line-thick: hsl(223 7% 29%);
   --color-bg-base: hsl(228 19% 5%);

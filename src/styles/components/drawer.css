@@ -1,7 +1,6 @@
 /* Drawer component – sandbox only – last updated 2025-06-17 */
 
 .c-drawer {
-
   /* Visual */
   background-color: var(--color-black);
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);

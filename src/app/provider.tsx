@@ -18,12 +18,18 @@ export default function Provider({ children }: ProviderProps) {
       const { data, error } = await supabase.auth.getUser();
       logger.log('Session check result', { user: data?.user, error });
       if (data?.user) {
-        useAuthStore.setState({ user: data.user, loading: false, error: null });
+        useAuthStore.setState({
+          user: data.user,
+          loading: false,
+          error: null,
+          hasCheckedAuth: true,
+        });
       } else {
         useAuthStore.setState({
           user: null,
           loading: false,
           error: error?.message || null,
+          hasCheckedAuth: true,
         });
       }
     };
@@ -38,9 +44,15 @@ export default function Provider({ children }: ProviderProps) {
             user: session.user,
             loading: false,
             error: null,
+            hasCheckedAuth: true,
           });
         } else {
-          useAuthStore.setState({ user: null, loading: false, error: null });
+          useAuthStore.setState({
+            user: null,
+            loading: false,
+            error: null,
+            hasCheckedAuth: true,
+          });
         }
       }
     );

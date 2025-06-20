@@ -1,0 +1,31 @@
+.form-card {
+  background-color: var(--color-white, #ffffff);
+  color: var(--color-black, #000000);
+  border-radius: var(--radius-rounded, 4px);
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.form-card-date {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.form-card-actions {
+  margin-top: auto;
+}
+
+.forms-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}

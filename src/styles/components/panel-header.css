@@ -1,0 +1,21 @@
+/* Panel header – shared for logged-in pages */
+
+.panel-header {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 1rem 0;
+}
+
+.panel-header-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.panel-header-title {
+  color: var(--color-neon-green);
+  font-size: calc(1.5rem + 0.3125rem); /* 5px larger */
+  margin: 0;
+}

@@ -41,6 +41,13 @@
   z-index: 5; /* Above other inline elements */
 }
 
+/* Right-aligned variant before hover/focus rules to maintain specificity order */
+.c-tooltip--right .c-tooltip-content {
+  left: auto;
+  right: 0;
+  transform: translateY(-0.5rem);
+}
+
 /* Show tooltip on hover or keyboard focus */
 .c-tooltip:hover .c-tooltip-content,
 .c-tooltip:focus-within .c-tooltip-content {
@@ -55,12 +62,7 @@
   visibility: visible;
 }
 
-.c-tooltip--right .c-tooltip-content {
-  left: auto;
-  right: 0;
-  transform: translateY(-0.5rem);
-}
-
+/* Open state for right-aligned variant – placed after generic rules to avoid specificity issues */
 .c-tooltip.is-open.c-tooltip--right .c-tooltip-content {
   transform: translateY(-0.75rem);
 }

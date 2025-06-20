@@ -6,6 +6,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { useFormStore } from '@/stores/formStore';
 import type { FormInstance } from '@/types/form';
 import { logger } from '@/utils/logger';
+import PanelHeader from '@/components/PageHeader/PanelHeader';
+import Button from '@/components/Button/Button';
+import '@/styles/components/form-card.css';
 
 export default function ActiveFormsList() {
   const [forms, setForms] = useState<FormInstance[]>([]);
@@ -86,15 +89,13 @@ export default function ActiveFormsList() {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
   if (loading) {
     return (
       <div className='active-forms-list'>
-        <h2>Active Forms</h2>
+        <PanelHeader title='Active Forms' />
         <div className='loading'>Loading forms...</div>
       </div>
     );
@@ -103,7 +104,7 @@ export default function ActiveFormsList() {
   if (error) {
     return (
       <div className='active-forms-list'>
-        <h2>Active Forms</h2>
+        <PanelHeader title='Active Forms' />
         <div className='error'>
           <p>Error: {error}</p>
           <button onClick={loadActiveForms}>Retry</button>
@@ -114,7 +115,7 @@ export default function ActiveFormsList() {
 
   return (
     <div className='active-forms-list'>
-      <h2>Active Forms</h2>
+      <PanelHeader title='Active Forms' />
 
       {forms.length === 0 ? (
         <div className='empty-state'>
@@ -125,33 +126,55 @@ export default function ActiveFormsList() {
         <div className='forms-grid'>
           {forms.map(form => (
             <div key={form.id} className='form-card'>
-              <div className='form-card-header'>
-                <h3 className='form-title'>{form.title || form.form_number}</h3>
-                <span className='form-number'>{form.form_number}</span>
+              <div
+                className='form-card-header-row'
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <h3 className='form-card-title' style={{ margin: 0 }}>
+                  {(form.title || 'FLRA').toUpperCase()}
+                </h3>
+                <span className='form-card-date'>
+                  {formatDate(form.created_at)}
+                </span>
               </div>
 
-              <div className='form-card-meta'>
-                <p className='form-date'>
-                  Created: {formatDate(form.created_at)}
-                </p>
-                <p className='form-date'>
-                  Updated: {formatDate(form.updated_at)}
-                </p>
-              </div>
-
-              <div className='form-card-actions'>
-                <button
+              <div
+                className='form-card-actions'
+                style={{
+                  display: 'flex',
+                  gap: '0.5rem',
+                  width: '100%',
+                }}
+              >
+                <Button
+                  variant='green'
+                  style={{
+                    fontSize: '0.875rem',
+                    padding: '0.25rem 0.75rem',
+                    flex: 1,
+                    minWidth: 'auto',
+                  }}
                   onClick={() => handleOpenForm(form.id)}
-                  className='btn-primary'
                 >
                   Open
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant='error'
+                  style={{
+                    fontSize: '0.875rem',
+                    padding: '0.25rem 0.75rem',
+                    flex: 1,
+                    minWidth: 'auto',
+                  }}
                   onClick={() => handleDeleteForm(form)}
-                  className='btn-danger'
                 >
                   Delete
-                </button>
+                </Button>
               </div>
             </div>
           ))}

@@ -8,6 +8,11 @@ import { logger } from '@/utils/logger';
 import ActiveFormsList from './ActiveFormsList';
 import ArchivedFormsList from './ArchivedFormsList';
 import NewFormList from './NewFormList';
+import Sidebar from '@/components/Sidebar/Sidebar';
+import DoubleArrowIcon from '@/components/Icon/DoubleArrowIcon';
+import Button from '@/components/Button/Button';
+import useBreakpoint from '@/hooks/useBreakpoint';
+import '@/styles/components/drawer.css';
 
 export default function SidebarLoggedIn() {
   const logout = useAuthStore(state => state.logout);
@@ -16,10 +21,18 @@ export default function SidebarLoggedIn() {
   const [panel, setPanel] = useState<'active' | 'archived' | 'profile' | 'new'>(
     'active'
   );
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const bp = useBreakpoint();
 
   // Form store state for checking if a form is currently open
   const { currentForm, hasUnsavedChanges } = useFormStore();
+
+  // Helper: close both sidebar and drawer
+  const closeSidebar = () => {
+    setDrawerOpen(false);
+    setSidebarOpen(false);
+  };
 
   useEffect(() => {
     logger.log('SidebarLoggedIn rendered');
@@ -87,6 +100,9 @@ export default function SidebarLoggedIn() {
     } else {
       setPanel(newPanel);
       setDrawerOpen(true); // Open drawer for other panels
+      if (bp === 'mobile') {
+        setSidebarOpen(false);
+      }
     }
   };
 
@@ -106,67 +122,140 @@ export default function SidebarLoggedIn() {
 
   return (
     <div className='sidebar-layout'>
-      {/* Sidebar with Navigation and Drawer */}
-      <aside
-        className={`sidebar ${drawerOpen ? 'drawer-open' : 'drawer-closed'}`}
-      >
-        {/* Navigation */}
-        <nav className='sidebar-nav'>
+      {/* Slide-in Sidebar container */}
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar}>
+        {/* Close-arrow button inside the sidebar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            padding: '0.75rem 1rem 0',
+          }}
+        >
           <button
-            onClick={() => handlePanelChange('active')}
-            className={panel === 'active' ? 'active' : ''}
+            type='button'
+            onClick={closeSidebar}
+            aria-label='Close sidebar'
+            style={{ background: 'transparent', border: 'none', padding: 0 }}
           >
-            Active Forms
+            <DoubleArrowIcon direction='left' />
           </button>
-          <button
-            onClick={() => handlePanelChange('archived')}
-            className={panel === 'archived' ? 'active' : ''}
+        </div>
+        <div
+          style={{ width: '100%' }}
+          className={drawerOpen ? 'drawer-open' : 'drawer-closed'}
+        >
+          {/* Navigation wrapped with responsive padding similar to logged-out sidebar */}
+          <div
+            style={{
+              padding: bp === 'mobile' ? '1rem' : '1.5rem 1rem 0',
+              paddingTop: bp === 'mobile' ? '1.75rem' : '2.25rem',
+            }}
           >
-            Archived Forms
-          </button>
-          <button
-            onClick={() => handlePanelChange('profile')}
-            className={panel === 'profile' ? 'active' : ''}
-          >
-            Profile
-          </button>
-          <button
-            onClick={() => handlePanelChange('new')}
-            className={panel === 'new' ? 'active' : ''}
-          >
-            New Form
-          </button>
-          <button onClick={handleCreateNewFLRA}>Create New FLRA</button>
-          <button
-            onClick={handleLogout}
-            disabled={loading}
-            className='logout-btn'
-          >
-            {loading ? 'Logging out...' : 'Log Out'}
-          </button>
-        </nav>
-
-        {/* Drawer Content */}
-        {drawerOpen && (
-          <div className='drawer'>
-            <div className='drawer-header'>
-              <button
-                onClick={() => setDrawerOpen(false)}
-                className='drawer-close'
-                aria-label='Close drawer'
+            <nav className='sidebar-nav o-stack o-stack--sm'>
+              <Button
+                variant='neon'
+                fullWidth
+                onClick={() => handlePanelChange('active')}
+                className={panel === 'active' ? 'active' : ''}
               >
-                ✕
-              </button>
-            </div>
-            <div className='drawer-content'>{renderDrawerContent()}</div>
+                Active Forms
+              </Button>
+              <Button
+                variant='neon'
+                fullWidth
+                onClick={() => handlePanelChange('archived')}
+                className={panel === 'archived' ? 'active' : ''}
+              >
+                Archived Forms
+              </Button>
+              <Button
+                variant='neon'
+                fullWidth
+                onClick={() => handlePanelChange('profile')}
+                className={panel === 'profile' ? 'active' : ''}
+              >
+                Profile
+              </Button>
+              <Button
+                variant='neon'
+                fullWidth
+                onClick={() => handlePanelChange('new')}
+                className={panel === 'new' ? 'active' : ''}
+              >
+                New Form
+              </Button>
+              <Button variant='green' fullWidth onClick={handleCreateNewFLRA}>
+                Create New FLRA
+              </Button>
+              <Button
+                variant='neutral'
+                fullWidth
+                onClick={handleLogout}
+                disabled={loading}
+                className='logout-btn'
+              >
+                {loading ? 'Logging out...' : 'Log Out'}
+              </Button>
+            </nav>
           </div>
-        )}
-      </aside>
+        </div>
+      </Sidebar>
 
-      {/* Main Content Area */}
+      {/* Arrow toggle to reopen sidebar when closed */}
+      {!sidebarOpen && (
+        <button
+          type='button'
+          onClick={() => setSidebarOpen(true)}
+          aria-label='Open sidebar'
+          style={{
+            position: 'fixed',
+            top: '1.5rem',
+            left: '1rem',
+            zIndex: 99999,
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+        >
+          <DoubleArrowIcon direction='right' />
+        </button>
+      )}
+
       <main className='main-content'>
-        <Outlet />
+        <Outlet
+          context={{
+            toggleSidebar: () => setSidebarOpen(prev => !prev),
+            sidebarOpen,
+          }}
+        />
       </main>
+
+      {/* Drawer – gallery style (sibling to Sidebar) */}
+      {drawerOpen && (
+        <aside className='c-drawer is-open'>
+          <button
+            type='button'
+            onClick={() => setDrawerOpen(false)}
+            aria-label='Close drawer'
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+          >
+            <DoubleArrowIcon direction='left' />
+          </button>
+          <div style={{ padding: '1rem', paddingTop: '3.25rem' }}>
+            {renderDrawerContent()}
+          </div>
+        </aside>
+      )}
     </div>
   );
 }

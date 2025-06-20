@@ -1,18 +1,38 @@
 /* Paper object – last updated 2025-06-17 */
 
+/* Paper object – simulates a sheet of paper that holds the form */
 .paper-object {
   background-color: var(--color-white);
   border: var(--spacing-grid-line-thin) solid var(--color-black);
-  /* Use width to mimic 8.5in letter width proportionally, but stay responsive */
-  width: 100%;
-  /* Maintain aspect ratio: approximate 8.5x11 – 1:1.29 */
+
+  /* Width */
+  width: 100%; /* mobile fills viewport width */
+  max-width: 760px; /* desktop/tablet cap */
+  margin-inline: auto; /* center horizontally */
+
+  /* Height */
+  min-height: 100vh;
+  /* Allow content to dictate further height; let page scroll naturally */
+
+  /* Maintain letter aspect ratio when content is shorter than viewport */
   aspect-ratio: 8.5 / 11;
 
-  margin-inline: var(--page-margin-mobile);
+  /* Enable internal scrolling only if needed */
+  overflow: visible;
 }
 
-@media (min-width: var(--breakpoint-desktop)) {
+@media (max-width: 599px) {
+  /* On small screens, remove aspect-ratio constraint to allow natural flow */
   .paper-object {
-    margin-inline: var(--page-margin-desktop);
+    aspect-ratio: unset;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* Tablet: fill available width like mobile (up to 1279px) */
+@media (max-width: 1279px) {
+  .paper-object {
+    max-width: none;
   }
 }

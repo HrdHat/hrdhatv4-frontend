@@ -25,6 +25,7 @@ import Terms from './routes/Terms';
 import Unauthorized from './routes/Unauthorized';
 import VerifyEmail from './routes/VerifyEmail';
 import Gallery from './routes/Gallery';
+import FormSample from './routes/FormSample';
 // import FAQ from './routes/FAQ'; // TODO: Add FAQ route when component exists
 
 function RequireEmailVerified({ children }: { children: React.ReactNode }) {
@@ -46,8 +47,17 @@ function RequireEmailVerified({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppRoutes() {
-  const user = useAuthStore(state => state.user);
-  logger.log('Router rendered', { user });
+  const { user, hasCheckedAuth } = useAuthStore();
+  logger.log('Router rendered', { user, hasCheckedAuth });
+
+  if (!hasCheckedAuth) {
+    return (
+      <div style={{ padding: '2rem', color: 'var(--color-neon-green)' }}>
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <RequireEmailVerified>
       <Routes>
@@ -79,6 +89,7 @@ export default function AppRoutes() {
         <Route path='/faq' element={<FAQ />} />
         {/* Dev component gallery */}
         <Route path='/gallery' element={<Gallery />} />
+        <Route path='/form-sample' element={<FormSample />} />
         <Route path='/500' element={<ErrorPage />} />
         <Route path='/unauthorized' element={<Unauthorized />} />
         <Route path='/maintenance' element={<Maintenance />} />

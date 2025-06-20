@@ -8,6 +8,7 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  hasCheckedAuth: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (
     email: string,
@@ -22,6 +23,7 @@ export const useAuthStore = create<AuthState>(set => ({
   user: null,
   loading: false,
   error: null,
+  hasCheckedAuth: false,
 
   login: async (email, password) => {
     logger.log('Login attempt', { email });
@@ -44,14 +46,19 @@ export const useAuthStore = create<AuthState>(set => ({
         status: error.status,
         name: error.name,
       });
-      set({ error: error.message, loading: false });
+      set({ error: error.message, loading: false, hasCheckedAuth: true });
     } else {
       logger.log('Login success', { user: data.user });
       logger.log('User email verified?', {
         email_confirmed_at: data.user?.email_confirmed_at,
         created_at: data.user?.created_at,
       });
-      set({ user: data.user, loading: false, error: null });
+      set({
+        user: data.user,
+        loading: false,
+        error: null,
+        hasCheckedAuth: true,
+      });
       logger.log('User state updated after login', { user: data.user });
     }
   },
@@ -75,10 +82,15 @@ export const useAuthStore = create<AuthState>(set => ({
     });
     if (error) {
       logger.error('Signup error', error);
-      set({ error: error.message, loading: false });
+      set({ error: error.message, loading: false, hasCheckedAuth: true });
     } else {
       logger.log('Signup success', { user: data.user });
-      set({ user: data.user, loading: false, error: null });
+      set({
+        user: data.user,
+        loading: false,
+        error: null,
+        hasCheckedAuth: true,
+      });
       logger.log('User state updated after signup', { user: data.user });
     }
   },
@@ -89,10 +101,10 @@ export const useAuthStore = create<AuthState>(set => ({
     const { error } = await supabase.auth.signOut();
     if (error) {
       logger.error('Logout error', error);
-      set({ error: error.message, loading: false });
+      set({ error: error.message, loading: false, hasCheckedAuth: true });
     } else {
       logger.log('Logout success');
-      set({ user: null, loading: false, error: null });
+      set({ user: null, loading: false, error: null, hasCheckedAuth: true });
       logger.log('User state cleared after logout');
     }
   },
@@ -103,11 +115,16 @@ export const useAuthStore = create<AuthState>(set => ({
     const { data, error } = await supabase.auth.getUser();
     if (error) {
       logger.error('Session refresh error', error);
-      set({ error: error.message, loading: false });
+      set({ error: error.message, loading: false, hasCheckedAuth: true });
       logger.log('User state cleared after session refresh error or no user');
     } else {
       logger.log('Session refresh success', { user: data.user });
-      set({ user: data.user, loading: false, error: null });
+      set({
+        user: data.user,
+        loading: false,
+        error: null,
+        hasCheckedAuth: true,
+      });
       logger.log('User state updated after session refresh', {
         user: data.user,
       });
