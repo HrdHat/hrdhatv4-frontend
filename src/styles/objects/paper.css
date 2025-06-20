@@ -21,8 +21,8 @@
   overflow: visible;
 }
 
-@media (max-width: 599px) {
-  /* On small screens, remove aspect-ratio constraint to allow natural flow */
+/* Disable aspect ratio on tablet & mobile (≤ 767px) to allow paper to auto-expand */
+@media (max-width: 767px) {
   .paper-object {
     aspect-ratio: unset;
     border-left: none;
